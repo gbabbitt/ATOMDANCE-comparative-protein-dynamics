@@ -276,7 +276,6 @@ def feature_vector():
         #print(M)
         # create sparse matrix
         M[np.abs(M) < 0.005] = 0 # plug in zero values if below threshold
-        M[np.abs(M) == "NaN"] = 0 #
         #print("Sparse Matrix:")
         #print(M)
         svd =  TruncatedSVD(n_components = 5)
@@ -386,7 +385,7 @@ def feature_vector():
         #print(dfcorr_sub_query)
         #print(feature_sub_query)
         df1 = feature_sub_query
-        writePath = "./feature_sub_ref/feature_%s_sub_query_%s.txt" % (PDB_id_query, i)
+        writePath = "./feature_sub_query/feature_%s_sub_query_%s.txt" % (PDB_id_query, i)
         with open(writePath, 'w') as f1:
             dfAsString = df1.to_string(header=False, index=True)
             f1.write(dfAsString)
