@@ -276,6 +276,7 @@ def feature_vector():
         #print(M)
         # create sparse matrix
         M[np.abs(M) < 0.005] = 0 # plug in zero values if below threshold
+        M[np.abs(M) == "NaN"] = 0 #
         #print("Sparse Matrix:")
         #print(M)
         svd =  TruncatedSVD(n_components = 5)

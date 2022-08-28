@@ -5,6 +5,12 @@ https://people.rit.edu/gabsbi/
 
 more on cpptraj
 https://amber-md.github.io/cpptraj/CPPTRAJ.xhtml
+
+TO INSTALL cpptraj
+1. check/install gcc, g++ and gfortran compilers (e.g. sudo apt install gcc g++ gfortran)
+2. sudo ./configure gcc
+3. make install
+
 NOTE: after installing cpptraj then open bashrc file (e.g. $ gedit .bashrc), then add the following lines to open cpptraj from everywhere
 
 export CPPTRAJ_HOME=/home/myUserName/Desktop/cpptraj-master

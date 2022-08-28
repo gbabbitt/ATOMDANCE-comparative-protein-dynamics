@@ -25,7 +25,6 @@ class Ui_Dialog(object):
         self.textEdit = QtWidgets.QTextEdit(self.frame)
         self.textEdit.setGeometry(QtCore.QRect(10, 40, 191, 75))
         self.textEdit.setObjectName("textEdit")
-        #self.textEdit.setText("1cdw_bound.pdb\n1cdw_bound.prmtop\n1cdw_bound.nc")
         self.label_14 = QtWidgets.QLabel(self.frame)
         self.label_14.setGeometry(QtCore.QRect(10, 120, 191, 16))
         self.label_14.setObjectName("label_14")
@@ -37,7 +36,6 @@ class Ui_Dialog(object):
         self.textEdit_2 = QtWidgets.QTextEdit(self.frame_2)
         self.textEdit_2.setGeometry(QtCore.QRect(10, 50, 191, 75))
         self.textEdit_2.setObjectName("textEdit_2")
-        #self.textEdit_2.setText("1cdw_unbound.pdb\n1cdw_unbound.prmtop\n1cdw_unbound.nc")
         self.label_15 = QtWidgets.QLabel(self.frame_2)
         self.label_15.setGeometry(QtCore.QRect(10, 130, 201, 16))
         self.label_15.setObjectName("label_15")
@@ -52,7 +50,6 @@ class Ui_Dialog(object):
         self.lineEdit = QtWidgets.QLineEdit(self.frame_3)
         self.lineEdit.setGeometry(QtCore.QRect(20, 30, 113, 28))
         self.lineEdit.setObjectName("lineEdit")
-        #self.lineEdit.setText("25")
         self.label_5 = QtWidgets.QLabel(self.frame_3)
         self.label_5.setGeometry(QtCore.QRect(20, 10, 261, 16))
         self.label_5.setObjectName("label_5")
@@ -62,18 +59,15 @@ class Ui_Dialog(object):
         self.lineEdit_2 = QtWidgets.QLineEdit(self.frame_3)
         self.lineEdit_2.setGeometry(QtCore.QRect(20, 80, 113, 28))
         self.lineEdit_2.setObjectName("lineEdit_2")
-        #self.lineEdit_2.setText("100")
         self.lineEdit_3 = QtWidgets.QLineEdit(self.frame_3)
         self.lineEdit_3.setGeometry(QtCore.QRect(20, 130, 113, 28))
         self.lineEdit_3.setObjectName("lineEdit_3")
-        #self.lineEdit_3.setText("5000")
         self.label_8 = QtWidgets.QLabel(self.frame_3)
         self.label_8.setGeometry(QtCore.QRect(20, 110, 271, 21))
         self.label_8.setObjectName("label_8")
         self.lineEdit_4 = QtWidgets.QLineEdit(self.frame_3)
         self.lineEdit_4.setGeometry(QtCore.QRect(20, 180, 113, 28))
         self.lineEdit_4.setObjectName("lineEdit_4")
-        #self.lineEdit_4.setText("1")
         self.label_9 = QtWidgets.QLabel(self.frame_3)
         self.label_9.setGeometry(QtCore.QRect(20, 160, 261, 16))
         self.label_9.setObjectName("label_9")
@@ -83,18 +77,15 @@ class Ui_Dialog(object):
         self.lineEdit_5 = QtWidgets.QLineEdit(self.frame_3)
         self.lineEdit_5.setGeometry(QtCore.QRect(20, 230, 113, 28))
         self.lineEdit_5.setObjectName("lineEdit_5")
-        #self.lineEdit_5.setText("179")
         self.label_11 = QtWidgets.QLabel(self.frame_3)
         self.label_11.setGeometry(QtCore.QRect(20, 260, 281, 16))
         self.label_11.setObjectName("label_11")
         self.lineEdit_6 = QtWidgets.QLineEdit(self.frame_3)
         self.lineEdit_6.setGeometry(QtCore.QRect(20, 280, 113, 28))
         self.lineEdit_6.setObjectName("lineEdit_6")
-        #self.lineEdit_6.setText("1")
         self.lineEdit_7 = QtWidgets.QLineEdit(self.frame_3)
         self.lineEdit_7.setGeometry(QtCore.QRect(20, 330, 113, 28))
         self.lineEdit_7.setObjectName("lineEdit_7")
-        self.lineEdit_7.setText("/usr/lib/ucsf-chimerax/bin/")
         self.label_12 = QtWidgets.QLabel(self.frame_3)
         self.label_12.setGeometry(QtCore.QRect(20, 310, 281, 16))
         self.label_12.setObjectName("label_12")
@@ -109,15 +100,12 @@ class Ui_Dialog(object):
         self.pushButton_2 = QtWidgets.QPushButton(self.frame_5)
         self.pushButton_2.setGeometry(QtCore.QRect(70, 140, 81, 28))
         self.pushButton_2.setObjectName("pushButton_2")
-        self.pushButton_2.clicked.connect(self.closeIt)
         self.pushButton = QtWidgets.QPushButton(self.frame_5)
         self.pushButton.setGeometry(QtCore.QRect(20, 50, 171, 28))
         self.pushButton.setObjectName("pushButton")
-        self.pushButton.clicked.connect(self.run_program)
         self.pushButton_3 = QtWidgets.QPushButton(self.frame_5)
         self.pushButton_3.setGeometry(QtCore.QRect(40, 90, 131, 28))
         self.pushButton_3.setObjectName("pushButton_3")
-        self.pushButton_3.clicked.connect(self.run_analyses)
         self.label_18 = QtWidgets.QLabel(self.frame_5)
         self.label_18.setGeometry(QtCore.QRect(20, 10, 181, 31))
         self.label_18.setObjectName("label_18")
@@ -143,11 +131,9 @@ class Ui_Dialog(object):
         self.radioButton = QtWidgets.QRadioButton(self.frame_7)
         self.radioButton.setGeometry(QtCore.QRect(10, 60, 104, 21))
         self.radioButton.setObjectName("radioButton")
-        self.radioButton.setChecked(True)
         self.radioButton_2 = QtWidgets.QRadioButton(self.frame_7)
         self.radioButton_2.setGeometry(QtCore.QRect(10, 100, 104, 21))
         self.radioButton_2.setObjectName("radioButton_2")
-        self.radioButton_2.setChecked(False)
         self.frame_8 = QtWidgets.QFrame(Dialog)
         self.frame_8.setGeometry(QtCore.QRect(250, 500, 821, 181))
         self.frame_8.setFrameShape(QtWidgets.QFrame.StyledPanel)
@@ -156,26 +142,21 @@ class Ui_Dialog(object):
         self.checkBox = QtWidgets.QCheckBox(self.frame_8)
         self.checkBox.setGeometry(QtCore.QRect(20, 40, 801, 31))
         self.checkBox.setObjectName("checkBox")
-        self.checkBox.setChecked(True)
         self.checkBox_2 = QtWidgets.QCheckBox(self.frame_8)
         self.checkBox_2.setGeometry(QtCore.QRect(20, 70, 791, 21))
         self.checkBox_2.setObjectName("checkBox_2")
-        self.checkBox_2.setChecked(False)
         self.checkBox_3 = QtWidgets.QCheckBox(self.frame_8)
         self.checkBox_3.setGeometry(QtCore.QRect(20, 110, 791, 21))
         self.checkBox_3.setObjectName("checkBox_3")
-        self.checkBox_3.setChecked(False)
         self.checkBox_4 = QtWidgets.QCheckBox(self.frame_8)
         self.checkBox_4.setGeometry(QtCore.QRect(20, 90, 781, 21))
         self.checkBox_4.setObjectName("checkBox_4")
-        self.checkBox_4.setChecked(False)
         self.label_17 = QtWidgets.QLabel(self.frame_8)
         self.label_17.setGeometry(QtCore.QRect(160, 0, 371, 31))
         self.label_17.setObjectName("label_17")
         self.checkBox_5 = QtWidgets.QCheckBox(self.frame_8)
         self.checkBox_5.setGeometry(QtCore.QRect(20, 130, 791, 21))
         self.checkBox_5.setObjectName("checkBox_5")
-        self.checkBox_5.setChecked(False)
         self.label_7 = QtWidgets.QLabel(Dialog)
         self.label_7.setGeometry(QtCore.QRect(140, 10, 791, 81))
         self.label_7.setObjectName("label_7")
@@ -246,134 +227,25 @@ class Ui_Dialog(object):
         self.label_16.setText(_translate("Dialog", "<html><head/><body><p><span style=\" font-size:12pt; font-weight:600;\">graphs</span></p></body></html>"))
         self.radioButton.setText(_translate("Dialog", "light"))
         self.radioButton_2.setText(_translate("Dialog", "dark"))
-        self.checkBox.setText(_translate("Dialog", "site-wise comparison with divergence metrics (KL relative entropy in atom fluctuation)"))
+        self.checkBox.setText(_translate("Dialog", "site-wise comparison with divergence metrics (KL relative entropy in aton fluctuation)"))
         self.checkBox_2.setText(_translate("Dialog", "site-wise comparison of learned  features (kernel processes on local fluctuation and correlation)"))
         self.checkBox_3.setText(_translate("Dialog", "site-wise identification of conserved molecular dynamics via resampled learning classification"))
         self.checkBox_4.setText(_translate("Dialog", "site-wise identification of coordinated dynamics via mutual information on learned classification"))
-        self.checkBox_5.setText(_translate("Dialog", "site-wise comparison of genetic and/or drug class variants with divergence metrics"))
         self.label_17.setText(_translate("Dialog", "<html><head/><body><p><span style=\" font-size:12pt; font-weight:600;\">machine learning analyses to be run</span></p></body></html>"))
+        self.checkBox_5.setText(_translate("Dialog", "site-wise comparison of genetic and/or drug class variants with divergence metrics"))
         self.label_7.setText(_translate("Dialog", "<html><head/><body><p align=\"center\"><span style=\" font-size:16pt; color:#00007f;\">DROIDS/maxDemon 5.0 </span></p><p align=\"center\"><span style=\" font-size:16pt; color:#00007f;\">AI-assisted Comparative Molecular Dynamics</span></p></body></html>"))
         self.textBrowser.setHtml(_translate("Dialog", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
 "</style></head><body style=\" font-family:\'Ubuntu\'; font-size:10pt; font-weight:400; font-style:normal;\">\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">1cdw_bound.pdb</p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">1cdw_bound.prmtop</p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">1cdw_bound.nc</p></body></html>"))
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">/path2file/1cdw_bound.pdb</p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">/path2file/1cdw_bound.prmtop</p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">/path2file/1cdw_bound.nc</p></body></html>"))
         self.label_20.setText(_translate("Dialog", "<html><head/><body><p><span style=\" font-weight:600;\">file list example </span></p></body></html>"))
 
 
-##########################################################################################
-#################   button actions    ####################################################
-##########################################################################################
-# create run program action  (make DROIDS.ctl and launch pipeline)
-    def run_program(self):
-        
-        print("writing control file")
-        n_subsamples = self.lineEdit.text()
-        #print(n_subsamples)
-        frs_subsample = self.lineEdit_2.text()
-        #print(frs_subsample)
-        frs_total = self.lineEdit_3.text()
-        #print(frs_total)
-        n_chains = self.lineEdit_4.text()
-        #print(n_chains)
-        n_sites = self.lineEdit_5.text()
-        #print(n_sites)
-        start_site = self.lineEdit_6.text()
-        #print(start_site)
-        chx_path = self.lineEdit_7.text()
-        #print(chx_path)
-        query_list = self.textEdit.toPlainText()
-        #print(query_list)
-        query_list = str.split(query_list, "\n")
-        #print(query_list)
-        query_pdb = query_list[0]
-        query_id = query_pdb[:-4]
-        query_top = query_list[1]
-        query_traj = query_list[2]
-        reference_list = self.textEdit_2.toPlainText()
-        #print(reference_list)
-        reference_list = str.split(reference_list, "\n")
-        #print(reference_list)
-        reference_pdb = reference_list[0]
-        reference_id = reference_pdb[:-4]
-        reference_top = reference_list[1]
-        reference_traj = reference_list[2]
-        
-        # check and set graph style
-        if self.radioButton.isChecked() == True:
-            graph_color = "light"
-        else:
-            graph_color = "dark"
-        
-        # analyses to run
-        if self.checkBox.isChecked() == True:
-            divergence = "yes"
-        else:
-            divergence = "no"
-        if self.checkBox_2.isChecked() == True:
-            discrepancy = "yes"
-        else:
-            discrepancy = "no"
-        if self.checkBox_3.isChecked() == True:
-            conservation = "yes"
-        else:
-            conservation = "no"
-        if self.checkBox_4.isChecked() == True:
-            coordination = "yes"
-        else:
-            coordination = "no"
-        if self.checkBox_5.isChecked() == True:
-            variants = "yes"
-        else:
-            variants = "no"
-        
-        # write file
-        f = open("./DROIDS.ctl", "w") 
-        f.write("queryID,%s,#pdb id for query structure\n" % query_id)
-        f.write("referenceID,%s,#pdb id for ref structure\n" % reference_id)
-        f.write("queryPDB,%s,#pdb file for query structure\n" % query_pdb)
-        f.write("referencePDB,%s,#pdb file for ref structure\n" % reference_pdb)
-        f.write("queryTOP,%s,#topology for query structure\n" % query_top)
-        f.write("referenceTOP,%s,#topology for ref structure\n" % reference_top)
-        f.write("queryTRAJ,%s,#trajectory for query structure\n" % query_traj)
-        f.write("referenceTRAJ,%s,#trajectory for ref structure\n" % reference_traj)
-        f.write("subsamples,%s,#number of subsamples\n" % n_subsamples)
-        f.write("frame_size,%s,#number of frames per subsample\n" % frs_subsample)
-        f.write("n_frames,%s,#total number of frames in simulation (5000 per ns)\n" % frs_total)
-        f.write("num_chains,%s,#number of protein chains\n" % n_chains)
-        f.write("length,%s,#total length of protein\n" % n_sites)
-        f.write("start,%s,#Nterminal AA starts at position...\n" % start_site)
-        f.write("chimerax,%s,#path to chimerax binary\n" % chx_path)
-        f.write("bgcolor,%s,#background color graphics\n" % graph_color)
-        f.write("divergence,%s,#run KL divergence analysis\n" % divergence)
-        f.write("discrepancy,%s,#run MMD analysis\n" % discrepancy)
-        f.write("conservation,%s,#run conserved dynamics analysis\n" % conservation)
-        f.write("coordination,%s,#run coordinated dynamics analysis\n" % coordination)
-        f.write("variants,%s,#run coordinated dynamics analysis\n" % variants)
-        f.close()
-        
-        
-        print("running DROIDS/maxDemon 5.0 parsers")
-        cmd1 = "python3 cpptraj_parser.py"
-        os.system(cmd1)
-        
-    def run_analyses(self):
-        print("running DROIDS/maxDemon 5.0 analyses")
-        cmd2 = "python3 chimerax_plotter.py"
-        os.system(cmd2)
-    
-    def closeIt(self):
-        print("DROIDS/maxDemon program closed")
-        sys.exit(app.exec_())
-
-
-#########################################################################################
-##########################################################################################
 if __name__ == "__main__":
     import sys
-    import os
     app = QtWidgets.QApplication(sys.argv)
     Dialog = QtWidgets.QDialog()
     ui = Ui_Dialog()
