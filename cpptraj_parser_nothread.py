@@ -233,7 +233,7 @@ def write_control_files():
 ##################################################################
 
 # run subsampling routines
-def subsample_reference_flux():
+def subsample_reference():
     print("collecting atom information")
     cmd = "cpptraj -i atominfo_%s_reference.ctl -o info_%s_out_reference.txt" % (PDB_id_reference,PDB_id_reference)
     os.system(cmd)
@@ -248,8 +248,6 @@ def subsample_reference_flux():
     print("NOTE: may take many minutes depending upon N subsamples & frames per subsample")
     cmd = "cpptraj -i atomflux_%s_sub_reference.ctl -o fluct_%s_out_sub_reference.txt" % (PDB_id_reference,PDB_id_reference)
     os.system(cmd)
-    
-def subsample_reference_corr():
     print("overall correlation - reference protein")
     #corr = pt.all_actions.atomiccorr(traj = traj_ref, mask = '@CA,C,O,N&!(:WAT)', byres = True)
     #print(corr)  # overall correlation
@@ -260,7 +258,7 @@ def subsample_reference_corr():
     cmd = "cpptraj -i atomcorr_%s_sub_reference.ctl -o corr_%s_out_sub_reference.txt" % (PDB_id_reference,PDB_id_reference)
     os.system(cmd)
     
-def subsample_query_flux():
+def subsample_query():
     print("collecting atom information")
     cmd = "cpptraj -i atominfo_%s_query.ctl -o info_%s_out_query.txt" % (PDB_id_query,PDB_id_query)
     os.system(cmd)
@@ -275,8 +273,6 @@ def subsample_query_flux():
     print("NOTE: may take many minutes depending upon N subsamples & frames per subsample")
     cmd = "cpptraj -i atomflux_%s_sub_query.ctl -o fluct_%s_out_sub_query.txt" % (PDB_id_query,PDB_id_query)
     os.system(cmd)
-    
-def subsample_query_corr():
     print("overall correlation - query protein")
     #corr = pt.all_actions.atomiccorr(traj = traj_query, mask = '@CA,C,O,N&!(:WAT)', byres = True)
     #print(corr)  # overall correlation
@@ -484,24 +480,8 @@ def resinfo():
 
 def main():
     write_control_files()
-        # creating thread
-    #t1 = threading.Thread(target=subsample_reference_flux)
-    #t2 = threading.Thread(target=subsample_query_flux)
-    #t3 = threading.Thread(target=subsample_reference_corr)
-    #t4 = threading.Thread(target=subsample_query_corr)
-    #t1.start() # start threads
-    #t2.start()
-    #t3.start() 
-    #t4.start()
-    #t1.join()  # wait until threads are completely executed
-    #t2.join()
-    #t3.join()  
-    #t4.join()
-    subsample_reference_flux()
-    subsample_query_flux()
-    subsample_reference_corr()
-    subsample_query_corr()
-    
+    subsample_reference()
+    subsample_query()
     print("subsampling of MD trajectories is completed") 
     matrix_maker()
     matrix_maker_batch()

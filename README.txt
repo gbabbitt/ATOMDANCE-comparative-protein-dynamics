@@ -12,6 +12,7 @@ TO INSTALL cpptraj
 3. make install
 
 NOTE: after installing cpptraj then open bashrc file (e.g. $ gedit .bashrc), then add the following lines to open cpptraj from everywhere
+NOTE: older versions of cpptraj should use functions matrix_maker_old() and matrix_maker_batch_old() in main() in cpptraj_parser.py
 
 export CPPTRAJ_HOME=/home/myUserName/Desktop/cpptraj-master
 export PATH=$PATH:$CPPTRAJ_HOME/bin

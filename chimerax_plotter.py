@@ -185,17 +185,17 @@ def feature_vector():
     influx_all_ref = "fluct_%s_all_reference.txt" % PDB_id_reference 
     incorr_all_ref = "corr_%s_all_reference_matrix.txt" % PDB_id_reference    
     dfflux_all_ref = pd.read_csv(influx_all_ref, sep="\s+")
-    dfcorr_all_ref = pd.read_csv(incorr_all_ref, sep="\t", header=None)
+    dfcorr_all_ref = pd.read_csv(incorr_all_ref, sep="\s+", header=None)
+    #print(dfflux_all_ref)
+    #print(dfcorr_all_ref)
     del dfflux_all_ref[dfflux_all_ref.columns[0]] # remove first column
     # normalize atom fluctuations (minmax method)
     column = 'AtomicFlx'
     dfflux_all_ref[column] = (dfflux_all_ref[column] - dfflux_all_ref[column].min()) / (dfflux_all_ref[column].max() - dfflux_all_ref[column].min())
     #dfflux_all_ref[column] = dfflux_all_ref[column]  # option skip normalization
     # trim uneccessary columns
-    del dfcorr_all_ref[dfcorr_all_ref.columns[0]] # remove first column
-    del dfcorr_all_ref[dfcorr_all_ref.columns[-1]] # remove last column = NaN
-    #print(dfflux_all_ref)
-    #print(dfcorr_all_ref)
+    #del dfcorr_all_ref[dfcorr_all_ref.columns[0]] # remove first column
+    #del dfcorr_all_ref[dfcorr_all_ref.columns[-1]] # remove last column = NaN
     frames_all_ref = [dfflux_all_ref, dfcorr_all_ref]
     feature_all_ref = pd.concat(frames_all_ref, axis = 1, join="inner")
     #print(dfflux_all_ref)
@@ -207,21 +207,23 @@ def feature_vector():
         dfAsString = df1.to_string(header=False, index=True)
         f1.write(dfAsString)
     # create reduced atom correlation matrix (from sparse matrix)
-    M = dfcorr_all_ref
-    #print("Original Matrix:")
+    M = pd.DataFrame(dfcorr_all_ref)
+    print("Original Matrix:")
+    print(M)
+    #del M[M[0]]
     #print(M)
     # create sparse matrix
     M[np.abs(M) < 0.005] = 0 # plug in zero values if below threshold
-    #print("Sparse Matrix:")
-    #print(M)
+    print("Sparse Matrix:")
+    print(M)
     svd =  TruncatedSVD(n_components = 5)
     M_transf = svd.fit_transform(M)
-    #print("Singular values:")
-    #print(svd.singular_values_)
-    #print("Transformed Matrix after reducing to 5 features:")
-    #print(M_transf)
+    print("Singular values:")
+    print(svd.singular_values_)
+    print("Transformed Matrix after reducing to 5 features:")
+    print(M_transf)
     M_transf = pd.DataFrame(M_transf)
-    #print(M_transf) # as dataframe
+    print(M_transf) # as dataframe
     # create reduced feature vector
     frames_all_ref_reduced = [dfflux_all_ref, M_transf]
     feature_all_ref_reduced = pd.concat(frames_all_ref_reduced, axis = 1, join="inner")
@@ -242,7 +244,7 @@ def feature_vector():
         influx_sub_ref = "./atomflux_ref/fluct_%s_sub_reference.txt" % PDB_id_reference 
         incorr_sub_ref = "./atomcorr_ref_matrix/corr_%s_sub_reference_matrix_%s.txt" % (PDB_id_reference, i)    
         dfflux_sub_ref = pd.read_csv(influx_sub_ref, sep="\s+")
-        dfcorr_sub_ref = pd.read_csv(incorr_sub_ref, sep="\t", header=None)
+        dfcorr_sub_ref = pd.read_csv(incorr_sub_ref, sep="\s+", header=None)
         del dfflux_sub_ref[dfflux_sub_ref.columns[0]] # remove first column
         #del dfflux_sub_ref[dfflux_sub_ref.columns[0]] # remove next column
         # iterate over atom flux columns 
@@ -304,7 +306,7 @@ def feature_vector():
     influx_all_query = "fluct_%s_all_query.txt" % PDB_id_query 
     incorr_all_query = "corr_%s_all_query_matrix.txt" % PDB_id_query    
     dfflux_all_query = pd.read_csv(influx_all_query, sep="\s+")
-    dfcorr_all_query = pd.read_csv(incorr_all_query, sep="\t", header=None)
+    dfcorr_all_query = pd.read_csv(incorr_all_query, sep="\s+", header=None)
     del dfflux_all_query[dfflux_all_query.columns[0]] # remove first column
     # normalize atom fluctuations (minmax method)
     column = 'AtomicFlx'
@@ -361,7 +363,7 @@ def feature_vector():
         influx_sub_query = "./atomflux_query/fluct_%s_sub_query.txt" % PDB_id_query 
         incorr_sub_query = "./atomcorr_query_matrix/corr_%s_sub_query_matrix_%s.txt" % (PDB_id_query, i)    
         dfflux_sub_query = pd.read_csv(influx_sub_query, sep="\s+")
-        dfcorr_sub_query = pd.read_csv(incorr_sub_query, sep="\t", header=None)
+        dfcorr_sub_query = pd.read_csv(incorr_sub_query, sep="\s+", header=None)
         del dfflux_sub_query[dfflux_sub_query.columns[0]] # remove first column
         #del dfflux_sub_query[dfflux_sub_query.columns[0]] # remove next column
         # iterate over atom flux columns 
@@ -644,7 +646,7 @@ def variant_dynamics():
 
 def main():
     plot_rmsd()
-    feature_vector()
+    feature_vector()  # NaN generating bug
     #view_query()
     #view_reference()
     if(div_anal == "yes"):

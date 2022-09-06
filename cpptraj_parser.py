@@ -15,6 +15,7 @@ import os
 import random as rnd
 import re
 import threading
+import pandas as pd
 
 # READ CONTROL FORM
 # read ChimeraX visualization ctl file
@@ -290,7 +291,7 @@ def subsample_query_corr():
 #################################################################################
 # parse data files for further analyses
 
-def matrix_maker():
+def matrix_maker_old():
     print("converting atomiccorr output to matrix (query protein)")
     f_in = open("./corr_%s_all_query.txt" % PDB_id_query, "r")
     f_out = open("./corr_%s_all_query_matrix.txt" % PDB_id_query, "w")
@@ -365,9 +366,8 @@ def matrix_maker():
             f_out.write("\t")
             site_counter = 1
             pos_counter = pos_counter+1
-            
-            
-def matrix_maker_batch():
+ 
+def matrix_maker_batch_old():
     print("converting atomiccorr batch output to matrix")
 
     for i in range(subsamples):
@@ -445,6 +445,94 @@ def matrix_maker_batch():
                 f_out.write("\t")
                 site_counter = 1
                 pos_counter = pos_counter+1
+            
+
+def matrix_maker_new():
+    print("converting atomiccorr output to matrix (query protein)")
+    f_in = open("./corr_%s_all_query.txt" % PDB_id_query, "r")
+    f_out = open("./corr_%s_all_query_matrix.txt" % PDB_id_query, "w")
+    f_in_lines = f_in.readlines()
+    line_counter = 0
+    for x in range(len(f_in_lines)-1):
+        if (x == 0):
+            line_counter = 1
+            next
+        f_in_line = f_in_lines[x+1]
+        line_counter = line_counter+1
+        f_in_line_array = re.split("\s+", f_in_line,)
+        del f_in_line_array[0]
+        f_in_line_df = pd.DataFrame(f_in_line_array)
+        f_in_line_df = f_in_line_df.transpose()
+        dfAsString = f_in_line_df.to_string(header=False, index=False)
+        #print(dfAsString)
+        f_out.write(dfAsString)
+        f_out.write("\n")
+
+    print("converting atomiccorr output to matrix (reference protein)")
+    f_in = open("./corr_%s_all_reference.txt" % PDB_id_reference, "r")
+    f_out = open("./corr_%s_all_reference_matrix.txt" % PDB_id_reference, "w")
+    f_in_lines = f_in.readlines()
+    line_counter = 0
+    for x in range(len(f_in_lines)-1):
+        if (x == 0):
+            line_counter = 1
+            next
+        f_in_line = f_in_lines[x+1]
+        line_counter = line_counter+1
+        f_in_line_array = re.split("\s+", f_in_line,)
+        del f_in_line_array[0]
+        f_in_line_df = pd.DataFrame(f_in_line_array)
+        f_in_line_df = f_in_line_df.transpose()
+        dfAsString = f_in_line_df.to_string(header=False, index=False)
+        #print(dfAsString)
+        f_out.write(dfAsString)
+        f_out.write("\n")
+
+def matrix_maker_batch_new():
+    print("converting atomiccorr batch output to matrix")
+    
+    for i in range(subsamples):
+        print("converting atomiccorr output to matrix - subsample %s (query protein)" % i)
+        f_in = open("./atomcorr_query/corr_%s_sub_query_%s.txt" % (PDB_id_query, i), "r")
+        f_out = open("./atomcorr_query_matrix/corr_%s_sub_query_matrix_%s.txt" % (PDB_id_query, i), "w")
+        f_in_lines = f_in.readlines()
+        line_counter = 0
+        for x in range(len(f_in_lines)-1):
+            if (x == 0):
+                line_counter = 1
+                next
+            f_in_line = f_in_lines[x+1]
+            line_counter = line_counter+1
+            f_in_line_array = re.split("\s+", f_in_line,)
+            del f_in_line_array[0]
+            f_in_line_df = pd.DataFrame(f_in_line_array)
+            f_in_line_df = f_in_line_df.transpose()
+            dfAsString = f_in_line_df.to_string(header=False, index=False)
+            #print(dfAsString)
+            f_out.write(dfAsString)
+            f_out.write("\n")
+            
+        print("converting atomiccorr output to matrix - subsample %s (reference protein)" % i)
+        f_in = open("./atomcorr_ref/corr_%s_sub_reference_%s.txt" % (PDB_id_reference, i), "r")
+        f_out = open("./atomcorr_ref_matrix/corr_%s_sub_reference_matrix_%s.txt" % (PDB_id_reference, i), "w")
+        f_in_lines = f_in.readlines()
+        line_counter = 0
+        for x in range(len(f_in_lines)-1):
+            if (x == 0):
+                line_counter = 1
+                next
+            f_in_line = f_in_lines[x+1]
+            line_counter = line_counter+1
+            f_in_line_array = re.split("\s+", f_in_line,)
+            del f_in_line_array[0]
+            f_in_line_df = pd.DataFrame(f_in_line_array)
+            f_in_line_df = f_in_line_df.transpose()
+            dfAsString = f_in_line_df.to_string(header=False, index=False)
+            #print(dfAsString)
+            f_out.write(dfAsString)
+            f_out.write("\n")
+            
+
 
 def copy_flux():
     print("copying atom flux files to atomflux folder")
@@ -498,8 +586,10 @@ def main():
     t3.join()  
     t4.join()
     print("subsampling of MD trajectories is completed") 
-    matrix_maker()
-    matrix_maker_batch()
+    #matrix_maker_old()  # for older version of cpptraj
+    #matrix_maker_batch_old() # for older version of cpptraj
+    matrix_maker_new()
+    matrix_maker_batch_new()
     copy_flux()
     resinfo()
     print("parsing of MD trajectories is completed")    
