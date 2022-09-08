@@ -469,7 +469,9 @@ def plot_rmsd():
     print(myRMSFindex)
     #make and save plot
     myRMSFplot = (ggplot() + labs(title='root mean square fluctuation (red is bound or mutated state)', x='frame number', y='RMSF') + geom_line(data = myRMSFindex, mapping = aes(x='#FrameR', y='ToFirstR'), color = 'black') + geom_line(data = myRMSFindex, mapping = aes(x='#FrameQ', y='ToFirstQ'), color = 'red') + theme(panel_background=element_rect(fill='black', alpha=.1)))
-    myRMSFplot.save("RMSF_plot.png", width=10, height=5, dpi=300)
+    if not os.path.exists('rmsd'):
+        os.mkdir('rmsd')
+    myRMSFplot.save("rmsd/RMSF_plot.png", width=10, height=5, dpi=300)
     print(myRMSFplot)
     
         
@@ -567,14 +569,16 @@ def compare_dynamics_KL():
     myplot6 = (ggplot(myKLindex) + aes(x='pos', y='D', color='p_value', fill='p_value') + geom_bar(stat='identity') + labs(title='bonferroni corrected significance in divergence in atom fluctuation', x='amino acid site', y='D (2 sample KS test)') + theme(panel_background=element_rect(fill='black', alpha=.1)))
     myplot8 = (ggplot() + labs(title='site-wise atom fluctuation (red is bound or mutated state)', x='amino acid site', y='atom fluctuation') + geom_line(data = myKLindex, mapping = aes(x='pos', y='FLUX_ref'), color = 'black') + geom_line(data = myKLindex, mapping = aes(x='pos', y='FLUX_query'), color = 'red') + theme(panel_background=element_rect(fill='black', alpha=.1)))
     
-    myplot1.save("KLdivergence_dark.png", width=10, height=5, dpi=300)
-    myplot2.save("deltaFLUX_dark.png", width=10, height=5, dpi=300)
-    myplot3.save("KLdivergence_light.png", width=10, height=5, dpi=300)
-    myplot4.save("deltaFLUX_light.png", width=10, height=5, dpi=300)
-    myplot5.save("KStest_dark.png", width=10, height=5, dpi=300)
-    myplot6.save("KStest_light.png", width=10, height=5, dpi=300)
-    myplot7.save("fluxlines_dark.png", width=10, height=5, dpi=300)
-    myplot8.save("fluxlines_light.png", width=10, height=5, dpi=300)
+    if not os.path.exists('divergenceMetrics'):
+        os.mkdir('divergenceMetrics')
+    myplot1.save("divergenceMetrics/KLdivergence_dark.png", width=10, height=5, dpi=300)
+    myplot2.save("divergenceMetrics/deltaFLUX_dark.png", width=10, height=5, dpi=300)
+    myplot3.save("divergenceMetrics/KLdivergence_light.png", width=10, height=5, dpi=300)
+    myplot4.save("divergenceMetrics/deltaFLUX_light.png", width=10, height=5, dpi=300)
+    myplot5.save("divergenceMetrics/KStest_dark.png", width=10, height=5, dpi=300)
+    myplot6.save("divergenceMetrics/KStest_light.png", width=10, height=5, dpi=300)
+    myplot7.save("divergenceMetrics/fluxlines_dark.png", width=10, height=5, dpi=300)
+    myplot8.save("divergenceMetrics/fluxlines_light.png", width=10, height=5, dpi=300)
     if(graph_scheme == "light"):
         print(myplot3)
         print(myplot4)
