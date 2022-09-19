@@ -593,12 +593,13 @@ def compare_dynamics_KL():
         
     # candlestickploy
     
-       
+   
     # create control, reference PDB and attribute file for chimerax
     os.popen('cp %s.pdb ./ChimeraXvis/query.pdb' % PDB_id_query) # linix
     #os.popen('copy %sREDUCED.pdb ./ChimeraXvis/reference.pdb' % PDB_id_reference) # Windows
-    f1 = open("ChimeraXvis.ctl", "w")
+    f1 = open("ChimeraXvis_KL.ctl", "w")
     f2 = open("./ChimeraXvis/attributeKL.dat", "w")
+    # ctl for KL map
     f1.write("model\t#1\n")
     f1.write("structure\tChimeraXvis/query.pdb\n")
     f1.write("structureADD	ChimeraXvis/reference.pdb\n")
@@ -609,7 +610,6 @@ def compare_dynamics_KL():
     f1.write("lighting\tsimple\n")
     f1.write("transparency\t50\n")
     f1.write("background\tgray\n")
-    
     f2.write("recipient: residues\n")
     f2.write("attribute: KL\n")
     f2.write("\n")
@@ -619,14 +619,53 @@ def compare_dynamics_KL():
         KLpos = myKLneg.iat[x,0]
         #print(KLpos)
         f2.write("\t:%s\t%s\n" % (sitepos, KLpos))
-
-
+    
+        # create control, reference PDB and attribute file for chimerax
+    os.popen('cp %s.pdb ./ChimeraXvis/query.pdb' % PDB_id_query) # linix
+    #os.popen('copy %sREDUCED.pdb ./ChimeraXvis/reference.pdb' % PDB_id_reference) # Windows
+    f3 = open("ChimeraXvis_KLsig.ctl", "w")
+    f4= open("./ChimeraXvis/attributeKLsig.dat", "w")
+    # ctl for sig KL map
+    f3.write("model\t#1\n")
+    f3.write("structure\tChimeraXvis/query.pdb\n")
+    f3.write("structureADD	ChimeraXvis/reference.pdb\n")
+    f3.write("attr_file\tChimeraXvis/attributeKLsig.dat\n")
+    f3.write("length\t%s\n" % length_prot)
+    f3.write("attr\tKLsig\n")
+    f3.write("palette\tbluered\n")
+    f3.write("lighting\tsimple\n")
+    f3.write("transparency\t50\n")
+    f3.write("background\tgray\n")
+    f4.write("recipient: residues\n")
+    f4.write("attribute: KLsig\n")
+    f4.write("\n")
+    #print(myKLneg)
+    for x in range(length_prot):
+        sitepos = x+1
+        #KLpos = myKLneg.iat[x,0]
+        KLyn = myKScolorlist.iat[x,0]
+        #print(KLyn)
+        #print((KLpos))
+        if(KLyn == "sig"):
+            KLpos = myKLneg.iat[x,0]
+        if(KLyn == "ns"):
+            KLpos = 0
+        #print(KLpos)
+        f4.write("\t:%s\t%s\n" % (sitepos, KLpos))
+    
+    
 def map_KL():    
     # map KL divergence in chimerax
-    print("mapping KLdivergence to reference protein %s" % PDB_id_reference)
-    cmd = "%sChimeraX color_by_attr_chimerax.py" % chimerax_path
+    print("mapping significant KLdivergence to reference protein %s" % PDB_id_reference)
+    cmd = "%sChimeraX color_by_attr_chimerax_KL.py" % chimerax_path
     os.system(cmd)
-    
+
+def map_KLsig():
+    # map KL divergence in chimerax
+    print("mapping significant KLdivergence to reference protein %s" % PDB_id_reference)
+    cmd = "%sChimeraX color_by_attr_chimerax_KLsig.py" % chimerax_path
+    os.system(cmd)
+
 def view_KL():    
     # map KL divergence in chimerax
     print("view filtered motions representing dynamic interactions on reference protein %s" % PDB_id_reference)
@@ -668,6 +707,33 @@ def compare_dynamics_MMD():
     print(MMD_output)
     
     
+    # index position on protein
+    myPOS = [i for i in range(1,length_prot+1)]
+    myPOS = pd.DataFrame(myPOS)
+    #print(myPOS)
+    inres_ref = "./resinfo_ref/cpptraj_resinfo_%s.txt" % PDB_id_reference
+    dfres_ref = pd.read_csv(inres_ref, sep="\t", header=None)
+    #print(dfres_ref)
+    del dfres_ref[dfres_ref.columns[0]] # remove first column
+    #print(dfres_ref)
+    myRES = dfres_ref
+    # rename/add header to columns
+    myFrames = (myPOS, myRES, MMD_output)
+    myMMDindex = pd.concat(myFrames, axis = 1, join="inner")
+    myMMDindex = myMMDindex.set_axis(['pos', 'res', 'MMD'], axis=1, inplace=False)
+    print(myMMDindex)
+    # make MMD plots
+    myplot9 = (ggplot(myMMDindex) + aes(x='pos', y='MMD', color='res', fill='res') + geom_bar(stat='identity') + labs(title='site-wise MMD of learned features between functional states', x='amino acid site', y='MMD') + theme(panel_background=element_rect(fill='black', alpha=.6)))
+    myplot10 = (ggplot(myMMDindex) + aes(x='pos', y='MMD', color='res', fill='res') + geom_bar(stat='identity') + labs(title='site-wise MMD of learned features between functional states', x='amino acid site', y='MMD') + theme(panel_background=element_rect(fill='black', alpha=.1)))
+    if not os.path.exists('maxMeanDiscrepancy'):
+        os.mkdir('maxMeanDiscrepancy')
+    myplot9.save("maxMeanDiscrepancy/MMD_dark.png", width=10, height=5, dpi=300)
+    myplot10.save("maxMeanDiscrepancy/MMD_light.png", width=10, height=5, dpi=300)
+    if(graph_scheme == "light"):
+        print(myplot10)
+    if(graph_scheme == "dark"):
+        print(myplot9)
+    
     
 def mmd_rbf(X, Y, gamma=1.0/6):
     """MMD using rbf (gaussian) kernel (i.e., k(x,y) = exp(-gamma * ||x-y||^2 / 2))
@@ -705,10 +771,11 @@ def main():
     if(div_anal == "yes"):
         compare_dynamics_KL()
         map_KL()
+        map_KLsig()
         #view_KL()
     if(disc_anal == "yes"):
         compare_dynamics_MMD()
-        
+        #map_MMD()
         
     if(cons_anal == "yes"):
         conserved_dynamics()
