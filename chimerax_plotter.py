@@ -19,6 +19,7 @@ from scipy.stats import entropy
 from scipy.stats import ks_2samp
 from sklearn.metrics.cluster import normalized_mutual_info_score
 from sklearn.decomposition import TruncatedSVD
+from sklearn import metrics
 import re
 # for ggplot
 import pandas as pd
@@ -633,7 +634,55 @@ def view_KL():
  
 def compare_dynamics_MMD():
     print("statistical comparison of dynamics via max mean discrepancy in learned features")
+    # for loop over length of protein
+    MMD_output = []
+    for i in range(length_prot-1):
+        # initiatize arrays
+        feature_reference = []
+        feature_query = []
+        for j in range(subsamples):
+            samp = j+1
+            #print("collecting subsample %s" % samp)
+            infeature_reference = "./feature_sub_ref_reduced/feature_%s_sub_ref_%s.txt" % (PDB_id_reference, j)
+            df_feature_reference = pd.read_csv(infeature_reference, sep="\s+")
+            #print(df_feature_reference)
+            sample_feature_reference = df_feature_reference.iloc[i]
+            sample_feature_reference = np.array(sample_feature_reference)
+            #print(sample_feature_reference)
+            feature_reference.append(sample_feature_reference)
+            infeature_query = "./feature_sub_query_reduced/feature_%s_sub_query_%s.txt" % (PDB_id_query, j)
+            df_feature_query = pd.read_csv(infeature_query, sep="\s+")
+            #print(df_feature_query)
+            sample_feature_query = df_feature_query.iloc[i]
+            sample_feature_query= np.array(sample_feature_query)
+            #print(sample_feature_query)
+            feature_query.append(sample_feature_query)
+        print("calculating MMD for site %s" % i)     
+        #print(feature_reference)
+        #print(feature_query)
+        myMMD = mmd_rbf(feature_reference, feature_query) # calulate MMD
+        print(myMMD)
+        MMD_output.append(myMMD)
+    # report MMD output array
+    MMD_output = pd.DataFrame(MMD_output)
+    print(MMD_output)
     
+    
+    
+def mmd_rbf(X, Y, gamma=1.0/6):
+    """MMD using rbf (gaussian) kernel (i.e., k(x,y) = exp(-gamma * ||x-y||^2 / 2))
+    Arguments:
+        X {[n_sample1, dim]} -- [X matrix]
+        Y {[n_sample2, dim]} -- [Y matrix]
+    Keyword Arguments:
+        gamma {float} -- [kernel parameter] (default: {1.0})
+    Returns:
+        [scalar] -- [MMD value]
+    """
+    XX = metrics.pairwise.rbf_kernel(X, X, gamma)
+    YY = metrics.pairwise.rbf_kernel(Y, Y, gamma)
+    XY = metrics.pairwise.rbf_kernel(X, Y, gamma)
+    return XX.mean() + YY.mean() - 2 * XY.mean()    
        
 def conserved_dynamics():
     print("identifying conserved dynamics")
@@ -650,7 +699,7 @@ def variant_dynamics():
 
 def main():
     plot_rmsd()
-    feature_vector()  # NaN generating bug
+    feature_vector()  
     #view_query()
     #view_reference()
     if(div_anal == "yes"):
@@ -659,6 +708,8 @@ def main():
         #view_KL()
     if(disc_anal == "yes"):
         compare_dynamics_MMD()
+        
+        
     if(cons_anal == "yes"):
         conserved_dynamics()
     if(coord_anal == "yes"):
