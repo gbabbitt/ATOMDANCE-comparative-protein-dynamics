@@ -620,7 +620,7 @@ def compare_dynamics_KL():
         #print(KLpos)
         f2.write("\t:%s\t%s\n" % (sitepos, KLpos))
     
-        # create control, reference PDB and attribute file for chimerax
+    # create control, reference PDB and attribute file for chimerax
     os.popen('cp %s.pdb ./ChimeraXvis/query.pdb' % PDB_id_query) # linix
     #os.popen('copy %sREDUCED.pdb ./ChimeraXvis/reference.pdb' % PDB_id_reference) # Windows
     f3 = open("ChimeraXvis_KLsig.ctl", "w")
@@ -666,6 +666,13 @@ def map_KLsig():
     cmd = "%sChimeraX color_by_attr_chimerax_KLsig.py" % chimerax_path
     os.system(cmd)
 
+def map_MMDsig():
+    # map KL divergence in chimerax
+    print("mapping significant MMD to reference protein %s" % PDB_id_reference)
+    cmd = "%sChimeraX color_by_attr_chimerax_MMDsig.py" % chimerax_path
+    os.system(cmd)
+
+
 def view_KL():    
     # map KL divergence in chimerax
     print("view filtered motions representing dynamic interactions on reference protein %s" % PDB_id_reference)
@@ -675,6 +682,7 @@ def compare_dynamics_MMD():
     print("statistical comparison of dynamics via max mean discrepancy in learned features")
     # for loop over length of protein
     MMD_output = []
+    PVAL_output = []
     for i in range(length_prot-1):
         # initiatize arrays
         feature_reference = []
@@ -696,17 +704,56 @@ def compare_dynamics_MMD():
             sample_feature_query= np.array(sample_feature_query)
             #print(sample_feature_query)
             feature_query.append(sample_feature_query)
-        print("calculating MMD for site %s" % i)     
+        print("calculating and bootstrapping MMD for site %s" % i)     
         #print(feature_reference)
         #print(feature_query)
         myMMD = mmd_rbf(feature_reference, feature_query) # calulate MMD
-        print(myMMD)
-        MMD_output.append(myMMD)
+        #print(myMMD)
+        MMD_output.append(myMMD) # build MMD list for each site
+        
+        ##### BOOTSTRAP TEST FOR MMD #########
+        cntGREATER = 1
+        cntLESSER = 1
+        for t in range(100):
+            # bootstrap1 feature_reference
+            my_bootstrap1 = []
+            for _ in range(100):
+                rand = rnd.randint(0, subsamples-1)
+                samp1 = np.random.choice(feature_reference[rand], size = 10, replace = True)
+                my_bootstrap1.append(samp1)
+            #print(my_bootstrap1)
+            # bootstrap2 feature_reference again 
+            my_bootstrap2= []
+            for _ in range(100):
+                rand = rnd.randint(0, subsamples-1)
+                samp2 = np.random.choice(feature_reference[rand], size = 10, replace = True)
+                my_bootstrap2.append(samp2)
+            #print(my_bootstrap2)
+            # neutral MMD (ref1 vs ref2)
+            neutralMMD = mmd_rbf(my_bootstrap1, my_bootstrap2) # calulate MMD
+            #print("neutral MMD %s" % t)
+            #print(neutralMMD)
+            # empirical p-value  (freq neutral MMD > alternative MMD)
+            if(myMMD >= neutralMMD):
+                cntGREATER = cntGREATER+1
+            if(myMMD <= neutralMMD):
+                cntLESSER = cntLESSER+1
+        # empiriacl p value
+        emp_P = cntGREATER/(cntGREATER+cntLESSER)
+        #print("empirical P value")
+        #print(emp_P)
+        if(emp_P >= 0.99):
+            p_label = "sig"
+        if(emp_P < 0.99):
+            p_label = "ns"
+        PVAL_output.append(p_label) # build MMD P VALUE list for each site
+    
     # report MMD output array
     MMD_output = pd.DataFrame(MMD_output)
     print(MMD_output)
-    
-    
+    # report MMD p value output array
+    PVAL_output = pd.DataFrame(PVAL_output)
+    print(PVAL_output)
     # index position on protein
     myPOS = [i for i in range(1,length_prot+1)]
     myPOS = pd.DataFrame(myPOS)
@@ -718,21 +765,62 @@ def compare_dynamics_MMD():
     #print(dfres_ref)
     myRES = dfres_ref
     # rename/add header to columns
-    myFrames = (myPOS, myRES, MMD_output)
+    myFrames = (myPOS, myRES, MMD_output, PVAL_output)
     myMMDindex = pd.concat(myFrames, axis = 1, join="inner")
-    myMMDindex = myMMDindex.set_axis(['pos', 'res', 'MMD'], axis=1, inplace=False)
+    myMMDindex = myMMDindex.set_axis(['pos', 'res', 'MMD', 'pval'], axis=1, inplace=False)
     print(myMMDindex)
     # make MMD plots
-    myplot9 = (ggplot(myMMDindex) + aes(x='pos', y='MMD', color='res', fill='res') + geom_bar(stat='identity') + labs(title='site-wise MMD of learned features between functional states', x='amino acid site', y='MMD') + theme(panel_background=element_rect(fill='black', alpha=.6)))
-    myplot10 = (ggplot(myMMDindex) + aes(x='pos', y='MMD', color='res', fill='res') + geom_bar(stat='identity') + labs(title='site-wise MMD of learned features between functional states', x='amino acid site', y='MMD') + theme(panel_background=element_rect(fill='black', alpha=.1)))
+    myplot9 = (ggplot(myMMDindex) + aes(x='pos', y='MMD', color='pval', fill='pval') + geom_bar(stat='identity') + labs(title='site-wise MMD of learned features between functional states', x='amino acid site', y='MMD') + theme(panel_background=element_rect(fill='black', alpha=.6)))
+    myplot10 = (ggplot(myMMDindex) + aes(x='pos', y='MMD', color='pval', fill='pval') + geom_bar(stat='identity') + labs(title='site-wise MMD of learned features between functional states', x='amino acid site', y='MMD') + theme(panel_background=element_rect(fill='black', alpha=.1)))
+    myplot11 = (ggplot(myMMDindex) + aes(x='pos', y='MMD', color='res', fill='res') + geom_bar(stat='identity') + labs(title='site-wise MMD of learned features between functional states', x='amino acid site', y='MMD') + theme(panel_background=element_rect(fill='black', alpha=.6)))
+    myplot12 = (ggplot(myMMDindex) + aes(x='pos', y='MMD', color='res', fill='res') + geom_bar(stat='identity') + labs(title='site-wise MMD of learned features between functional states', x='amino acid site', y='MMD') + theme(panel_background=element_rect(fill='black', alpha=.1)))
+    
     if not os.path.exists('maxMeanDiscrepancy'):
         os.mkdir('maxMeanDiscrepancy')
-    myplot9.save("maxMeanDiscrepancy/MMD_dark.png", width=10, height=5, dpi=300)
-    myplot10.save("maxMeanDiscrepancy/MMD_light.png", width=10, height=5, dpi=300)
+    myplot9.save("maxMeanDiscrepancy/MMD_dark_sig.png", width=10, height=5, dpi=300)
+    myplot10.save("maxMeanDiscrepancy/MMD_light_sig.png", width=10, height=5, dpi=300)
+    myplot9.save("maxMeanDiscrepancy/MMD_dark_res.png", width=10, height=5, dpi=300)
+    myplot10.save("maxMeanDiscrepancy/MMD_light_res.png", width=10, height=5, dpi=300)
     if(graph_scheme == "light"):
         print(myplot10)
+        print(myplot12)
     if(graph_scheme == "dark"):
         print(myplot9)
+        print(myplot11)
+    
+    # create control, reference PDB and attribute file for chimerax
+    os.popen('cp %s.pdb ./ChimeraXvis/query.pdb' % PDB_id_query) # linix
+    #os.popen('copy %sREDUCED.pdb ./ChimeraXvis/reference.pdb' % PDB_id_reference) # Windows
+    f5 = open("ChimeraXvis_MMDsig.ctl", "w")
+    f6= open("./ChimeraXvis/attributeMMDsig.dat", "w")
+    # ctl for sig KL map
+    f5.write("model\t#1\n")
+    f5.write("structure\tChimeraXvis/query.pdb\n")
+    f5.write("structureADD	ChimeraXvis/reference.pdb\n")
+    f5.write("attr_file\tChimeraXvis/attributeMMDsig.dat\n")
+    f5.write("length\t%s\n" % length_prot)
+    f5.write("attr\tMMDsig\n")
+    f5.write("palette\tGreens-5\n")
+    f5.write("lighting\tsimple\n")
+    f5.write("transparency\t50\n")
+    f5.write("background\tgray\n")
+    f6.write("recipient: residues\n")
+    f6.write("attribute: MMDsig\n")
+    f6.write("\n")
+    #print(myKLneg)
+    for x in range(length_prot-1):
+        sitepos = x+1
+        #MMDpos = MMD_output.iat[x,0]
+        MMDyn = PVAL_output.iat[x,0]
+        #print(MMDyn)
+        #print((MMDpos))
+        if(MMDyn == "sig"):
+            MMDpos = MMD_output.iat[x,0]
+        if(MMDyn == "ns"):
+            MMDpos = 0
+        #print(MMDpos)
+        f6.write("\t:%s\t%s\n" % (sitepos, MMDpos))
+    
     
     
 def mmd_rbf(X, Y, gamma=1.0/6):
@@ -775,7 +863,7 @@ def main():
         #view_KL()
     if(disc_anal == "yes"):
         compare_dynamics_MMD()
-        #map_MMD()
+        map_MMDsig()
         
     if(cons_anal == "yes"):
         conserved_dynamics()
