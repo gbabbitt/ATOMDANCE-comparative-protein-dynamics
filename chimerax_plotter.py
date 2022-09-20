@@ -779,8 +779,8 @@ def compare_dynamics_MMD():
         os.mkdir('maxMeanDiscrepancy')
     myplot9.save("maxMeanDiscrepancy/MMD_dark_sig.png", width=10, height=5, dpi=300)
     myplot10.save("maxMeanDiscrepancy/MMD_light_sig.png", width=10, height=5, dpi=300)
-    myplot9.save("maxMeanDiscrepancy/MMD_dark_res.png", width=10, height=5, dpi=300)
-    myplot10.save("maxMeanDiscrepancy/MMD_light_res.png", width=10, height=5, dpi=300)
+    myplot11.save("maxMeanDiscrepancy/MMD_dark_res.png", width=10, height=5, dpi=300)
+    myplot12.save("maxMeanDiscrepancy/MMD_light_res.png", width=10, height=5, dpi=300)
     if(graph_scheme == "light"):
         print(myplot10)
         print(myplot12)
