@@ -649,7 +649,7 @@ def compare_dynamics_KL():
         if(KLyn == "sig"):
             KLpos = myKLneg.iat[x,0]
         if(KLyn == "ns"):
-            KLpos = 0
+            KLpos = 0.0
         #print(KLpos)
         f4.write("\t:%s\t%s\n" % (sitepos, KLpos))
     
@@ -817,7 +817,7 @@ def compare_dynamics_MMD():
         if(MMDyn == "sig"):
             MMDpos = MMD_output.iat[x,0]
         if(MMDyn == "ns"):
-            MMDpos = 0
+            MMDpos = 0.0
         #print(MMDpos)
         f6.write("\t:%s\t%s\n" % (sitepos, MMDpos))
     
