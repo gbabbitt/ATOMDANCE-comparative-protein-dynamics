@@ -500,6 +500,14 @@ def compare_dynamics_KL():
     dfflux_sub_ref = dfflux_sub_ref.transpose()
     #print(dfflux_sub_ref)
     
+    ##### remove all rows and columns above length of protein chain #####
+    rows_to_keep = [x for x in range(length_prot)]
+    dfflux_all_query = dfflux_all_query.iloc[rows_to_keep, :]
+    dfflux_all_ref = dfflux_all_ref.iloc[rows_to_keep, :]
+    columns_to_keep = [x for x in range(length_prot)]
+    dfflux_sub_query = dfflux_sub_query.iloc[:, columns_to_keep]
+    dfflux_sub_ref = dfflux_sub_ref.iloc[:, columns_to_keep]
+        
     ##############################
     ##### calc KL divergence #####
     ##############################
