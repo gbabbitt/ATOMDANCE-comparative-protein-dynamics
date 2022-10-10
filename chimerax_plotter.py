@@ -167,18 +167,27 @@ def feature_vector():
         os.makedirs('feature_all_query')  
     if not os.path.exists('feature_all_ref'):
         os.makedirs('feature_all_ref')
+    if not os.path.exists('feature_all_refCTL'):
+        os.makedirs('feature_all_refCTL')    
     if not os.path.exists('feature_sub_query'):
         os.makedirs('feature_sub_query')  
     if not os.path.exists('feature_sub_ref'):
         os.makedirs('feature_sub_ref')
+    if not os.path.exists('feature_sub_refCTL'):
+        os.makedirs('feature_sub_refCTL')    
     if not os.path.exists('feature_all_query_reduced'):
         os.makedirs('feature_all_query_reduced')  
     if not os.path.exists('feature_all_ref_reduced'):
         os.makedirs('feature_all_ref_reduced')
+    if not os.path.exists('feature_all_refCTL_reduced'):
+        os.makedirs('feature_all_refCTL_reduced')    
     if not os.path.exists('feature_sub_query_reduced'):
         os.makedirs('feature_sub_query_reduced')  
     if not os.path.exists('feature_sub_ref_reduced'):
         os.makedirs('feature_sub_ref_reduced')
+    if not os.path.exists('feature_sub_refCTL_reduced'):
+        os.makedirs('feature_sub_refCTL_reduced')    
+    
     #######################################################
     ###### feature vector for whole reference MD run ######
     #######################################################
@@ -356,7 +365,7 @@ def feature_vector():
     print(feature_all_query_reduced)
         
     ##############################################################
-    ###### feature vectors for subsampled reference MD runs ######
+    ###### feature vectors for subsampled query MD runs     ######
     ##############################################################
     
     for i in range(subsamples):
@@ -418,6 +427,130 @@ def feature_vector():
             f2.write(dfAsString)
         #print("feature vector(subsampled reference MD run %s) = atom fluct + 5 reduced atom corr features:" % i)
         #print(feature_sub_ref_reduced) 
+    
+    ###############################################################
+    ###### feature vector for whole reference control MD run ######
+    ###############################################################
+    print("creating feature vector for whole MD reference control run")
+    influx_all_ref = "fluct_%s_all_referenceCTL.txt" % PDB_id_reference 
+    incorr_all_ref = "corr_%s_all_referenceCTL_matrix.txt" % PDB_id_reference    
+    dfflux_all_ref = pd.read_csv(influx_all_ref, sep="\s+")
+    dfcorr_all_ref = pd.read_csv(incorr_all_ref, sep="\s+", header=None)
+    #print(dfflux_all_ref)
+    #print(dfcorr_all_ref)
+    del dfflux_all_ref[dfflux_all_ref.columns[0]] # remove first column
+    # normalize atom fluctuations (minmax method)
+    column = 'AtomicFlx'
+    dfflux_all_ref[column] = (dfflux_all_ref[column] - dfflux_all_ref[column].min()) / (dfflux_all_ref[column].max() - dfflux_all_ref[column].min())
+    #dfflux_all_ref[column] = dfflux_all_ref[column]  # option skip normalization
+    # trim uneccessary columns
+    #del dfcorr_all_ref[dfcorr_all_ref.columns[0]] # remove first column
+    #del dfcorr_all_ref[dfcorr_all_ref.columns[-1]] # remove last column = NaN
+    frames_all_ref = [dfflux_all_ref, dfcorr_all_ref]
+    feature_all_ref = pd.concat(frames_all_ref, axis = 1, join="inner")
+    #print(dfflux_all_ref)
+    #print(dfcorr_all_ref)
+    #print(feature_all_ref)
+    df1 = feature_all_ref
+    writePath = "./feature_all_refCTL/feature_%s_all_refCTL.txt" % PDB_id_reference
+    with open(writePath, 'w') as f1:
+        dfAsString = df1.to_string(header=False, index=True)
+        f1.write(dfAsString)
+    # create reduced atom correlation matrix (from sparse matrix)
+    M = pd.DataFrame(dfcorr_all_ref)
+    print("Original Matrix:")
+    print(M)
+    #del M[M[0]]
+    #print(M)
+    # create sparse matrix
+    M[np.abs(M) < 0.005] = 0 # plug in zero values if below threshold
+    print("Sparse Matrix:")
+    print(M)
+    svd =  TruncatedSVD(n_components = 5)
+    M_transf = svd.fit_transform(M)
+    print("Singular values:")
+    print(svd.singular_values_)
+    print("Transformed Matrix after reducing to 5 features:")
+    print(M_transf)
+    M_transf = pd.DataFrame(M_transf)
+    print(M_transf) # as dataframe
+    # create reduced feature vector
+    frames_all_ref_reduced = [dfflux_all_ref, M_transf]
+    feature_all_ref_reduced = pd.concat(frames_all_ref_reduced, axis = 1, join="inner")
+    df2 = feature_all_ref_reduced
+    writePath = "./feature_all_refCTL_reduced/feature_%s_all_refCTL.txt" % PDB_id_reference
+    with open(writePath, 'w') as f2:
+        dfAsString = df2.to_string(header=False, index=True)
+        f2.write(dfAsString)
+    print("feature vector(whole reference MD run) = atom fluct + 5 reduced atom corr features:")
+    print(feature_all_ref_reduced)  
+    
+    ##############################################################
+    ###### feature vectors for subsampled reference MD runs ######
+    ##############################################################
+    
+    for i in range(subsamples):
+        print("creating reduced feature vector for subsample %s MD reference control run" % i)
+        influx_sub_ref = "./atomflux_refCTL/fluct_%s_sub_referenceCTL.txt" % PDB_id_reference 
+        incorr_sub_ref = "./atomcorr_refCTL_matrix/corr_%s_sub_referenceCTL_matrix_%s.txt" % (PDB_id_reference, i)    
+        dfflux_sub_ref = pd.read_csv(influx_sub_ref, sep="\s+")
+        dfcorr_sub_ref = pd.read_csv(incorr_sub_ref, sep="\s+", header=None)
+        del dfflux_sub_ref[dfflux_sub_ref.columns[0]] # remove first column
+        #del dfflux_sub_ref[dfflux_sub_ref.columns[0]] # remove next column
+        # iterate over atom flux columns 
+        column = dfflux_sub_ref.columns[i]
+        #print(column)
+        # normalize atom fluctuations (minmax method)
+        dfflux_sub_ref[column] = (dfflux_sub_ref[column] - dfflux_sub_ref[column].min()) / (dfflux_sub_ref[column].max() - dfflux_sub_ref[column].min())
+        #dfflux_sub_ref[column] = dfflux_sub_ref[column] # option skip normalization
+        myColumn = dfflux_sub_ref[column]
+        myColumn = pd.DataFrame(myColumn)
+        #print(myColumn)
+        #dfflux_sub_ref = dfflux_sub_ref[column]
+        # trim uneccessary columns
+        del dfcorr_sub_ref[dfcorr_sub_ref.columns[0]] # remove first column
+        del dfcorr_sub_ref[dfcorr_sub_ref.columns[-1]] # remove last column = NaN
+        #print(dfflux_sub_ref)
+        #print(dfcorr_sub_ref)
+        frames_sub_ref = [myColumn, dfcorr_sub_ref]
+        feature_sub_ref = pd.concat(frames_sub_ref, axis = 1, join="inner")
+        #print(dfflux_sub_ref)
+        #print(dfcorr_sub_ref)
+        #print(feature_sub_ref)
+        df1 = feature_sub_ref
+        writePath = "./feature_sub_refCTL/feature_%s_sub_refCTL_%s.txt" % (PDB_id_reference, i)
+        with open(writePath, 'w') as f1:
+            dfAsString = df1.to_string(header=False, index=True)
+            f1.write(dfAsString)
+        # create reduced atom correlation matrix (from sparse matrix)
+        M = dfcorr_sub_ref
+        #print("Original Matrix:")
+        #print(M)
+        # create sparse matrix
+        M[np.abs(M) < 0.005] = 0 # plug in zero values if below threshold
+        #print("Sparse Matrix:")
+        #print(M)
+        svd =  TruncatedSVD(n_components = 5)
+        M_transf = svd.fit_transform(M)
+        #print("Singular values:")
+        #print(svd.singular_values_)
+        #print("Transformed Matrix after reducing to 5 features:")
+        #print(M_transf)
+        M_transf = pd.DataFrame(M_transf)
+        #print(M_transf) # as dataframe
+        # create reduced feature vector
+        frames_sub_ref_reduced = [myColumn, M_transf]
+        feature_sub_ref_reduced = pd.concat(frames_sub_ref_reduced, axis = 1, join="inner")
+        df2 = feature_sub_ref_reduced
+        writePath = "./feature_sub_refCTL_reduced/feature_%s_sub_refCTL_%s.txt" % (PDB_id_reference, i)
+        with open(writePath, 'w') as f2:
+            dfAsString = df2.to_string(header=False, index=True)
+            f2.write(dfAsString)
+        #print("feature vector(subsampled reference MD run %s) = atom fluct + 5 reduced atom corr features:" % i)
+        #print(feature_sub_ref_reduced) 
+    
+    
+    
     
 #################################################################################
 # view movie of entire MD run
@@ -500,7 +633,7 @@ def compare_dynamics_KL():
     dfflux_sub_ref = dfflux_sub_ref.transpose()
     #print(dfflux_sub_ref)
     
-    ##### remove all rows and columns above length of protein chain #####
+    ##### remove all rows over length of protein chain #####
     rows_to_keep = [x for x in range(length_prot)]
     dfflux_all_query = dfflux_all_query.iloc[rows_to_keep, :]
     dfflux_all_ref = dfflux_all_ref.iloc[rows_to_keep, :]
@@ -694,65 +827,107 @@ def compare_dynamics_MMD():
     for i in range(length_prot-1):
         # initiatize arrays
         feature_reference = []
+        feature_referenceCTL = []
         feature_query = []
         for j in range(subsamples):
             samp = j+1
             #print("collecting subsample %s" % samp)
+            ######## reference protein ###########
             infeature_reference = "./feature_sub_ref_reduced/feature_%s_sub_ref_%s.txt" % (PDB_id_reference, j)
             df_feature_reference = pd.read_csv(infeature_reference, sep="\s+")
+            #print(df_feature_reference)
+            del df_feature_reference[df_feature_reference.columns[0]] # remove first column
             #print(df_feature_reference)
             sample_feature_reference = df_feature_reference.iloc[i]
             sample_feature_reference = np.array(sample_feature_reference)
             #print(sample_feature_reference)
             feature_reference.append(sample_feature_reference)
+            ######## reference control protein #####
+            infeature_referenceCTL = "./feature_sub_refCTL_reduced/feature_%s_sub_refCTL_%s.txt" % (PDB_id_reference, j)
+            df_feature_referenceCTL = pd.read_csv(infeature_referenceCTL, sep="\s+")
+            #print(df_feature_referenceCTL)
+            del df_feature_referenceCTL[df_feature_referenceCTL.columns[0]] # remove first column
+            #print(df_feature_referenceCTL)
+            sample_feature_referenceCTL = df_feature_referenceCTL.iloc[i]
+            sample_feature_referenceCTL = np.array(sample_feature_referenceCTL)
+            #print(sample_feature_referenceCTL)
+            feature_referenceCTL.append(sample_feature_referenceCTL)
+            ######### query protein #########
             infeature_query = "./feature_sub_query_reduced/feature_%s_sub_query_%s.txt" % (PDB_id_query, j)
             df_feature_query = pd.read_csv(infeature_query, sep="\s+")
+            #print(df_feature_query)
+            del df_feature_query[df_feature_query.columns[0]] # remove first column
             #print(df_feature_query)
             sample_feature_query = df_feature_query.iloc[i]
             sample_feature_query= np.array(sample_feature_query)
             #print(sample_feature_query)
             feature_query.append(sample_feature_query)
+            
         print("calculating and bootstrapping MMD for site %s" % i)     
         #print(feature_reference)
         #print(feature_query)
-        myMMD = mmd_rbf(feature_reference, feature_query) # calulate MMD
+        df_feature_ref = pd.DataFrame(feature_reference)
+        df_feature_refCTL = pd.DataFrame(feature_referenceCTL)
+        df_feature_query = pd.DataFrame(feature_query)
+        feature_ref_mean = df_feature_ref.mean()
+        #print(feature_ref_mean)
+        feature_query_mean = df_feature_query.mean()
+        #print(feature_query_mean)
+        # convert back to array for MMD calc
+        feature_ref_mean = np.array(feature_ref_mean)
+        feature_query_mean = np.array(feature_query_mean)
+        feature_ref_mean = feature_ref_mean.reshape(1, -1)
+        feature_query_mean = feature_query_mean.reshape(1, -1)
+        #print(feature_ref_mean)
+        #print(feature_query_mean)
+        #myMMD = mmd_rbf(feature_reference, feature_query) # calulate MMD
+        myMMD = mmd_rbf(feature_ref_mean, feature_query_mean) # calulate MMD
+        #print("obs MMD")
         #print(myMMD)
         MMD_output.append(myMMD) # build MMD list for each site
         
         ##### BOOTSTRAP TEST FOR MMD #########
         cntGREATER = 1
         cntLESSER = 1
-        for t in range(100):
+        neutralMMDs = []
+        for t in range(500):
             # bootstrap1 feature_reference
-            my_bootstrap1 = []
-            for _ in range(100):
-                rand = rnd.randint(0, subsamples-1)
-                samp1 = np.random.choice(feature_reference[rand], size = 10, replace = True)
-                my_bootstrap1.append(samp1)
-            #print(my_bootstrap1)
-            # bootstrap2 feature_reference again 
-            my_bootstrap2= []
-            for _ in range(100):
-                rand = rnd.randint(0, subsamples-1)
-                samp2 = np.random.choice(feature_reference[rand], size = 10, replace = True)
-                my_bootstrap2.append(samp2)
-            #print(my_bootstrap2)
+            rand1 = rnd.randint(0, subsamples-1)
+            #print("rand1")
+            #print(rand1)
+            #print(feature_reference[rand])
+            samp1 = feature_reference[rand1]
+            samp1 = samp1.reshape(1, -1)
+            #print (samp1)
+            # bootstrap2 feature_reference control 
+            rand2 = rnd.randint(0, subsamples-1)
+            #print("rand2")
+            #print(rand2)
+            samp2 = feature_referenceCTL[rand2]
+            samp2 = samp2.reshape(1, -1)
+            #print (samp2)
             # neutral MMD (ref1 vs ref2)
-            neutralMMD = mmd_rbf(my_bootstrap1, my_bootstrap2) # calulate MMD
+            neutralMMD = mmd_rbf(samp1, samp2) # calulate MMD
             #print("neutral MMD %s" % t)
             #print(neutralMMD)
+            neutralMMDs.append(neutralMMD)
             # empirical p-value  (freq neutral MMD > alternative MMD)
-            if(myMMD >= neutralMMD):
+            if(myMMD > neutralMMD):
                 cntGREATER = cntGREATER+1
             if(myMMD <= neutralMMD):
                 cntLESSER = cntLESSER+1
+        # avg neutral MMD
+        mean_neutralMMD = np.mean(neutralMMDs, axis = None)
+        #print("avg neutral MMD")
+        #print(mean_neutralMMD)
         # empiriacl p value
         emp_P = cntGREATER/(cntGREATER+cntLESSER)
         #print("empirical P value")
         #print(emp_P)
-        if(emp_P >= 0.99):
+        cutoff = 0.99
+        if(emp_P > cutoff):
             p_label = "sig"
-        if(emp_P < 0.99):
+        if(emp_P <= cutoff):
             p_label = "ns"
         PVAL_output.append(p_label) # build MMD P VALUE list for each site
     
