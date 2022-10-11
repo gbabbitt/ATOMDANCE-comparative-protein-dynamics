@@ -821,10 +821,10 @@ def main():
     t7.join()
     
     print("subsampling of MD trajectories is completed") 
-    matrix_maker_old()  # for older version of cpptraj
-    matrix_maker_batch_old() # for older version of cpptraj
-    #matrix_maker_new()
-    #matrix_maker_batch_new()
+    #matrix_maker_old()  # for older version of cpptraj
+    #matrix_maker_batch_old() # for older version of cpptraj
+    matrix_maker_new()
+    matrix_maker_batch_new()
     copy_flux()
     resinfo()
     print("parsing of MD trajectories is completed")    
