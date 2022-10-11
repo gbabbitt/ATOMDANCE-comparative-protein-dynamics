@@ -104,14 +104,20 @@ length_prot = int(l_pr)
 # make directories
 if not os.path.exists('atomflux_ref'):
     os.makedirs('atomflux_ref')
+if not os.path.exists('atomflux_refCTL'):
+    os.makedirs('atomflux_refCTL')
 if not os.path.exists('atomflux_query'):
     os.makedirs('atomflux_query')
 if not os.path.exists('atomcorr_ref'):
     os.makedirs('atomcorr_ref')
+if not os.path.exists('atomcorr_refCTL'):
+    os.makedirs('atomcorr_refCTL')  
 if not os.path.exists('atomcorr_query'):
     os.makedirs('atomcorr_query')
 if not os.path.exists('atomcorr_ref_matrix'):
     os.makedirs('atomcorr_ref_matrix')
+if not os.path.exists('atomcorr_refCTL_matrix'):
+    os.makedirs('atomcorr_refCTL_matrix')    
 if not os.path.exists('atomcorr_query_matrix'):
     os.makedirs('atomcorr_query_matrix')
 
@@ -231,6 +237,66 @@ def write_control_files():
     f1.close()
     f2.close()
     
+    ################# control on reference protein ############################
+    # for getting atom info
+    f = open("./atominfo_%s_referenceCTL.ctl" % PDB_id_reference, "w")
+    f.write("parm %s\n" % top_file_reference)
+    f.write("trajin %s\n" % traj_file_reference)
+    f.write("resinfo !(:WAT)\n")
+    f.write("atominfo out info_%s_all_referenceCTL.txt @CA,C,O,N,H&!(:WAT) byres\n" % PDB_id_reference)
+    f.write("run\n")
+    f.close()
+    
+    # create cpptraj .ctl routines for overall fluctuation and correlation
+    f = open("./atomflux_%s_all_referenceCTL.ctl" % PDB_id_reference, "w")
+    f.write("parm %s\n" % top_file_reference)
+    f.write("trajin %s\n" % traj_file_reference)
+    f.write("rms first\n")
+    f.write("average crdset MyAvg\n")
+    f.write("run\n")
+    f.write("rms ref MyAvg\n")
+    f.write("atomicfluct out fluct_%s_all_referenceCTL.txt @CA,C,O,N&!(:WAT) byres\n" % PDB_id_reference)
+    f.write("run\n")
+    f.close()
+
+    f = open("./atomcorr_%s_all_referenceCTL.ctl" % PDB_id_reference, "w") 
+    f.write("parm %s\n" % top_file_reference)
+    f.write("trajin %s\n" % traj_file_reference)
+    f.write("rms first\n")
+    f.write("average crdset MyAvg\n")
+    f.write("run\n")
+    f.write("rms ref MyAvg\n")
+    f.write("atomiccorr out corr_%s_all_referenceCTL.txt @CA,C,O,N&!(:WAT) byres\n" % PDB_id_reference)
+    f.write("run\n")
+    f.close()
+        
+    # create subsampling .ctl routines for KL divergence
+    f1 = open("./atomflux_%s_sub_referenceCTL.ctl" % PDB_id_reference, "w")
+    f2 = open("./atomcorr_%s_sub_referenceCTL.ctl" % PDB_id_reference, "w")
+    f1.write("parm %s\n" % top_file_reference)
+    f1.write("trajin %s\n"% traj_file_reference)
+    f1.write("rms first\n")
+    f1.write("average crdset MyAvg\n")
+    f1.write("run\n")
+    f2.write("parm %s\n" % top_file_reference)
+    f2.write("trajin %s\n"% traj_file_reference)
+    for x in range(subsamples):
+        upper_limit = n_frames-frame_size
+        start = rnd.randint(1, upper_limit)
+        stop = start+frame_size
+        f1.write("rms ref MyAvg\n")
+        f1.write("atomicfluct out fluct_%s_sub_referenceCTL.txt @CA,C,O,N&!(:WAT) byres start %s stop %s\n" % (PDB_id_reference, start, stop))
+        f1.write("run\n")
+        f2.write("trajin %s %s %s\n"% (traj_file_reference, start, stop))
+        f2.write("atomiccorr out ./atomcorr_refCTL/corr_%s_sub_referenceCTL_%s.txt @CA,C,O,N&!(:WAT) byres\n" % (PDB_id_reference, x))
+        f2.write("run\n")
+    f1.close()
+    f2.close()
+    
+    
+    
+    
+    
 ##################################################################
 
 # run subsampling routines
@@ -286,6 +352,33 @@ def subsample_query_corr():
     print("subsampling query protein correlations")
     print("NOTE: may take many minutes depending upon N subsamples & frames per subsample")
     cmd = "cpptraj -i atomcorr_%s_sub_query.ctl -o corr_%s_out_sub_query.txt" % (PDB_id_query,PDB_id_query)
+    os.system(cmd)
+
+def subsample_referenceCTL_flux():
+    print("collecting atom information")
+    cmd = "cpptraj -i atominfo_%s_referenceCTL.ctl -o info_%s_out_referenceCTL.txt" % (PDB_id_reference,PDB_id_reference)
+    os.system(cmd)
+    cmd = "cpptraj -i atominfo_%s_referenceCTL.ctl | tee cpptraj_atominfo_%s.txt" % (PDB_id_reference,PDB_id_reference)
+    os.system(cmd)
+    print("overall fluctuation - reference protein")
+    #flux = pt.all_actions.atomicfluct(traj = traj_ref, mask = '@CA,C,O,N&!(:WAT)', options = 'byres')
+    #print(flux)  # overall fluctuation
+    cmd = 'cpptraj -i atomflux_%s_all_referenceCTL.ctl -o fluct_%s_out_all_referenceCTL.txt' % (PDB_id_reference,PDB_id_reference)
+    os.system(cmd)
+    print("subsampling reference protein fluctuations")
+    print("NOTE: may take many minutes depending upon N subsamples & frames per subsample")
+    cmd = "cpptraj -i atomflux_%s_sub_referenceCTL.ctl -o fluct_%s_out_sub_referenceCTL.txt" % (PDB_id_reference,PDB_id_reference)
+    os.system(cmd)
+    
+def subsample_referenceCTL_corr():
+    print("overall correlation - reference protein")
+    #corr = pt.all_actions.atomiccorr(traj = traj_ref, mask = '@CA,C,O,N&!(:WAT)', byres = True)
+    #print(corr)  # overall correlation
+    cmd = 'cpptraj -i atomcorr_%s_all_referenceCTL.ctl -o corr_%s_out_all_referenceCTL.txt' % (PDB_id_reference,PDB_id_reference) 
+    os.system(cmd)
+    print("subsampling reference protein correlations")
+    print("NOTE: may take many minutes depending upon N subsamples & frames per subsample")
+    cmd = "cpptraj -i atomcorr_%s_sub_referenceCTL.ctl -o corr_%s_out_sub_referenceCTL.txt" % (PDB_id_reference,PDB_id_reference)
     os.system(cmd)
 
 #################################################################################
@@ -366,6 +459,46 @@ def matrix_maker_old():
             f_out.write("\t")
             site_counter = 1
             pos_counter = pos_counter+1
+    print("converting atomiccorr output to matrix (reference control protein)")
+    f_in = open("./corr_%s_all_referenceCTL.txt" % PDB_id_reference, "r")
+    f_out = open("./corr_%s_all_referenceCTL_matrix.txt" % PDB_id_reference, "w")
+    f_in_lines = f_in.readlines()
+    site_counter = 0
+    pos_counter = 0
+    for x in range(len(f_in_lines)-1):
+        if (x == 0):
+            site_counter = 1
+            pos_counter = 1
+            f_out.write(str(pos_counter))
+            f_out.write("\t")
+            pos_counter = pos_counter+1
+            next
+        f_in_line = f_in_lines[x+1]
+        #print(f_in_line)
+        f_in_line_array = re.split("\s+", f_in_line,)
+        pos_1 = f_in_line_array[1]
+        pos_2 = f_in_line_array[2]
+        corr_val = f_in_line_array[3]
+        
+        #print(pos_1)
+        #print(pos_2)
+        #print(corr_val)
+        if (site_counter <= length_prot):
+            f_out.write(corr_val)
+            f_out.write("\t")
+            site_counter = site_counter+1
+        if (site_counter > length_prot and pos_counter <= length_prot):
+            #print("\n")
+            #print(pos_counter)
+            #f_out.write("\n")  # visual chaeck
+            f_out.write("\n")
+            f_out.write(str(pos_counter))
+            f_out.write("\t")
+            site_counter = 1
+            pos_counter = pos_counter+1
+
+ 
+ 
  
 def matrix_maker_batch_old():
     print("converting atomiccorr batch output to matrix")
@@ -445,6 +578,43 @@ def matrix_maker_batch_old():
                 f_out.write("\t")
                 site_counter = 1
                 pos_counter = pos_counter+1
+        print("converting atomiccorr output to matrix - subsample %s (reference control protein)" % i)
+        f_in = open("./atomcorr_refCTL/corr_%s_sub_referenceCTL_%s.txt" % (PDB_id_reference, i), "r")
+        f_out = open("./atomcorr_refCTL_matrix/corr_%s_sub_referenceCTL_matrix_%s.txt" % (PDB_id_reference, i), "w")
+        f_in_lines = f_in.readlines()
+        site_counter = 0
+        pos_counter = 0
+        for x in range(len(f_in_lines)-1):
+            if (x == 0):
+                site_counter = 1
+                pos_counter = 1
+                f_out.write(str(pos_counter))
+                f_out.write("\t")
+                pos_counter = pos_counter+1
+                next
+            f_in_line = f_in_lines[x+1]
+            #print(f_in_line)
+            f_in_line_array = re.split("\s+", f_in_line,)
+            pos_1 = f_in_line_array[1]
+            pos_2 = f_in_line_array[2]
+            corr_val = f_in_line_array[3]
+            
+            #print(pos_1)
+            #print(pos_2)
+            #print(corr_val)
+            if (site_counter <= length_prot):
+                f_out.write(corr_val)
+                f_out.write("\t")
+                site_counter = site_counter+1
+            if (site_counter > length_prot and pos_counter <= length_prot):
+                #print("\n")
+                #print(pos_counter)
+                #f_out.write("\n")  # visual chaeck
+                f_out.write("\n")
+                f_out.write(str(pos_counter))
+                f_out.write("\t")
+                site_counter = 1
+                pos_counter = pos_counter+1
             
 
 def matrix_maker_new():
@@ -487,7 +657,26 @@ def matrix_maker_new():
         #print(dfAsString)
         f_out.write(dfAsString)
         f_out.write("\n")
-
+    print("converting atomiccorr output to matrix (reference control protein)")
+    f_in = open("./corr_%s_all_referenceCTL.txt" % PDB_id_reference, "r")
+    f_out = open("./corr_%s_all_referenceCTL_matrix.txt" % PDB_id_reference, "w")
+    f_in_lines = f_in.readlines()
+    line_counter = 0
+    for x in range(len(f_in_lines)-1):
+        if (x == 0):
+            line_counter = 1
+            next
+        f_in_line = f_in_lines[x+1]
+        line_counter = line_counter+1
+        f_in_line_array = re.split("\s+", f_in_line,)
+        del f_in_line_array[0]
+        f_in_line_df = pd.DataFrame(f_in_line_array)
+        f_in_line_df = f_in_line_df.transpose()
+        dfAsString = f_in_line_df.to_string(header=False, index=False)
+        #print(dfAsString)
+        f_out.write(dfAsString)
+        f_out.write("\n")
+        
 def matrix_maker_batch_new():
     print("converting atomiccorr batch output to matrix")
     
@@ -531,13 +720,33 @@ def matrix_maker_batch_new():
             #print(dfAsString)
             f_out.write(dfAsString)
             f_out.write("\n")
-            
+        
+        print("converting atomiccorr output to matrix - subsample %s (reference control protein)" % i)
+        f_in = open("./atomcorr_refCTL/corr_%s_sub_referenceCTL_%s.txt" % (PDB_id_reference, i), "r")
+        f_out = open("./atomcorr_refCTL_matrix/corr_%s_sub_referenceCTL_matrix_%s.txt" % (PDB_id_reference, i), "w")
+        f_in_lines = f_in.readlines()
+        line_counter = 0
+        for x in range(len(f_in_lines)-1):
+            if (x == 0):
+                line_counter = 1
+                next
+            f_in_line = f_in_lines[x+1]
+            line_counter = line_counter+1
+            f_in_line_array = re.split("\s+", f_in_line,)
+            del f_in_line_array[0]
+            f_in_line_df = pd.DataFrame(f_in_line_array)
+            f_in_line_df = f_in_line_df.transpose()
+            dfAsString = f_in_line_df.to_string(header=False, index=False)
+            #print(dfAsString)
+            f_out.write(dfAsString)
+            f_out.write("\n")   
 
 
 def copy_flux():
     print("copying atom flux files to atomflux folder")
     os.system('cp fluct_%s_sub_query.txt ./atomflux_query/fluct_%s_sub_query.txt' % (PDB_id_query, PDB_id_query))
     os.system('cp fluct_%s_sub_reference.txt ./atomflux_ref/fluct_%s_sub_reference.txt' % (PDB_id_reference, PDB_id_reference))
+    os.system('cp fluct_%s_sub_referenceCTL.txt ./atomflux_refCTL/fluct_%s_sub_referenceCTL.txt' % (PDB_id_reference, PDB_id_reference))
     
 def resinfo():
     ### collect residue info
@@ -567,29 +776,59 @@ def resinfo():
                outfile.write("\n")
     outfile.close
 
+def runProgressBar():
+    import time
+    from progress.bar import IncrementalBar
+    bar = IncrementalBar('subsamples_completed', max=subsamples)
+    lst = os.listdir('atomcorr_ref') # your directory path
+    num_files = 0
+    next_num_files = 0
+    while (num_files < subsamples):
+        #if(num_files == next_num_files):
+        #    print("match")
+        if(num_files != next_num_files):
+            #print("mismatch")
+            bar.next()
+            #time.sleep(1)
+        lst = os.listdir('atomcorr_ref') # your directory path
+        num_files = len(lst)
+        time.sleep(2)
+        lst = os.listdir('atomcorr_ref') # your directory path
+        next_num_files = len(lst)
+    bar.finish()
 ###############################################################
 ###############################################################
 
 def main():
     write_control_files()
-        # creating thread
+    # creating thread
     t1 = threading.Thread(target=subsample_reference_flux)
-    t2 = threading.Thread(target=subsample_query_flux)
-    t3 = threading.Thread(target=subsample_reference_corr)
-    t4 = threading.Thread(target=subsample_query_corr)
+    t2 = threading.Thread(target=subsample_referenceCTL_flux)
+    t3 = threading.Thread(target=subsample_query_flux)
+    t4 = threading.Thread(target=subsample_reference_corr)
+    t5 = threading.Thread(target=subsample_referenceCTL_corr)
+    t6 = threading.Thread(target=subsample_query_corr)
+    t7 = threading.Thread(target=runProgressBar)
     t1.start() # start threads
     t2.start()
     t3.start() 
     t4.start()
+    t5.start() 
+    t6.start()
+    t7.start()
     t1.join()  # wait until threads are completely executed
     t2.join()
-    t3.join()  
+    t3.join() 
     t4.join()
+    t5.join() 
+    t6.join()
+    t7.join()
+    
     print("subsampling of MD trajectories is completed") 
-    #matrix_maker_old()  # for older version of cpptraj
-    #matrix_maker_batch_old() # for older version of cpptraj
-    matrix_maker_new()
-    matrix_maker_batch_new()
+    matrix_maker_old()  # for older version of cpptraj
+    matrix_maker_batch_old() # for older version of cpptraj
+    #matrix_maker_new()
+    #matrix_maker_batch_new()
     copy_flux()
     resinfo()
     print("parsing of MD trajectories is completed")    
