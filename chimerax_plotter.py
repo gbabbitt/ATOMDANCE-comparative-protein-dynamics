@@ -701,6 +701,15 @@ def compare_dynamics_KL():
     myKLindex = pd.concat(myFrames, axis = 1, join="inner")
     myKLindex = myKLindex.set_axis(['pos', 'res', 'dFLUX', 'KL', 'D', 'pvalue', 'p_value', 'FLUX_ref', 'FLUX_query'], axis=1, inplace=False)
     print(myKLindex)
+     # write to output file
+    if not os.path.exists('divergenceMetrics'):
+        os.mkdir('divergenceMetrics')
+    df_out = myKLindex
+    writePath = "./divergenceMetrics/divergenceMetrics.txt"
+    with open(writePath, 'w') as f_out:
+        dfAsString = df_out.to_string(header=True, index=False)
+        f_out.write(dfAsString)
+        f_out.close
     # plot KL divergence and dFLUX
     myplot1 = (ggplot(myKLindex) + aes(x='pos', y='KL', color='res', fill='res') + geom_bar(stat='identity') + labs(title='site-wise signed divergence in atom fluctuation', x='amino acid site', y='signed JS divergence') + theme(panel_background=element_rect(fill='black', alpha=.6)))
     myplot2 = (ggplot(myKLindex) + aes(x='pos', y='dFLUX', color='res', fill='res') + geom_bar(stat='identity') + labs(title='site-wise difference in atom fluctuation', x='amino acid site', y='dFLUX') + theme(panel_background=element_rect(fill='black', alpha=.6)))
@@ -710,9 +719,6 @@ def compare_dynamics_KL():
     myplot4 = (ggplot(myKLindex) + aes(x='pos', y='dFLUX', color='res', fill='res') + geom_bar(stat='identity') + labs(title='site-wise difference in atom fluctuation', x='amino acid site', y='dFLUX') + theme(panel_background=element_rect(fill='black', alpha=.1)))
     myplot6 = (ggplot(myKLindex) + aes(x='pos', y='D', color='p_value', fill='p_value') + geom_bar(stat='identity') + labs(title='bonferroni corrected significance in divergence in atom fluctuation', x='amino acid site', y='D (2 sample KS test)') + theme(panel_background=element_rect(fill='black', alpha=.1)))
     myplot8 = (ggplot() + labs(title='site-wise atom fluctuation (red is bound or mutated state)', x='amino acid site', y='atom fluctuation') + geom_line(data = myKLindex, mapping = aes(x='pos', y='FLUX_ref'), color = 'black') + geom_line(data = myKLindex, mapping = aes(x='pos', y='FLUX_query'), color = 'red') + theme(panel_background=element_rect(fill='black', alpha=.1)))
-    
-    if not os.path.exists('divergenceMetrics'):
-        os.mkdir('divergenceMetrics')
     myplot1.save("divergenceMetrics/KLdivergence_dark.png", width=10, height=5, dpi=300)
     myplot2.save("divergenceMetrics/deltaFLUX_dark.png", width=10, height=5, dpi=300)
     myplot3.save("divergenceMetrics/KLdivergence_light.png", width=10, height=5, dpi=300)
@@ -952,14 +958,20 @@ def compare_dynamics_MMD():
     myMMDindex = pd.concat(myFrames, axis = 1, join="inner")
     myMMDindex = myMMDindex.set_axis(['pos', 'res', 'MMD', 'pval'], axis=1, inplace=False)
     print(myMMDindex)
+    # write to output file
+    if not os.path.exists('maxMeanDiscrepancy'):
+        os.mkdir('maxMeanDiscrepancy')
+    df_out = myMMDindex
+    writePath = "./maxMeanDiscrepancy/maxMeanDiscrepancy.txt"
+    with open(writePath, 'w') as f_out:
+        dfAsString = df_out.to_string(header=True, index=False)
+        f_out.write(dfAsString)
+        f_out.close
     # make MMD plots
     myplot9 = (ggplot(myMMDindex) + aes(x='pos', y='MMD', color='pval', fill='pval') + geom_bar(stat='identity') + labs(title='site-wise MMD of learned features between functional states', x='amino acid site', y='MMD') + theme(panel_background=element_rect(fill='black', alpha=.6)))
     myplot10 = (ggplot(myMMDindex) + aes(x='pos', y='MMD', color='pval', fill='pval') + geom_bar(stat='identity') + labs(title='site-wise MMD of learned features between functional states', x='amino acid site', y='MMD') + theme(panel_background=element_rect(fill='black', alpha=.1)))
     myplot11 = (ggplot(myMMDindex) + aes(x='pos', y='MMD', color='res', fill='res') + geom_bar(stat='identity') + labs(title='site-wise MMD of learned features between functional states', x='amino acid site', y='MMD') + theme(panel_background=element_rect(fill='black', alpha=.6)))
     myplot12 = (ggplot(myMMDindex) + aes(x='pos', y='MMD', color='res', fill='res') + geom_bar(stat='identity') + labs(title='site-wise MMD of learned features between functional states', x='amino acid site', y='MMD') + theme(panel_background=element_rect(fill='black', alpha=.1)))
-    
-    if not os.path.exists('maxMeanDiscrepancy'):
-        os.mkdir('maxMeanDiscrepancy')
     myplot9.save("maxMeanDiscrepancy/MMD_dark_sig.png", width=10, height=5, dpi=300)
     myplot10.save("maxMeanDiscrepancy/MMD_light_sig.png", width=10, height=5, dpi=300)
     myplot11.save("maxMeanDiscrepancy/MMD_dark_res.png", width=10, height=5, dpi=300)
