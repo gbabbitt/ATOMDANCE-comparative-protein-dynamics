@@ -22,8 +22,8 @@ more on UCSF ChimeraX
 https://www.rbvi.ucsf.edu/chimerax/
 
 python module dependencies (os, getopt, sys, threading, random, re, chimerax.core.commands) 
-python modules to be installed (PyQt5, numpy, scipy, pandas, sklearn, matplotlib, plotnine)
-NOTE: the CPU on the computer should support at least 4 threads
+python modules to be installed (PyQt5, numpy, scipy, pandas, sklearn, matplotlib, plotnine, progress)
+NOTE: the CPU on the computer should support at least 4 cores
 
 Molecular dynamics file inputs to DROIDS/maxDemon include 6 files (3 for each functional state including a .pdb formatted structure file, a .prmtop formatted topology file and a .nc (i.e. NetCDF) formatted trajectory file.  To run the program put these input files in the local folder you have downloaded from us, open a terminal or cmd line from that folder and type 'python3 DROIDS.py'.  Then follow directions on the graphical interface. These files can be generated on any molecular dynamics engine the user prefers (e.g. QwikMD using NAMD, OpenMM in python, or Amber/Ambertools in Linux).  For beginners, we also offer a useful GUI for Amber MD simulations on Linux available here
 

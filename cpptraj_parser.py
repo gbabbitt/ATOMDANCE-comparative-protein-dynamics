@@ -784,12 +784,8 @@ def runProgressBar():
     num_files = 0
     next_num_files = 0
     while (num_files < subsamples):
-        #if(num_files == next_num_files):
-        #    print("match")
         if(num_files != next_num_files):
-            #print("mismatch")
             bar.next()
-            #time.sleep(1)
         lst = os.listdir('atomcorr_ref') # your directory path
         num_files = len(lst)
         time.sleep(2)
