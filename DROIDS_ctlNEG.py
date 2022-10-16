@@ -357,12 +357,12 @@ class Ui_Dialog(object):
         
         
         print("running DROIDS/maxDemon 5.0 parsers")
-        cmd1 = "python3 cpptraj_parser.py"
+        cmd1 = "python3 cpptraj_sampler.py"
         os.system(cmd1)
         
     def run_analyses(self):
         print("running DROIDS/maxDemon 5.0 analyses")
-        cmd2 = "python3 chimerax_plotter.py"
+        cmd2 = "python3 chimerax_analyzer.py"
         os.system(cmd2)
     
     def closeIt(self):
