@@ -206,11 +206,18 @@ def feature_vector():
     # trim uneccessary columns
     #del dfcorr_all_ref[dfcorr_all_ref.columns[0]] # remove first column
     #del dfcorr_all_ref[dfcorr_all_ref.columns[-1]] # remove last column = NaN
-    frames_all_ref = [dfflux_all_ref, dfcorr_all_ref]
-    feature_all_ref = pd.concat(frames_all_ref, axis = 1, join="inner")
+    
+    ### option to combine flux and corr ###
+    #frames_all_ref = [dfflux_all_ref, dfcorr_all_ref]
+    #feature_all_ref = pd.concat(frames_all_ref, axis = 1, join="inner")
+    
+    ### option to include only corr ###
+    feature_all_ref = dfcorr_all_ref
+    
     #print(dfflux_all_ref)
     #print(dfcorr_all_ref)
     #print(feature_all_ref)
+    
     df1 = feature_all_ref
     writePath = "./feature_all_ref/feature_%s_all_ref.txt" % PDB_id_reference
     with open(writePath, 'w') as f1:
@@ -235,8 +242,14 @@ def feature_vector():
     M_transf = pd.DataFrame(M_transf)
     print(M_transf) # as dataframe
     # create reduced feature vector
-    frames_all_ref_reduced = [dfflux_all_ref, M_transf]
-    feature_all_ref_reduced = pd.concat(frames_all_ref_reduced, axis = 1, join="inner")
+    
+    ### option to combine flux and corr ###
+    #frames_all_ref_reduced = [dfflux_all_ref, M_transf]
+    #feature_all_ref_reduced = pd.concat(frames_all_ref_reduced, axis = 1, join="inner")
+        
+    ### option to include only corr ###
+    feature_all_ref_reduced = M_transf
+    
     df2 = feature_all_ref_reduced
     writePath = "./feature_all_ref_reduced/feature_%s_all_ref.txt" % PDB_id_reference
     with open(writePath, 'w') as f2:
@@ -272,8 +285,14 @@ def feature_vector():
         del dfcorr_sub_ref[dfcorr_sub_ref.columns[-1]] # remove last column = NaN
         #print(dfflux_sub_ref)
         #print(dfcorr_sub_ref)
-        frames_sub_ref = [myColumn, dfcorr_sub_ref]
-        feature_sub_ref = pd.concat(frames_sub_ref, axis = 1, join="inner")
+                
+        ### option to combine flux and corr ###
+        #frames_sub_ref = [myColumn, dfcorr_sub_ref]
+        #feature_sub_ref = pd.concat(frames_sub_ref, axis = 1, join="inner")
+        
+        ### option to include only corr ###
+        feature_sub_ref = dfcorr_sub_ref
+        
         #print(dfflux_sub_ref)
         #print(dfcorr_sub_ref)
         #print(feature_sub_ref)
@@ -299,8 +318,14 @@ def feature_vector():
         M_transf = pd.DataFrame(M_transf)
         #print(M_transf) # as dataframe
         # create reduced feature vector
-        frames_sub_ref_reduced = [myColumn, M_transf]
-        feature_sub_ref_reduced = pd.concat(frames_sub_ref_reduced, axis = 1, join="inner")
+        
+        ### option to combine flux and corr ###
+        #frames_sub_ref_reduced = [myColumn, M_transf]
+        #feature_sub_ref_reduced = pd.concat(frames_sub_ref_reduced, axis = 1, join="inner")
+        
+        ### option to include only corr ###
+        feature_sub_ref_reduced = M_transf
+        
         df2 = feature_sub_ref_reduced
         writePath = "./feature_sub_ref_reduced/feature_%s_sub_ref_%s.txt" % (PDB_id_reference, i)
         with open(writePath, 'w') as f2:
@@ -327,8 +352,14 @@ def feature_vector():
     del dfcorr_all_query[dfcorr_all_query.columns[-1]] # remove last column = NaN
     #print(dfflux_all_query)
     #print(dfcorr_all_query)
-    frames_all_query = [dfflux_all_query, dfcorr_all_query]
-    feature_all_query = pd.concat(frames_all_query, axis = 1, join="inner")
+    
+    ### option to combine flux and corr ###
+    #frames_all_query = [dfflux_all_query, dfcorr_all_query]
+    #feature_all_query = pd.concat(frames_all_query, axis = 1, join="inner")
+    
+    ### option to include only corr ###
+    feature_all_query = dfcorr_all_query
+    
     #print(dfflux_all_query)
     #print(dfcorr_all_query)
     #print(feature_all_query)
@@ -354,8 +385,14 @@ def feature_vector():
     M_transf = pd.DataFrame(M_transf)
     #print(M_transf) # as dataframe
     # create reduced feature vector
-    frames_all_query_reduced = [dfflux_all_query, M_transf]
-    feature_all_query_reduced = pd.concat(frames_all_query_reduced, axis = 1, join="inner")
+    
+    ### option to combine flux and corr ###
+    #frames_all_query_reduced = [dfflux_all_query, M_transf]
+    #feature_all_query_reduced = pd.concat(frames_all_query_reduced, axis = 1, join="inner")
+    
+    ### option to include only corr ###
+    feature_all_query_reduced = M_transf
+    
     df2 = feature_all_query_reduced
     writePath = "./feature_all_query_reduced/feature_%s_all_query.txt" % PDB_id_query
     with open(writePath, 'w') as f2:
@@ -391,8 +428,14 @@ def feature_vector():
         del dfcorr_sub_query[dfcorr_sub_query.columns[-1]] # remove last column = NaN
         #print(dfflux_sub_query)
         #print(dfcorr_sub_query)
-        frames_sub_query = [myColumn, dfcorr_sub_query]
-        feature_sub_query = pd.concat(frames_sub_query, axis = 1, join="inner")
+        
+        ### option to combine flux and corr ###
+        #frames_sub_query = [myColumn, dfcorr_sub_query]
+        #feature_sub_query = pd.concat(frames_sub_query, axis = 1, join="inner")
+        
+        ### option to include only corr ###
+        feature_sub_query = dfcorr_sub_query
+        
         #print(dfflux_sub_query)
         #print(dfcorr_sub_query)
         #print(feature_sub_query)
@@ -418,8 +461,14 @@ def feature_vector():
         M_transf = pd.DataFrame(M_transf)
         #print(M_transf) # as dataframe
         # create reduced feature vector
-        frames_sub_query_reduced = [myColumn, M_transf]
-        feature_sub_query_reduced = pd.concat(frames_sub_query_reduced, axis = 1, join="inner")
+        
+        ### option to combineflux and corr ###
+        #frames_sub_query_reduced = [myColumn, M_transf]
+        #feature_sub_query_reduced = pd.concat(frames_sub_query_reduced, axis = 1, join="inner")
+        
+        ### option to include only corr ###
+        feature_sub_query_reduced = M_transf
+        
         df2 = feature_sub_query_reduced
         writePath = "./feature_sub_query_reduced/feature_%s_sub_query_%s.txt" % (PDB_id_query, i)
         with open(writePath, 'w') as f2:
@@ -446,8 +495,14 @@ def feature_vector():
     # trim uneccessary columns
     #del dfcorr_all_ref[dfcorr_all_ref.columns[0]] # remove first column
     #del dfcorr_all_ref[dfcorr_all_ref.columns[-1]] # remove last column = NaN
-    frames_all_ref = [dfflux_all_ref, dfcorr_all_ref]
-    feature_all_ref = pd.concat(frames_all_ref, axis = 1, join="inner")
+    
+    ### option to combine flux and corr ###
+    #frames_all_ref = [dfflux_all_ref, dfcorr_all_ref]
+    #feature_all_ref = pd.concat(frames_all_ref, axis = 1, join="inner")
+    
+    ### option to include only corr ###
+    feature_all_ref = dfcorr_all_ref
+    
     #print(dfflux_all_ref)
     #print(dfcorr_all_ref)
     #print(feature_all_ref)
@@ -475,8 +530,14 @@ def feature_vector():
     M_transf = pd.DataFrame(M_transf)
     print(M_transf) # as dataframe
     # create reduced feature vector
-    frames_all_ref_reduced = [dfflux_all_ref, M_transf]
-    feature_all_ref_reduced = pd.concat(frames_all_ref_reduced, axis = 1, join="inner")
+    
+    ### option to combine flux and corr ###
+    #frames_all_ref_reduced = [dfflux_all_ref, M_transf]
+    #feature_all_ref_reduced = pd.concat(frames_all_ref_reduced, axis = 1, join="inner")
+    
+    ### option to include only corr ###
+    feature_all_ref_reduced = M_transf
+    
     df2 = feature_all_ref_reduced
     writePath = "./feature_all_refCTL_reduced/feature_%s_all_refCTL.txt" % PDB_id_reference
     with open(writePath, 'w') as f2:
@@ -512,8 +573,14 @@ def feature_vector():
         del dfcorr_sub_ref[dfcorr_sub_ref.columns[-1]] # remove last column = NaN
         #print(dfflux_sub_ref)
         #print(dfcorr_sub_ref)
-        frames_sub_ref = [myColumn, dfcorr_sub_ref]
-        feature_sub_ref = pd.concat(frames_sub_ref, axis = 1, join="inner")
+        
+        ### option to combine flux and corr ###
+        #frames_sub_ref = [myColumn, dfcorr_sub_ref]
+        #feature_sub_ref = pd.concat(frames_sub_ref, axis = 1, join="inner")
+        
+        ### option to include only corr ###
+        feature_sub_ref = dfcorr_sub_ref
+                
         #print(dfflux_sub_ref)
         #print(dfcorr_sub_ref)
         #print(feature_sub_ref)
@@ -539,8 +606,14 @@ def feature_vector():
         M_transf = pd.DataFrame(M_transf)
         #print(M_transf) # as dataframe
         # create reduced feature vector
-        frames_sub_ref_reduced = [myColumn, M_transf]
-        feature_sub_ref_reduced = pd.concat(frames_sub_ref_reduced, axis = 1, join="inner")
+        
+        ### option to combine flux and corr ###
+        #frames_sub_ref_reduced = [myColumn, M_transf]
+        #feature_sub_ref_reduced = pd.concat(frames_sub_ref_reduced, axis = 1, join="inner")
+        
+        ### option to include only corr ###
+        feature_sub_ref_reduced = M_transf
+        
         df2 = feature_sub_ref_reduced
         writePath = "./feature_sub_refCTL_reduced/feature_%s_sub_refCTL_%s.txt" % (PDB_id_reference, i)
         with open(writePath, 'w') as f2:
