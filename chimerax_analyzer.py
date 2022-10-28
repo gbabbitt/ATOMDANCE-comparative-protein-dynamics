@@ -193,7 +193,7 @@ def feature_vector():
     #######################################################
     print("creating feature vector for whole MD reference run")
     
-    setSize = int(0.25*length_prot)  # set size of reduced feature vector
+    setSize = int(0.1*length_prot)  # set size of reduced feature vector
     
     influx_all_ref = "fluct_%s_all_reference.txt" % PDB_id_reference 
     incorr_all_ref = "corr_%s_all_reference_matrix.txt" % PDB_id_reference    
