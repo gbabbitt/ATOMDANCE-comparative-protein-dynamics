@@ -192,6 +192,9 @@ def feature_vector():
     ###### feature vector for whole reference MD run ######
     #######################################################
     print("creating feature vector for whole MD reference run")
+    
+    setSize = int(0.25*length_prot)  # set size of reduced feature vector
+    
     influx_all_ref = "fluct_%s_all_reference.txt" % PDB_id_reference 
     incorr_all_ref = "corr_%s_all_reference_matrix.txt" % PDB_id_reference    
     dfflux_all_ref = pd.read_csv(influx_all_ref, sep="\s+")
@@ -233,7 +236,7 @@ def feature_vector():
     M[np.abs(M) < 0.005] = 0 # plug in zero values if below threshold
     print("Sparse Matrix:")
     print(M)
-    svd =  TruncatedSVD(n_components = 5)
+    svd =  TruncatedSVD(n_components = setSize)
     M_transf = svd.fit_transform(M)
     print("Singular values:")
     print(svd.singular_values_)
@@ -309,8 +312,14 @@ def feature_vector():
         M[np.abs(M) < 0.005] = 0 # plug in zero values if below threshold
         #print("Sparse Matrix:")
         #print(M)
-        svd =  TruncatedSVD(n_components = 5)
+        svd =  TruncatedSVD(n_components = setSize)
         M_transf = svd.fit_transform(M)
+        print("singular values")
+        print(svd.singular_values_)
+        print("explained variance ratio")
+        print(svd.explained_variance_ratio_)
+        print("total explained")
+        print(svd.explained_variance_ratio_.sum())
         #print("Singular values:")
         #print(svd.singular_values_)
         #print("Transformed Matrix after reducing to 5 features:")
@@ -376,7 +385,7 @@ def feature_vector():
     M[np.abs(M) < 0.005] = 0 # plug in zero values if below threshold
     #print("Sparse Matrix:")
     #print(M)
-    svd =  TruncatedSVD(n_components = 5)
+    svd =  TruncatedSVD(n_components = setSize)
     M_transf = svd.fit_transform(M)
     #print("Singular values:")
     #print(svd.singular_values_)
@@ -452,8 +461,14 @@ def feature_vector():
         M[np.abs(M) < 0.005] = 0 # plug in zero values if below threshold
         #print("Sparse Matrix:")
         #print(M)
-        svd =  TruncatedSVD(n_components = 5)
+        svd =  TruncatedSVD(n_components = setSize)
         M_transf = svd.fit_transform(M)
+        print("singular values")
+        print(svd.singular_values_)
+        print("explained variance ratio")
+        print(svd.explained_variance_ratio_)
+        print("total explained")
+        print(svd.explained_variance_ratio_.sum())
         #print("Singular values:")
         #print(svd.singular_values_)
         #print("Transformed Matrix after reducing to 5 features:")
@@ -521,7 +536,7 @@ def feature_vector():
     M[np.abs(M) < 0.005] = 0 # plug in zero values if below threshold
     print("Sparse Matrix:")
     print(M)
-    svd =  TruncatedSVD(n_components = 5)
+    svd =  TruncatedSVD(n_components = setSize)
     M_transf = svd.fit_transform(M)
     print("Singular values:")
     print(svd.singular_values_)
@@ -597,8 +612,14 @@ def feature_vector():
         M[np.abs(M) < 0.005] = 0 # plug in zero values if below threshold
         #print("Sparse Matrix:")
         #print(M)
-        svd =  TruncatedSVD(n_components = 5)
+        svd =  TruncatedSVD(n_components = setSize)
         M_transf = svd.fit_transform(M)
+        print("singular values")
+        print(svd.singular_values_)
+        print("explained variance ratio")
+        print(svd.explained_variance_ratio_)
+        print("total explained")
+        print(svd.explained_variance_ratio_.sum())
         #print("Singular values:")
         #print(svd.singular_values_)
         #print("Transformed Matrix after reducing to 5 features:")
