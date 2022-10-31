@@ -193,7 +193,7 @@ def feature_vector():
     #######################################################
     print("creating feature vector for whole MD reference run")
     
-    setSize = int(0.1*length_prot)  # set size of reduced feature vector
+    setSize = int(0.2*length_prot)  # initiate set size of reduced feature vector
     
     influx_all_ref = "fluct_%s_all_reference.txt" % PDB_id_reference 
     incorr_all_ref = "corr_%s_all_reference_matrix.txt" % PDB_id_reference    
@@ -240,7 +240,7 @@ def feature_vector():
     M_transf = svd.fit_transform(M)
     print("Singular values:")
     print(svd.singular_values_)
-    print("Transformed Matrix after reducing to 5 features:")
+    print("Transformed Matrix after reducing:")
     print(M_transf)
     M_transf = pd.DataFrame(M_transf)
     print(M_transf) # as dataframe
@@ -258,7 +258,7 @@ def feature_vector():
     with open(writePath, 'w') as f2:
         dfAsString = df2.to_string(header=False, index=True)
         f2.write(dfAsString)
-    print("feature vector(whole reference MD run) = atom fluct + 5 reduced atom corr features:")
+    print("feature vector(whole reference MD run) = reduced atom corr features:")
     print(feature_all_ref_reduced)  
     
     ##############################################################
@@ -312,14 +312,38 @@ def feature_vector():
         M[np.abs(M) < 0.005] = 0 # plug in zero values if below threshold
         #print("Sparse Matrix:")
         #print(M)
+        ##################################################################################################
+        #### tune size of truncation of SVD to capture 80% of variance explained by site correlations ####
+        ##################################################################################################
+        if (i == 0):
+            ratio = 0.9
+            setSize = int(ratio*length_prot)
+            #print(setSize)
+            svd =  TruncatedSVD(n_components = setSize)
+            M_transf = svd.fit_transform(M)
+            tve = svd.explained_variance_ratio_.sum()
+            while (tve >= 0.8 and setSize >= 5):
+                setSize = int(ratio*length_prot)
+                #print(setSize)
+                svd =  TruncatedSVD(n_components = setSize)
+                M_transf = svd.fit_transform(M)
+                #print(svd.explained_variance_ratio_.sum())
+                tve = svd.explained_variance_ratio_.sum()
+                #print(tve)
+                ratio = ratio-0.02
+            print("determine reduced feature vector size")
+            print(setSize)
+        ##################################################################################################
+        
         svd =  TruncatedSVD(n_components = setSize)
         M_transf = svd.fit_transform(M)
-        print("singular values")
-        print(svd.singular_values_)
-        print("explained variance ratio")
-        print(svd.explained_variance_ratio_)
-        print("total explained")
-        print(svd.explained_variance_ratio_.sum())
+        if (i == 0):
+            print("singular values")
+            print(svd.singular_values_)
+            print("explained variance ratio")
+            print(svd.explained_variance_ratio_)
+            print("total variance explained")
+            print(svd.explained_variance_ratio_.sum())
         #print("Singular values:")
         #print(svd.singular_values_)
         #print("Transformed Matrix after reducing to 5 features:")
@@ -347,6 +371,9 @@ def feature_vector():
     ###### feature vector for whole query MD run ##########
     #######################################################
     print("creating feature vector for whole MD query run")
+    
+    setSize = int(0.2*length_prot)  # initiate set size of reduced feature vector
+    
     influx_all_query = "fluct_%s_all_query.txt" % PDB_id_query 
     incorr_all_query = "corr_%s_all_query_matrix.txt" % PDB_id_query    
     dfflux_all_query = pd.read_csv(influx_all_query, sep="\s+")
@@ -407,7 +434,7 @@ def feature_vector():
     with open(writePath, 'w') as f2:
         dfAsString = df2.to_string(header=False, index=True)
         f2.write(dfAsString)
-    print("feature vector (whole query MD run) = atom fluct + 5 reduced atom corr features:")
+    print("feature vector (whole query MD run) = reduced atom corr features:")
     print(feature_all_query_reduced)
         
     ##############################################################
@@ -461,14 +488,38 @@ def feature_vector():
         M[np.abs(M) < 0.005] = 0 # plug in zero values if below threshold
         #print("Sparse Matrix:")
         #print(M)
+        ##################################################################################################
+        #### tune size of truncation of SVD to capture 80% of variance explained by site correlations ####
+        ##################################################################################################
+        if (i == 0):
+            ratio = 0.9
+            setSize = int(ratio*length_prot)
+            #print(setSize)
+            svd =  TruncatedSVD(n_components = setSize)
+            M_transf = svd.fit_transform(M)
+            tve = svd.explained_variance_ratio_.sum()
+            while (tve >= 0.8 and setSize >= 5):
+                setSize = int(ratio*length_prot)
+                #print(setSize)
+                svd =  TruncatedSVD(n_components = setSize)
+                M_transf = svd.fit_transform(M)
+                #print(svd.explained_variance_ratio_.sum())
+                tve = svd.explained_variance_ratio_.sum()
+                #print(tve)
+                ratio = ratio-0.02
+            print("determine reduced feature vector size")
+            print(setSize)
+        ##################################################################################################
+        
         svd =  TruncatedSVD(n_components = setSize)
         M_transf = svd.fit_transform(M)
-        print("singular values")
-        print(svd.singular_values_)
-        print("explained variance ratio")
-        print(svd.explained_variance_ratio_)
-        print("total explained")
-        print(svd.explained_variance_ratio_.sum())
+        if (i == 0):
+            print("singular values")
+            print(svd.singular_values_)
+            print("explained variance ratio")
+            print(svd.explained_variance_ratio_)
+            print("total variance explained")
+            print(svd.explained_variance_ratio_.sum())
         #print("Singular values:")
         #print(svd.singular_values_)
         #print("Transformed Matrix after reducing to 5 features:")
@@ -492,10 +543,15 @@ def feature_vector():
         #print("feature vector(subsampled reference MD run %s) = atom fluct + 5 reduced atom corr features:" % i)
         #print(feature_sub_ref_reduced) 
     
+        
+    
     ###############################################################
     ###### feature vector for whole reference control MD run ######
     ###############################################################
     print("creating feature vector for whole MD reference control run")
+    
+    setSize = int(0.2*length_prot)  # initiate set size of reduced feature vector
+    
     influx_all_ref = "fluct_%s_all_referenceCTL.txt" % PDB_id_reference 
     incorr_all_ref = "corr_%s_all_referenceCTL_matrix.txt" % PDB_id_reference    
     dfflux_all_ref = pd.read_csv(influx_all_ref, sep="\s+")
@@ -558,7 +614,7 @@ def feature_vector():
     with open(writePath, 'w') as f2:
         dfAsString = df2.to_string(header=False, index=True)
         f2.write(dfAsString)
-    print("feature vector(whole reference MD run) = atom fluct + 5 reduced atom corr features:")
+    print("feature vector(whole reference MD run) = reduced atom corr features:")
     print(feature_all_ref_reduced)  
     
     ##############################################################
@@ -612,14 +668,39 @@ def feature_vector():
         M[np.abs(M) < 0.005] = 0 # plug in zero values if below threshold
         #print("Sparse Matrix:")
         #print(M)
+        ##################################################################################################
+        #### tune size of truncation of SVD to capture 80% of variance explained by site correlations ####
+        ##################################################################################################
+        if (i == 0):
+            ratio = 0.9
+            setSize = int(ratio*length_prot)
+            #print(setSize)
+            svd =  TruncatedSVD(n_components = setSize)
+            M_transf = svd.fit_transform(M)
+            tve = svd.explained_variance_ratio_.sum()
+            while (tve >= 0.8 and setSize >= 5):
+                setSize = int(ratio*length_prot)
+                #print(setSize)
+                svd =  TruncatedSVD(n_components = setSize)
+                M_transf = svd.fit_transform(M)
+                #print(svd.explained_variance_ratio_.sum())
+                tve = svd.explained_variance_ratio_.sum()
+                #print(tve)
+                ratio = ratio-0.02
+            print("determine reduced feature vector size")
+            print(setSize)
+        ##################################################################################################
+        
         svd =  TruncatedSVD(n_components = setSize)
         M_transf = svd.fit_transform(M)
-        print("singular values")
-        print(svd.singular_values_)
-        print("explained variance ratio")
-        print(svd.explained_variance_ratio_)
-        print("total explained")
-        print(svd.explained_variance_ratio_.sum())
+        if (i == 0):
+            print("singular values")
+            print(svd.singular_values_)
+            print("explained variance ratio")
+            print(svd.explained_variance_ratio_)
+            print("total variance explained")
+            print(svd.explained_variance_ratio_.sum())
+        #print(svd.explained_variance_ratio_.sum())
         #print("Singular values:")
         #print(svd.singular_values_)
         #print("Transformed Matrix after reducing to 5 features:")
