@@ -30,9 +30,11 @@ class Ui_Dialog(object):
         self.pushButton = QtWidgets.QPushButton(Dialog)
         self.pushButton.setGeometry(QtCore.QRect(300, 170, 141, 41))
         self.pushButton.setObjectName("pushButton")
+        self.pushButton.clicked.connect(self.run_sampler)
         self.pushButton_2 = QtWidgets.QPushButton(Dialog)
         self.pushButton_2.setGeometry(QtCore.QRect(300, 220, 141, 41))
         self.pushButton_2.setObjectName("pushButton_2")
+        self.pushButton_2.clicked.connect(self.closeIt)
 
         self.retranslateUi(Dialog)
         QtCore.QMetaObject.connectSlotsByName(Dialog)
@@ -55,8 +57,40 @@ class Ui_Dialog(object):
         self.pushButton_2.setText(_translate("Dialog", "close window"))
 
 
+    def run_sampler(self):
+        print("writing control file")
+        ortho_list = self.textEdit.toPlainText()
+        print(ortho_list)
+        ortho_list = str.split(ortho_list, "\n")
+        print(ortho_list)
+        ortho_pdb = ortho_list[0]
+        ortho_id = ortho_pdb[:-4]
+        ortho_top = ortho_list[1]
+        ortho_traj = ortho_list[2]
+        
+                
+        # write file
+        f = open("./maxDemon.ctl", "w") 
+        f.write("orthoID,%s,#pdb id for ortholog structure\n" % ortho_id)
+        f.write("orthoPDB,%s,#pdb file for ortholog structure\n" % ortho_pdb)
+        f.write("orthoTOP,%s,#topology for ortholog structure\n" % ortho_top)
+        f.write("orthoTRAJ,%s,#trajectory for ortholog structure\n" % ortho_traj)
+        f.close()
+        
+        
+        print("running DROIDS/maxDemon 5.0 analyses")
+        cmd1 = "python3 cpptraj_ortholog_sampler.py"
+        os.system(cmd1)
+    
+    def closeIt(self):
+        print("maxDemon sampler program closed")
+        sys.exit(app.exec_())
+
+
+
 if __name__ == "__main__":
     import sys
+    import os
     app = QtWidgets.QApplication(sys.argv)
     Dialog = QtWidgets.QDialog()
     ui = Ui_Dialog()
