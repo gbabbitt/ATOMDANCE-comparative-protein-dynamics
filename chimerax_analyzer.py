@@ -837,8 +837,8 @@ def variant_dynamics():
 ###############################################################
 
 def main():
-    #plot_rmsd()
-    #feature_vector()  
+    plot_rmsd()
+    feature_vector()  
     #view_query()
     #view_reference()
     if(div_anal == "yes"):

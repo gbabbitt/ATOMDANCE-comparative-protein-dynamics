@@ -53,8 +53,8 @@ class Ui_Dialog(object):
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:12pt;\">1cdw_ortholog.nc</span></p>\n"
 "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br /></p>\n"
 "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br /></p></body></html>"))
-        self.pushButton.setText(_translate("Dialog", "run analysis"))
-        self.pushButton_2.setText(_translate("Dialog", "close window"))
+        self.pushButton.setText(_translate("Dialog", "run sampling"))
+        self.pushButton_2.setText(_translate("Dialog", "close afterwards"))
 
 
     def run_sampler(self):
@@ -78,10 +78,11 @@ class Ui_Dialog(object):
         f.close()
         
         
-        print("running DROIDS/maxDemon 5.0 analyses")
+        print("running DROIDS/maxDemon 5.0 ortholog trajectory sampler")
         cmd1 = "python3 cpptraj_ortholog_sampler.py"
         os.system(cmd1)
-    
+        print("close user interface when completed")
+        
     def closeIt(self):
         print("maxDemon sampler program closed")
         sys.exit(app.exec_())
