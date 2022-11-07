@@ -20,6 +20,8 @@ from scipy.stats import ks_2samp
 from sklearn.metrics.cluster import normalized_mutual_info_score
 from sklearn.decomposition import TruncatedSVD
 from sklearn import metrics
+from sklearn.gaussian_process import GaussianProcessClassifier
+from sklearn.gaussian_process.kernels import RBF
 import re
 # for ggplot
 import pandas as pd
@@ -544,20 +546,224 @@ def feature_vector_ortho():
 def conserved_dynamics():
     print("identifying conserved dynamics")
  
- 
+    avg_learn_profile_neutral = []
+    PVAL_output = []
+    learn_profile_obs = []
+    learn_profile_neutral = []
     
-    # loop over sites
-        # loop or vectorize over subsamples
-        # train on classifier on ref vs query and deploy on ortholog
-        # calculate obs learning performance frequency and push to list
-        # train on classifier on ref vs ref ctl and deploy on ortholog
+    for i in range(length_prot-1): # loop over sites
+        # initiatize arrays
+        feature_reference = []
+        feature_referenceCTL = []
+        feature_query = []
+        feature_ortho = []
+        feature_orthoCTL = []
+        
+        for j in range(subsamples): # loop over subsamples
+            samp = j+1
+            #print("collecting subsample %s" % samp)
+            ######## reference protein ###########
+            infeature_reference = "./feature_sub_ref_reduced/feature_%s_sub_ref_%s.txt" % (PDB_id_reference, j)
+            df_feature_reference = pd.read_csv(infeature_reference, sep="\s+")
+            #print(df_feature_reference)
+            del df_feature_reference[df_feature_reference.columns[0]] # remove first column
+            #print(df_feature_reference)
+            sample_feature_reference = df_feature_reference.iloc[i]
+            sample_feature_reference = np.array(sample_feature_reference)
+            #print(sample_feature_reference)
+            feature_reference.append(sample_feature_reference)
+            ######## reference control protein #####
+            infeature_referenceCTL = "./feature_sub_refCTL_reduced/feature_%s_sub_refCTL_%s.txt" % (PDB_id_reference, j)
+            df_feature_referenceCTL = pd.read_csv(infeature_referenceCTL, sep="\s+")
+            #print(df_feature_referenceCTL)
+            del df_feature_referenceCTL[df_feature_referenceCTL.columns[0]] # remove first column
+            #print(df_feature_referenceCTL)
+            sample_feature_referenceCTL = df_feature_referenceCTL.iloc[i]
+            sample_feature_referenceCTL = np.array(sample_feature_referenceCTL)
+            #print(sample_feature_referenceCTL)
+            feature_referenceCTL.append(sample_feature_referenceCTL)
+            ######### query protein #########
+            infeature_query = "./feature_sub_query_reduced/feature_%s_sub_query_%s.txt" % (PDB_id_query, j)
+            df_feature_query = pd.read_csv(infeature_query, sep="\s+")
+            #print(df_feature_query)
+            del df_feature_query[df_feature_query.columns[0]] # remove first column
+            #print(df_feature_query)
+            sample_feature_query = df_feature_query.iloc[i]
+            sample_feature_query= np.array(sample_feature_query)
+            #print(sample_feature_query)
+            feature_query.append(sample_feature_query)
+            
+            ######## ortholog protein ###########
+            infeature_ortho = "./feature_sub_ortho_reduced/feature_%s_sub_ortho_%s.txt" % (PDB_id_ortho, j)
+            df_feature_ortho = pd.read_csv(infeature_ortho, sep="\s+")
+            #print(df_feature_ortho)
+            del df_feature_ortho[df_feature_ortho.columns[0]] # remove first column
+            #print(df_feature_ortho)
+            sample_feature_ortho = df_feature_ortho.iloc[i]
+            sample_feature_ortho = np.array(sample_feature_ortho)
+            #print(sample_feature_ortho)
+            feature_ortho.append(sample_feature_ortho)
+            ######## ortholog control protein #####
+            infeature_orthoCTL = "./feature_sub_orthoCTL_reduced/feature_%s_sub_orthoCTL_%s.txt" % (PDB_id_ortho, j)
+            df_feature_orthoCTL = pd.read_csv(infeature_orthoCTL, sep="\s+")
+            #print(df_feature_referenceCTL)
+            del df_feature_orthoCTL[df_feature_orthoCTL.columns[0]] # remove first column
+            #print(df_feature_orthoCTL)
+            sample_feature_orthoCTL = df_feature_orthoCTL.iloc[i]
+            sample_feature_orthoCTL = np.array(sample_feature_orthoCTL)
+            #print(sample_feature_orthoCTL)
+            feature_orthoCTL.append(sample_feature_orthoCTL)
+    
+        print("calculating and bootstrapping conserved dynamics identification for site %s" % i)     
+        #print(feature_reference)
+        #print(feature_query)
+        #print(feature_ortho)
+        df_feature_ref = pd.DataFrame(feature_reference)
+        df_feature_refCTL = pd.DataFrame(feature_referenceCTL)
+        df_feature_query = pd.DataFrame(feature_query)
+        df_feature_ortho = pd.DataFrame(feature_ortho)
+        df_feature_orthoCTL = pd.DataFrame(feature_orthoCTL)
+        #print(df_feature_ref)
+        #print(df_feature_query)
+        #print(df_feature_ortho)
+        
+        # create conbined matrix query and ref
+        frames = [df_feature_reference, df_feature_query]
+        df_feature_train = pd.concat(frames, axis=1, join="inner", ignore_index=True, sort=False)
+        df_feature_train = df_feature_train.transpose()
+        #print(df_feature_train)
+        
+        # create conbined matrix ref and ref control
+        frames = [df_feature_reference, df_feature_refCTL]
+        df_feature_train_neutral = pd.concat(frames, axis=1, join="inner", ignore_index=True, sort=False)
+        df_feature_train_neutral = df_feature_train_neutral.transpose()
+        #print(df_feature_train_neutral)
+                
+        # create matching class vector
+        n_rows = df_feature_train.shape[0]
+        classlen = n_rows/2
+        classlen = int(classlen)
+        #print(classlen)
+        class0 = np.zeros((1,classlen), dtype=np.int)
+        #print(class0)
+        class1 = np.ones((1,classlen), dtype=np.int)
+        #print(class1)
+        class0 = pd.DataFrame(class0)
+        class1 = pd.DataFrame(class1)
+        frames = [class0, class1]
+        df_class_train = pd.concat(frames, axis=1, join="inner", ignore_index=True, sort=False)
+        df_class_train = df_class_train.transpose()
+        #print(df_class_train)
+        class_array = np.ravel(df_class_train) # returns flattened array
+        #print(class_array)
+        
+        # train on classifier on ref vs query and deploy on ortholog across each subsample
+        X_obs = df_feature_train
+        X_exp = df_feature_train_neutral
+        y_train = class_array
+        Z = df_feature_ortho
+        Z = Z.transpose()
+        y_test = np.ravel(class1)
+        #print(X_obs)
+        #print(Z)
+        #print(y_test)
+        kernel = 1.0 * RBF(1.0)
+        # observed model
+        gpc = GaussianProcessClassifier(kernel=kernel,random_state=0).fit(X_obs, y_train)
+        training_accuracy = gpc.score(X_obs, y_train)
+        #print("training accuracy")
+        #print(training_accuracy)
+        # now deploy
+        myPred = gpc.predict(Z)
+        #print(myPred)
+        myProb = gpc.predict_proba(Z)
+        #print(myProb)
+        # calculate obs learning performance frequency over subsamples and push to list
+        testing_accuracy = gpc.score(Z, y_test)
+        #print("testing accuracy")
+        #print(testing_accuracy)
+        learn_profile_obs.append(testing_accuracy)
+        
+        # null model (pivot)
+        # train on classifier on ref vs ref ctl and deploy on ortholog ctl
+        gpc_neutral = GaussianProcessClassifier(kernel=kernel,random_state=0).fit(X_exp, y_train)
+        training_accuracy_neutral = gpc_neutral.score(X_exp, y_train)
+        #print("training accuracy (neutral)")
+        #print(training_accuracy_neutral)
+        # now deploy
+        myPred_neutral = gpc_neutral.predict(Z)
+        #print(myPred_neutral)
+        myProb_neutral = gpc_neutral.predict_proba(Z)
+        #print(myProb_neutral)
         # calculate null learning performance frequency and push to list
-        # bootstrap null learning performance and count for empical p value )
+        testing_accuracy_neutral = gpc_neutral.score(Z, y_test)
+        #print("testing accuracy (neutral)")
+        #print(testing_accuracy_neutral)
+        learn_profile_neutral.append(testing_accuracy_neutral)
+        
+        # bootstrap null learning performance and count for empirical p value )
+        ##### BOOTSTRAP TEST FOR CONSERVED DYNAMICS #########
+        cntGREATER = 1
+        cntLESSER = 1
+        neutralCONs = []
+        for t in range(500):
+            # bootstrap1 neutral predictions
+            #print(myPred_neutral)
+            n_learn = len(myPred_neutral)
+            #print(n_learn)
+            myPred_neutral = pd.DataFrame(myPred_neutral)
+            myPred_neutral_sample = myPred_neutral.sample(n_learn, replace=True)
+            #print (myPred_neutral_sample)
+            sum_learn = myPred_neutral_sample.sum()
+            #print(sum_learn)
+            testing_accuracy_neutral_sample = sum_learn/n_learn
+            testing_accuracy_neutral_sample = testing_accuracy_neutral_sample[0]
+            #print("neutral LEARN %s" % t)
+            #print(testing_accuracy)
+            #print(testing_accuracy_neutral_sample)
+            neutralCONs.append(testing_accuracy_neutral_sample)
+            # empirical p-value  (freq neutral MMD > alternative MMD)
+            if(testing_accuracy > testing_accuracy_neutral_sample):
+                cntGREATER = cntGREATER+1
+            if(testing_accuracy <= testing_accuracy_neutral_sample):
+                cntLESSER = cntLESSER+1
+        # avg neutral MMD
+        mean_neutralCON = np.mean(neutralCONs, axis = None)
+        #print("avg neutral CON")
+        #print(mean_neutralCON)
+        avg_learn_profile_neutral.append(mean_neutralCON)
+        # empiriacl p value
+        emp_P = cntGREATER/(cntGREATER+cntLESSER)
+        #print("empirical P value")
+        #print(emp_P)
+        cutoff = 0.99
+        if(emp_P > cutoff):
+            p_label = "sig"
+        if(emp_P <= cutoff):
+            p_label = "ns"
+        PVAL_output.append(p_label) # build MMD P VALUE list for each site
+    
         # calculate empirical p value
         
     # plot obs and null learning performance and null bootstrap CI    
-        
-        
+    learn_profile_obs = pd.DataFrame(learn_profile_obs)
+    learn_profile_neutral = pd.DataFrame(learn_profile_neutral)
+    avg_learn_profile_neutral = pd.DataFrame(avg_learn_profile_neutral)
+    print("learning profile (obs)")
+    print(learn_profile_obs)
+    print("learning profile (neutral)")
+    print(learn_profile_neutral) 
+    print("avg bootstrap learning profile (neutral)")
+    print(avg_learn_profile_neutral)
+    # report p value output array
+    PVAL_output = pd.DataFrame(PVAL_output)
+    print("p values")
+    print(PVAL_output)    
+    
+    # ggplot conserved dynamics
+ 
+ 
+ 
         
 ###############################################################
 ###############################################################
