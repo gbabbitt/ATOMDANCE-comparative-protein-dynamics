@@ -644,9 +644,9 @@ def conserved_dynamics():
         classlen = n_rows/2
         classlen = int(classlen)
         #print(classlen)
-        class0 = np.zeros((1,classlen), dtype=np.int)
+        class0 = np.zeros((1,classlen), dtype=int)
         #print(class0)
-        class1 = np.ones((1,classlen), dtype=np.int)
+        class1 = np.ones((1,classlen), dtype=int)
         #print(class1)
         class0 = pd.DataFrame(class0)
         class1 = pd.DataFrame(class1)
@@ -760,7 +760,83 @@ def conserved_dynamics():
     print("p values")
     print(PVAL_output)    
     
-    # ggplot conserved dynamics
+    CONS_output = learn_profile_obs
+    
+    # index position on protein
+    myPOS = [i for i in range(1,length_prot+1)]
+    myPOS = pd.DataFrame(myPOS)
+    #print(myPOS)
+    inres_ref = "./resinfo_ref/cpptraj_resinfo_%s.txt" % PDB_id_reference
+    dfres_ref = pd.read_csv(inres_ref, sep="\t", header=None)
+    #print(dfres_ref)
+    del dfres_ref[dfres_ref.columns[0]] # remove first column
+    #print(dfres_ref)
+    myRES = dfres_ref
+    # rename/add header to columns
+    myFrames = (myPOS, myRES, CONS_output, PVAL_output)
+    myCONSindex = pd.concat(myFrames, axis = 1, join="inner")
+    myCONSindex = myCONSindex.set_axis(['pos', 'res', 'CONS', 'pval'], axis=1, inplace=False)
+    print(myCONSindex)
+    # write to output file
+    if not os.path.exists('conservedDynamics_%s' % PDB_id_reference):
+        os.mkdir('conservedDynamics_%s' % PDB_id_reference)
+    df_out = myCONSindex
+    writePath = "./conservedDynamics_%s/conservedDynamics.txt" % PDB_id_reference
+    with open(writePath, 'w') as f_out:
+        dfAsString = df_out.to_string(header=True, index=False)
+        f_out.write(dfAsString)
+        f_out.close
+    # make MMD plots
+    myplot13 = (ggplot(myCONSindex) + aes(x='pos', y='CONS', color='pval', fill='pval') + geom_bar(stat='identity') + labs(title='site-wise conserved dynamics between orthologs', x='amino acid site', y='observed learning profile') + theme(panel_background=element_rect(fill='black', alpha=.6)))
+    myplot14 = (ggplot(myCONSindex) + aes(x='pos', y='CONS', color='pval', fill='pval') + geom_bar(stat='identity') + labs(title='site-wise conserved dynamics between orthologs', x='amino acid site', y='observed learning profile') + theme(panel_background=element_rect(fill='black', alpha=.1)))
+    myplot15 = (ggplot(myCONSindex) + aes(x='pos', y='CONS', color='res', fill='res') + geom_bar(stat='identity') + labs(title='site-wise conserved dynamics between orthologs', x='amino acid site', y='observed learning profile') + theme(panel_background=element_rect(fill='black', alpha=.6)))
+    myplot16 = (ggplot(myCONSindex) + aes(x='pos', y='CONS', color='res', fill='res') + geom_bar(stat='identity') + labs(title='site-wise conserved dynamics between orthologs', x='amino acid site', y='observed learning profile') + theme(panel_background=element_rect(fill='black', alpha=.1)))
+    myplot13.save("conservedDynamics_%s/CONS_dark_sig.png" % PDB_id_reference, width=10, height=5, dpi=300)
+    myplot14.save("conservedDynamics_%s/CONS_light_sig.png" % PDB_id_reference, width=10, height=5, dpi=300)
+    myplot15.save("conservedDynamics_%s/CONS_dark_res.png" % PDB_id_reference, width=10, height=5, dpi=300)
+    myplot16.save("conservedDynamics_%s/CONS_light_res.png" % PDB_id_reference, width=10, height=5, dpi=300)
+    if(graph_scheme == "light"):
+        print(myplot14)
+        print(myplot16)
+    if(graph_scheme == "dark"):
+        print(myplot13)
+        print(myplot15)
+    
+    # create control, reference PDB and attribute file for chimerax
+    os.popen('cp %s.pdb ./ChimeraXvis/query.pdb' % PDB_id_query) # linix
+    #os.popen('copy %sREDUCED.pdb ./ChimeraXvis/reference.pdb' % PDB_id_reference) # Windows
+    f5 = open("ChimeraXvis_CONSsig.ctl", "w")
+    f6= open("./ChimeraXvis/attributeCONSsig.dat", "w")
+    # ctl for sig KL map
+    f5.write("model\t#1\n")
+    f5.write("structure\tChimeraXvis/query.pdb\n")
+    f5.write("structureADD	ChimeraXvis/reference.pdb\n")
+    f5.write("attr_file\tChimeraXvis/attributeCONSsig.dat\n")
+    f5.write("length\t%s\n" % length_prot)
+    f5.write("attr\tCONSsig\n")
+    f5.write("palette\tGreys-5\n")
+    f5.write("lighting\tsimple\n")
+    f5.write("transparency\t50\n")
+    f5.write("background\tgray\n")
+    f6.write("recipient: residues\n")
+    f6.write("attribute: CONSsig\n")
+    f6.write("\n")
+    #print(myKLneg)
+    for x in range(length_prot-1):
+        sitepos = x+1
+        #CONSpos = CONS_output.iat[x,0]
+        CONSyn = PVAL_output.iat[x,0]
+        #print(CONSyn)
+        #print((CONSpos))
+        if(CONSyn == "sig"):
+            CONSpos = CONS_output.iat[x,0]
+        if(CONSyn == "ns"):
+            CONSpos = 0.0
+        #print(CONSpos)
+        f6.write("\t:%s\t%s\n" % (sitepos, CONSpos))
+    
+    
+ 
  
  
  

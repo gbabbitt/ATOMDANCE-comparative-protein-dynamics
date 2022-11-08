@@ -799,9 +799,15 @@ def map_KLsig():
     os.system(cmd)
 
 def map_MMDsig():
-    # map KL divergence in chimerax
+    # map MMD in chimerax
     print("mapping significant MMD to reference protein %s" % PDB_id_reference)
     cmd = "%sChimeraX color_by_attr_chimerax_MMDsig.py" % chimerax_path
+    os.system(cmd)
+
+def map_CONSsig():
+    # map conserved dynamics in chimerax
+    print("mapping significant CONSERVED DYNAMICS to reference protein %s" % PDB_id_reference)
+    cmd = "%sChimeraX color_by_attr_chimerax_CONSsig.py" % chimerax_path
     os.system(cmd)
 
 
@@ -852,6 +858,7 @@ def main():
         
     if(cons_anal == "yes"):
         conserved_dynamics()
+        map_CONSsig()
     if(coord_anal == "yes"):
         coordinated_dynamics()
     if(var_anal == "yes"):
