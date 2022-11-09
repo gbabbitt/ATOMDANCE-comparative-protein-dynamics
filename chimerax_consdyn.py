@@ -126,9 +126,9 @@ for x in range(len(infile_lines)):
     if(header == "coordination"):
         coord_anal = value
         print("run coordinated dynamics is",coord_anal)
-    if(header == "variants"):
-        var_anal = value
-        print("run variant dynamics is",var_anal)
+    #if(header == "variants"):
+    #    var_anal = value
+    #    print("run variant dynamics is",var_anal)
 ###### variable assignments ######
 PDB_id_query = ""+query_id+""
 PDB_id_reference = ""+ref_id+""
@@ -154,7 +154,7 @@ div_anal = ""+div_anal+""
 disc_anal = ""+disc_anal+""
 cons_anal = ""+cons_anal+""
 coord_anal = ""+coord_anal+""
-var_anal = ""+var_anal+""
+#var_anal = ""+var_anal+""
 
 #def conserved_dynamics_sampling():
 #    print("identifying conserved dynamics")

@@ -101,9 +101,9 @@ for x in range(len(infile_lines)):
     if(header == "coordination"):
         coord_anal = value
         print("run coordinated dynamics is",coord_anal)
-    if(header == "variants"):
-        var_anal = value
-        print("run variant dynamics is",var_anal)
+    #if(header == "variants"):
+    #    var_anal = value
+    #    print("run variant dynamics is",var_anal)
 ###### variable assignments ######
 PDB_id_query = ""+query_id+""
 PDB_id_reference = ""+ref_id+""
@@ -125,13 +125,28 @@ div_anal = ""+div_anal+""
 disc_anal = ""+disc_anal+""
 cons_anal = ""+cons_anal+""
 coord_anal = ""+coord_anal+""
-var_anal = ""+var_anal+""
+#var_anal = ""+var_anal+""
 ###############################################################
 def coordinated_dynamics():
     print("identifying coordinated dynamics")
     myMI = normalized_mutual_info_score([0, 0, 1, 1, 1], [0, 0, 1, 1, 0])
     print(myMI)
-  
+    
+    # loop over sites i
+        # loop over sites j
+            # loop or vectorize over subsamples
+            # train on classifier on subset ref vs query and deploy on remaining sample
+            # calculate MI for i vs j and push to list
+            # train on classifier on subset ref vs ref ctl and deploy on remaining sample
+            # calculate null MI i and j 
+            # count obs MI > null MI
+        # calculate avg MI over subsamples
+        # calculate emp p value
+        # push avg MI to list of lists (i.e. matrix) if pvalue significant
+        
+    # plot MI matrix   
+     
+    
 ###############################################################
 ###############################################################
 

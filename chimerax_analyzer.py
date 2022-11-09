@@ -101,9 +101,9 @@ for x in range(len(infile_lines)):
     if(header == "coordination"):
         coord_anal = value
         print("run coordinated dynamics is",coord_anal)
-    if(header == "variants"):
-        var_anal = value
-        print("run variant dynamics is",var_anal)
+    #if(header == "variants"):
+    #    var_anal = value
+    #    print("run variant dynamics is",var_anal)
 ###### variable assignments ######
 PDB_id_query = ""+query_id+""
 PDB_id_reference = ""+ref_id+""
@@ -125,7 +125,7 @@ div_anal = ""+div_anal+""
 disc_anal = ""+disc_anal+""
 cons_anal = ""+cons_anal+""
 coord_anal = ""+coord_anal+""
-var_anal = ""+var_anal+""
+#var_anal = ""+var_anal+""
 
 # create folder for ChimeraX visualization files
 if not os.path.exists('ChimeraXvis'):
@@ -835,10 +835,10 @@ def coordinated_dynamics():
     cmd4 = "python3 chimerax_coordyn.py"
     os.system(cmd4)
 ##################################################################################
-def variant_dynamics():
-    print("running DROIDS/maxDemon 5.0 variant dynamics analyses")
-    cmd5 = "python3 chimerax_vardyn.py"
-    os.system(cmd5)
+#def variant_dynamics():
+#    print("running DROIDS/maxDemon 5.0 variant dynamics analyses")
+#    cmd5 = "python3 chimerax_vardyn.py"
+#    os.system(cmd5)
 ###############################################################
 ###############################################################
 
@@ -861,8 +861,8 @@ def main():
         #map_CONSsig()
     if(coord_anal == "yes"):
         coordinated_dynamics()
-    if(var_anal == "yes"):
-        variant_dynamics()
+    #if(var_anal == "yes"):
+    #    variant_dynamics()
     print("comparative analyses of molecular dynamics is completed")
     
     
