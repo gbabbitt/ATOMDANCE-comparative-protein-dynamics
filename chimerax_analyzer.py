@@ -804,11 +804,11 @@ def map_MMDsig():
     cmd = "%sChimeraX color_by_attr_chimerax_MMDsig.py" % chimerax_path
     os.system(cmd)
 
-def map_CONSsig():
-    # map conserved dynamics in chimerax
-    print("mapping significant CONSERVED DYNAMICS to reference protein %s" % PDB_id_reference)
-    cmd = "%sChimeraX color_by_attr_chimerax_CONSsig.py" % chimerax_path
-    os.system(cmd)
+#def map_CONSsig():
+#    # map conserved dynamics in chimerax
+#    print("mapping significant CONSERVED DYNAMICS to reference protein %s" % PDB_id_reference)
+#    cmd = "%sChimeraX color_by_attr_chimerax_CONSsig.py" % chimerax_path
+#    os.system(cmd)
 
 
 def view_KL():    
@@ -827,7 +827,7 @@ def compare_dynamics_MMD():
 #################################################################################   
 def conserved_dynamics():
     print("running DROIDS/maxDemon 5.0 conserved dynamics analyses")
-    cmd3 = "python3 chimerax_consdyn.py"
+    cmd3 = "python3 maxDemon1.py"
     os.system(cmd3)
 ##################################################################################    
 def coordinated_dynamics():
@@ -858,7 +858,7 @@ def main():
         
     if(cons_anal == "yes"):
         conserved_dynamics()
-        map_CONSsig()
+        #map_CONSsig()
     if(coord_anal == "yes"):
         coordinated_dynamics()
     if(var_anal == "yes"):

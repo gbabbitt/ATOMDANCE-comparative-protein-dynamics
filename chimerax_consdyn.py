@@ -156,32 +156,24 @@ cons_anal = ""+cons_anal+""
 coord_anal = ""+coord_anal+""
 var_anal = ""+var_anal+""
 
-def conserved_dynamics_sampling():
-    print("identifying conserved dynamics")
-    # cpptraj subsampler on ortholog files
-    cmd = "python3 maxDemon1.py"
-    os.system(cmd)
+#def conserved_dynamics_sampling():
+#    print("identifying conserved dynamics")
+#    # cpptraj subsampler on ortholog files
+#    cmd = "python3 maxDemon1.py"
+#    os.system(cmd)
         
 # build feature vector for ortholog subsamples
 def feature_vector_ortho():
     print("creating feature vector files for machine learning")
     if not os.path.exists('feature_all_ortho'):
         os.makedirs('feature_all_ortho')  
-    if not os.path.exists('feature_all_orthoCTL'):
-        os.makedirs('feature_all_orthoCTL')    
     if not os.path.exists('feature_sub_ortho'):
         os.makedirs('feature_sub_ortho')  
-    if not os.path.exists('feature_sub_orthoCTL'):
-        os.makedirs('feature_sub_orthoCTL')    
     if not os.path.exists('feature_all_ortho_reduced'):
         os.makedirs('feature_all_ortho_reduced')  
-    if not os.path.exists('feature_all_orthoCTL_reduced'):
-        os.makedirs('feature_all_orthoCTL_reduced')    
     if not os.path.exists('feature_sub_ortho_reduced'):
         os.makedirs('feature_sub_ortho_reduced')  
-    if not os.path.exists('feature_sub_orthoCTL_reduced'):
-        os.makedirs('feature_sub_orthoCTL_reduced')    
-    
+        
     #######################################################
     ###### feature vector for whole ortholog MD run #######
     #######################################################
@@ -357,193 +349,8 @@ def feature_vector_ortho():
             f2.write(dfAsString)
         #print("feature vector(subsampled reference MD run %s) = atom fluct + 5 reduced atom corr features:" % i)
         #print(feature_sub_ref_reduced) 
-    
-        
-    
-    ###############################################################
-    ###### feature vector for whole ortholog control MD run ######
-    ###############################################################
-    print("creating feature vector for whole MD ortholog control run")
-    
-    setSize = int(0.2*length_prot)  # initiate set size of reduced feature vector
-    
-    influx_all_ref = "fluct_%s_all_orthoCTL.txt" % PDB_id_ortho 
-    incorr_all_ref = "corr_%s_all_orthoCTL_matrix.txt" % PDB_id_ortho    
-    dfflux_all_ref = pd.read_csv(influx_all_ref, sep="\s+")
-    dfcorr_all_ref = pd.read_csv(incorr_all_ref, sep="\s+", header=None)
-    #print(dfflux_all_ref)
-    #print(dfcorr_all_ref)
-    del dfflux_all_ref[dfflux_all_ref.columns[0]] # remove first column
-    # normalize atom fluctuations (minmax method)
-    column = 'AtomicFlx'
-    dfflux_all_ref[column] = (dfflux_all_ref[column] - dfflux_all_ref[column].min()) / (dfflux_all_ref[column].max() - dfflux_all_ref[column].min())
-    #dfflux_all_ref[column] = dfflux_all_ref[column]  # option skip normalization
-    # trim uneccessary columns
-    #del dfcorr_all_ref[dfcorr_all_ref.columns[0]] # remove first column
-    #del dfcorr_all_ref[dfcorr_all_ref.columns[-1]] # remove last column = NaN
-    
-    ### option to combine flux and corr ###
-    #frames_all_ref = [dfflux_all_ref, dfcorr_all_ref]
-    #feature_all_ref = pd.concat(frames_all_ref, axis = 1, join="inner")
-    
-    ### option to include only corr ###
-    feature_all_ref = dfcorr_all_ref
-    
-    #print(dfflux_all_ref)
-    #print(dfcorr_all_ref)
-    #print(feature_all_ref)
-    df1 = feature_all_ref
-    writePath = "./feature_all_orthoCTL/feature_%s_all_orthoCTL.txt" % PDB_id_ortho
-    with open(writePath, 'w') as f1:
-        dfAsString = df1.to_string(header=False, index=True)
-        f1.write(dfAsString)
-    # create reduced atom correlation matrix (from sparse matrix)
-    M = pd.DataFrame(dfcorr_all_ref)
-    print("Original Matrix:")
-    print(M)
-    #del M[M[0]]
-    #print(M)
-    # create sparse matrix
-    M[np.abs(M) < 0.005] = 0 # plug in zero values if below threshold
-    print("Sparse Matrix:")
-    print(M)
-    svd =  TruncatedSVD(n_components = setSize)
-    M_transf = svd.fit_transform(M)
-    print("Singular values:")
-    print(svd.singular_values_)
-    print("Transformed Matrix after reducing features:")
-    print(M_transf)
-    M_transf = pd.DataFrame(M_transf)
-    print(M_transf) # as dataframe
-    # create reduced feature vector
-    
-    ### option to combine flux and corr ###
-    #frames_all_ref_reduced = [dfflux_all_ref, M_transf]
-    #feature_all_ref_reduced = pd.concat(frames_all_ref_reduced, axis = 1, join="inner")
-    
-    ### option to include only corr ###
-    feature_all_ref_reduced = M_transf
-    
-    df2 = feature_all_ref_reduced
-    writePath = "./feature_all_orthoCTL_reduced/feature_%s_all_orthoCTL.txt" % PDB_id_ortho
-    with open(writePath, 'w') as f2:
-        dfAsString = df2.to_string(header=False, index=True)
-        f2.write(dfAsString)
-    print("feature vector(whole ortholog MD run) = reduced atom corr features:")
-    print(feature_all_ref_reduced)  
-    
-    ##############################################################
-    ###### feature vectors for subsampled reference MD runs ######
-    ##############################################################
-    
-    for i in range(subsamples):
-        print("creating reduced feature vector for subsample %s MD ortholog control run" % i)
-        influx_sub_ref = "./atomflux_orthoCTL/fluct_%s_sub_orthoCTL.txt" % PDB_id_ortho 
-        incorr_sub_ref = "./atomcorr_orthoCTL_matrix/corr_%s_sub_orthoCTL_matrix_%s.txt" % (PDB_id_ortho, i)    
-        dfflux_sub_ref = pd.read_csv(influx_sub_ref, sep="\s+")
-        dfcorr_sub_ref = pd.read_csv(incorr_sub_ref, sep="\s+", header=None)
-        del dfflux_sub_ref[dfflux_sub_ref.columns[0]] # remove first column
-        #del dfflux_sub_ref[dfflux_sub_ref.columns[0]] # remove next column
-        # iterate over atom flux columns 
-        column = dfflux_sub_ref.columns[i]
-        #print(column)
-        # normalize atom fluctuations (minmax method)
-        dfflux_sub_ref[column] = (dfflux_sub_ref[column] - dfflux_sub_ref[column].min()) / (dfflux_sub_ref[column].max() - dfflux_sub_ref[column].min())
-        #dfflux_sub_ref[column] = dfflux_sub_ref[column] # option skip normalization
-        myColumn = dfflux_sub_ref[column]
-        myColumn = pd.DataFrame(myColumn)
-        #print(myColumn)
-        #dfflux_sub_ref = dfflux_sub_ref[column]
-        # trim uneccessary columns
-        del dfcorr_sub_ref[dfcorr_sub_ref.columns[0]] # remove first column
-        del dfcorr_sub_ref[dfcorr_sub_ref.columns[-1]] # remove last column = NaN
-        #print(dfflux_sub_ref)
-        #print(dfcorr_sub_ref)
-        
-        ### option to combine flux and corr ###
-        #frames_sub_ref = [myColumn, dfcorr_sub_ref]
-        #feature_sub_ref = pd.concat(frames_sub_ref, axis = 1, join="inner")
-        
-        ### option to include only corr ###
-        feature_sub_ref = dfcorr_sub_ref
-                
-        #print(dfflux_sub_ref)
-        #print(dfcorr_sub_ref)
-        #print(feature_sub_ref)
-        df1 = feature_sub_ref
-        writePath = "./feature_sub_orthoCTL/feature_%s_sub_orthoCTL_%s.txt" % (PDB_id_ortho, i)
-        with open(writePath, 'w') as f1:
-            dfAsString = df1.to_string(header=False, index=True)
-            f1.write(dfAsString)
-        # create reduced atom correlation matrix (from sparse matrix)
-        M = dfcorr_sub_ref
-        #print("Original Matrix:")
-        #print(M)
-        # create sparse matrix
-        M[np.abs(M) < 0.005] = 0 # plug in zero values if below threshold
-        #print("Sparse Matrix:")
-        #print(M)
-        ##################################################################################################
-        #### tune size of truncation of SVD to capture 80% of variance explained by site correlations ####
-        ##################################################################################################
-        if (i == 0):
-            ratio = 0.9
-            setSize = int(ratio*length_prot)
-            #print(setSize)
-            svd =  TruncatedSVD(n_components = setSize)
-            M_transf = svd.fit_transform(M)
-            tve = svd.explained_variance_ratio_.sum()
-            while (tve >= 0.8 and setSize >= 5):
-                setSize = int(ratio*length_prot)
-                #print(setSize)
-                svd =  TruncatedSVD(n_components = setSize)
-                M_transf = svd.fit_transform(M)
-                #print(svd.explained_variance_ratio_.sum())
-                tve = svd.explained_variance_ratio_.sum()
-                #print(tve)
-                ratio = ratio-0.02
-            print("determine reduced feature vector size")
-            print(setSize)
-        ##################################################################################################
-        
-        svd =  TruncatedSVD(n_components = setSize)
-        M_transf = svd.fit_transform(M)
-        if (i == 0):
-            print("singular values")
-            print(svd.singular_values_)
-            print("explained variance ratio")
-            print(svd.explained_variance_ratio_)
-            print("total variance explained")
-            print(svd.explained_variance_ratio_.sum())
-        #print(svd.explained_variance_ratio_.sum())
-        #print("Singular values:")
-        #print(svd.singular_values_)
-        #print("Transformed Matrix after reducing to 5 features:")
-        #print(M_transf)
-        M_transf = pd.DataFrame(M_transf)
-        #print(M_transf) # as dataframe
-        # create reduced feature vector
-        
-        ### option to combine flux and corr ###
-        #frames_sub_ref_reduced = [myColumn, M_transf]
-        #feature_sub_ref_reduced = pd.concat(frames_sub_ref_reduced, axis = 1, join="inner")
-        
-        ### option to include only corr ###
-        feature_sub_ref_reduced = M_transf
-        
-        df2 = feature_sub_ref_reduced
-        writePath = "./feature_sub_orthoCTL_reduced/feature_%s_sub_orthoCTL_%s.txt" % (PDB_id_ortho, i)
-        with open(writePath, 'w') as f2:
-            dfAsString = df2.to_string(header=False, index=True)
-            f2.write(dfAsString)
-        #print("feature vector(subsampled reference MD run %s) = atom fluct + 5 reduced atom corr features:" % i)
-        #print(feature_sub_ref_reduced) 
-    
-
-
-
-
-def conserved_dynamics():
+ 
+def conserved_dynamics_analysis():
     print("identifying conserved dynamics")
  
     avg_learn_profile_neutral = []
@@ -557,8 +364,7 @@ def conserved_dynamics():
         feature_referenceCTL = []
         feature_query = []
         feature_ortho = []
-        feature_orthoCTL = []
-        
+                
         for j in range(subsamples): # loop over subsamples
             samp = j+1
             #print("collecting subsample %s" % samp)
@@ -603,16 +409,7 @@ def conserved_dynamics():
             sample_feature_ortho = np.array(sample_feature_ortho)
             #print(sample_feature_ortho)
             feature_ortho.append(sample_feature_ortho)
-            ######## ortholog control protein #####
-            infeature_orthoCTL = "./feature_sub_orthoCTL_reduced/feature_%s_sub_orthoCTL_%s.txt" % (PDB_id_ortho, j)
-            df_feature_orthoCTL = pd.read_csv(infeature_orthoCTL, sep="\s+")
-            #print(df_feature_referenceCTL)
-            del df_feature_orthoCTL[df_feature_orthoCTL.columns[0]] # remove first column
-            #print(df_feature_orthoCTL)
-            sample_feature_orthoCTL = df_feature_orthoCTL.iloc[i]
-            sample_feature_orthoCTL = np.array(sample_feature_orthoCTL)
-            #print(sample_feature_orthoCTL)
-            feature_orthoCTL.append(sample_feature_orthoCTL)
+            
     
         print("calculating and bootstrapping conserved dynamics identification for site %s" % i)     
         #print(feature_reference)
@@ -622,7 +419,7 @@ def conserved_dynamics():
         df_feature_refCTL = pd.DataFrame(feature_referenceCTL)
         df_feature_query = pd.DataFrame(feature_query)
         df_feature_ortho = pd.DataFrame(feature_ortho)
-        df_feature_orthoCTL = pd.DataFrame(feature_orthoCTL)
+        
         #print(df_feature_ref)
         #print(df_feature_query)
         #print(df_feature_ortho)
@@ -835,19 +632,20 @@ def conserved_dynamics():
         #print(CONSpos)
         f6.write("\t:%s\t%s\n" % (sitepos, CONSpos))
     
-    
- 
- 
- 
- 
-        
+def map_CONSsig():
+    # map conserved dynamics in chimerax
+    print("mapping significant CONSERVED DYNAMICS to reference protein %s" % PDB_id_reference)
+    cmd = "%sChimeraX color_by_attr_chimerax_CONSsig.py" % chimerax_path
+    os.system(cmd)    
+         
 ###############################################################
 ###############################################################
 
 def main():
-    conserved_dynamics_sampling()
+    #conserved_dynamics_sampling()
     feature_vector_ortho()
-    conserved_dynamics()
+    conserved_dynamics_analysis()
+    map_CONSsig()
     print("comparative analyses of molecular dynamics is completed")
     
     

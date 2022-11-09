@@ -158,24 +158,24 @@ class Ui_Dialog(object):
         self.checkBox.setObjectName("checkBox")
         self.checkBox.setChecked(True)
         self.checkBox_2 = QtWidgets.QCheckBox(self.frame_8)
-        self.checkBox_2.setGeometry(QtCore.QRect(20, 70, 791, 21))
+        self.checkBox_2.setGeometry(QtCore.QRect(20, 80, 791, 21))
         self.checkBox_2.setObjectName("checkBox_2")
         self.checkBox_2.setChecked(False)
         self.checkBox_3 = QtWidgets.QCheckBox(self.frame_8)
-        self.checkBox_3.setGeometry(QtCore.QRect(20, 110, 791, 21))
+        self.checkBox_3.setGeometry(QtCore.QRect(20, 140, 791, 21))
         self.checkBox_3.setObjectName("checkBox_3")
         self.checkBox_3.setChecked(False)
         self.checkBox_4 = QtWidgets.QCheckBox(self.frame_8)
-        self.checkBox_4.setGeometry(QtCore.QRect(20, 90, 781, 21))
+        self.checkBox_4.setGeometry(QtCore.QRect(20, 110, 781, 21))
         self.checkBox_4.setObjectName("checkBox_4")
         self.checkBox_4.setChecked(False)
         self.label_17 = QtWidgets.QLabel(self.frame_8)
         self.label_17.setGeometry(QtCore.QRect(160, 0, 371, 31))
         self.label_17.setObjectName("label_17")
-        self.checkBox_5 = QtWidgets.QCheckBox(self.frame_8)
-        self.checkBox_5.setGeometry(QtCore.QRect(20, 130, 791, 21))
-        self.checkBox_5.setObjectName("checkBox_5")
-        self.checkBox_5.setChecked(False)
+        #self.checkBox_5 = QtWidgets.QCheckBox(self.frame_8)
+        #self.checkBox_5.setGeometry(QtCore.QRect(20, 130, 791, 21))
+        #self.checkBox_5.setObjectName("checkBox_5")
+        #self.checkBox_5.setChecked(False)
         self.label_7 = QtWidgets.QLabel(Dialog)
         self.label_7.setGeometry(QtCore.QRect(140, 10, 791, 91))
         self.label_7.setStyleSheet("background-color: rgb(0, 0, 0);")
@@ -251,7 +251,7 @@ class Ui_Dialog(object):
         self.checkBox_2.setText(_translate("Dialog", "site-wise comparison of atom correlations across the protein (MMD on learned features)"))
         self.checkBox_3.setText(_translate("Dialog", "site-wise identification of conserved molecular dynamics (ortholog vs neutral learning profiles)"))
         self.checkBox_4.setText(_translate("Dialog", "site-wise identification of coordinated dynamics (mutual information on learned classifications)"))
-        self.checkBox_5.setText(_translate("Dialog", "site-wise comparison of genetic/drug class variants (divergence metrics on conserved dynamics)"))
+        #self.checkBox_5.setText(_translate("Dialog", "site-wise comparison of genetic/drug class variants (divergence metrics on conserved dynamics)"))
         self.label_17.setText(_translate("Dialog", "<html><head/><body><p><span style=\" font-size:12pt; font-weight:600;\">machine learning analyses to be run</span></p></body></html>"))
         self.label_7.setText(_translate("Dialog", "<html><head/><body><p align=\"center\"><span style=\" font-size:16pt; color:#ffffff;\">DROIDS/maxDemon 5.0 </span></p><p align=\"center\"><span style=\" font-size:16pt; color:#ffffff;\">AI-assisted Comparative Molecular Dynamics</span></p></body></html>"))
         self.textBrowser.setHtml(_translate("Dialog", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
@@ -325,10 +325,10 @@ class Ui_Dialog(object):
             coordination = "yes"
         else:
             coordination = "no"
-        if self.checkBox_5.isChecked() == True:
-            variants = "yes"
-        else:
-            variants = "no"
+        #if self.checkBox_5.isChecked() == True:
+        #    variants = "yes"
+        #else:
+        #    variants = "no"
         
         # write file
         f = open("./DROIDS.ctl", "w") 
@@ -352,7 +352,7 @@ class Ui_Dialog(object):
         f.write("discrepancy,%s,#run MMD analysis\n" % discrepancy)
         f.write("conservation,%s,#run conserved dynamics analysis\n" % conservation)
         f.write("coordination,%s,#run coordinated dynamics analysis\n" % coordination)
-        f.write("variants,%s,#run coordinated dynamics analysis\n" % variants)
+        #f.write("variants,%s,#run coordinated dynamics analysis\n" % variants)
         f.close()
         
         

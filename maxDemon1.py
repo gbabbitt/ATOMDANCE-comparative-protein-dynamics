@@ -10,11 +10,10 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 
-
 class Ui_Dialog(object):
     def setupUi(self, Dialog):
         Dialog.setObjectName("Dialog")
-        Dialog.resize(526, 287)
+        Dialog.resize(526, 326)
         self.label = QtWidgets.QLabel(Dialog)
         self.label.setGeometry(QtCore.QRect(10, 20, 231, 21))
         self.label.setObjectName("label")
@@ -34,8 +33,12 @@ class Ui_Dialog(object):
         self.pushButton_2 = QtWidgets.QPushButton(Dialog)
         self.pushButton_2.setGeometry(QtCore.QRect(300, 220, 141, 41))
         self.pushButton_2.setObjectName("pushButton_2")
-        self.pushButton_2.clicked.connect(self.closeIt)
-
+        self.pushButton_2.clicked.connect(self.analyzeIt)
+        self.pushButton_3 = QtWidgets.QPushButton(Dialog)
+        self.pushButton_3.setGeometry(QtCore.QRect(300, 270, 141, 41))
+        self.pushButton_3.setObjectName("pushButton_3")
+        self.pushButton_3.clicked.connect(self.closeIt)
+        
         self.retranslateUi(Dialog)
         QtCore.QMetaObject.connectSlotsByName(Dialog)
 
@@ -54,9 +57,12 @@ class Ui_Dialog(object):
 "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br /></p>\n"
 "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br /></p></body></html>"))
         self.pushButton.setText(_translate("Dialog", "run sampling"))
-        self.pushButton_2.setText(_translate("Dialog", "close afterwards"))
+        self.pushButton_2.setText(_translate("Dialog", "analyze"))
+        self.pushButton_3.setText(_translate("Dialog", "close afterwards"))
 
-
+#########################################################################################
+       
+    
     def run_sampler(self):
         print("writing control file")
         ortho_list = self.textEdit.toPlainText()
@@ -77,11 +83,17 @@ class Ui_Dialog(object):
         f.write("orthoTRAJ,%s,#trajectory for ortholog structure\n" % ortho_traj)
         f.close()
         
-        
+        ############# run ortholog sampling program ###################
         print("running DROIDS/maxDemon 5.0 ortholog trajectory sampler")
         cmd1 = "python3 cpptraj_ortholog_sampler.py"
         os.system(cmd1)
         print("close user interface when completed")
+    
+    def analyzeIt(self):
+        print("running DROIDS/maxDemon 5.0 ortholog trajectory sampler")
+        cmd1 = "python3 chimerax_consdyn.py"
+        os.system(cmd1)
+    
         
     def closeIt(self):
         print("maxDemon sampler program closed")
