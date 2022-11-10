@@ -132,21 +132,46 @@ def coordinated_dynamics():
     myMI = normalized_mutual_info_score([0, 0, 1, 1, 1], [0, 0, 1, 1, 0])
     print(myMI)
     
+    matrix_in = "./coordinatedDynamics_%s/coordinatedDynamics.txt" % PDB_id_reference
+    df_matrix_in = pd.read_csv(matrix_in, sep="\s+")
+    #print(df_matrix_in)
     # loop over sites i
+    len_matrix = len(df_matrix_in)
+    print(len_matrix)
+    matrixI =[]
+    matrixJ =[]
+    matrixMI =[]
+    for i in range(len_matrix):
+        print("computing MI values from site %s" % i)
+        site1 = df_matrix_in.iloc[i]
+        pos1 = i+1
         # loop over sites j
-            # loop or vectorize over subsamples
-            # train on classifier on subset ref vs query and deploy on remaining sample
-            # calculate MI for i vs j and push to list
-            # train on classifier on subset ref vs ref ctl and deploy on remaining sample
-            # calculate null MI i and j 
-            # count obs MI > null MI
-        # calculate avg MI over subsamples
-        # calculate emp p value
-        # push avg MI to list of lists (i.e. matrix) if pvalue significant
-        
+        for j in range(len_matrix):
+            site2 = df_matrix_in.iloc[j]
+            pos2 = j+1
+            #print(i)
+            #print(j)
+            #print(site1)
+            #print(site2)
+            myMI = normalized_mutual_info_score(site1, site2)
+            #print(myMI)
+            matrixI.append(pos1)
+            matrixJ.append(pos2)
+            matrixMI.append(myMI)
+            
+    matrixI = pd.DataFrame(matrixI)
+    #print(matrixI)
+    matrixJ = pd.DataFrame(matrixJ)
+    #print(matrixJ)
+    matrixMI = pd.DataFrame(matrixMI)
+    #print(matrixMI)    
+    # join columns
+    myMATRIX = pd.concat([matrixI, matrixJ, matrixMI], keys = ['matrixI', 'matrixJ', 'matrixMI'], axis=1, join="inner")
+    print(myMATRIX)
     # plot MI matrix   
-     
-    
+    myMATRIX_plot =  (ggplot(myMATRIX, aes('matrixI', 'matrixJ', fill='matrixMI')) + geom_tile())
+    myMATRIX_plot.save("./coordinatedDynamics_%s/coordinatedDynamics.png" % PDB_id_reference, width=10, height=5, dpi=300)
+    print(myMATRIX_plot)
 ###############################################################
 ###############################################################
 

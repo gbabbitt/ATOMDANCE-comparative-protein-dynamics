@@ -357,6 +357,7 @@ def conserved_dynamics_analysis():
     PVAL_output = []
     learn_profile_obs = []
     learn_profile_neutral = []
+    learn_profile_matrix = []
     
     for i in range(length_prot-1): # loop over sites
         # initiatize arrays
@@ -424,6 +425,7 @@ def conserved_dynamics_analysis():
         #print(df_feature_query)
         #print(df_feature_ortho)
         
+        
         # create conbined matrix query and ref
         frames = [df_feature_reference, df_feature_query]
         df_feature_train = pd.concat(frames, axis=1, join="inner", ignore_index=True, sort=False)
@@ -473,6 +475,7 @@ def conserved_dynamics_analysis():
         # now deploy
         myPred = gpc.predict(Z)
         #print(myPred)
+        learn_profile_matrix.append(myPred) # collect for analysis of coordinated dynamics
         myProb = gpc.predict_proba(Z)
         #print(myProb)
         # calculate obs learning performance frequency over subsamples and push to list
@@ -544,14 +547,28 @@ def conserved_dynamics_analysis():
         
     # plot obs and null learning performance and null bootstrap CI    
     learn_profile_obs = pd.DataFrame(learn_profile_obs)
-    learn_profile_neutral = pd.DataFrame(learn_profile_neutral)
     avg_learn_profile_neutral = pd.DataFrame(avg_learn_profile_neutral)
+    avg_learn_profile_neutral = pd.DataFrame(avg_learn_profile_neutral)
+    learn_profile_matrix = pd.DataFrame(learn_profile_matrix)
     print("learning profile (obs)")
     print(learn_profile_obs)
     print("learning profile (neutral)")
     print(learn_profile_neutral) 
     print("avg bootstrap learning profile (neutral)")
     print(avg_learn_profile_neutral)
+    print("learning profile matrix")
+    print(learn_profile_matrix)
+    
+    # copy learning matrix for heatmapping coordinated dynamics
+    if not os.path.exists('coordinatedDynamics_%s' % PDB_id_reference):
+        os.mkdir('coordinatedDynamics_%s' % PDB_id_reference)
+    df_out = learn_profile_matrix
+    writePath = "./coordinatedDynamics_%s/coordinatedDynamics.txt" % PDB_id_reference
+    with open(writePath, 'w') as f_out:
+        dfAsString = df_out.to_string(header=False, index=False)
+        f_out.write(dfAsString)
+        f_out.close
+    
     # report p value output array
     PVAL_output = pd.DataFrame(PVAL_output)
     print("p values")
