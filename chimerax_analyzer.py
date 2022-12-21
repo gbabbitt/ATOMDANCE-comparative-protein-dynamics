@@ -161,8 +161,8 @@ def resinfo():
     outfile.close
 
 ################################################################################
-def feature_vector():
-    print("creating feature vector files for machine learning")
+def feature_vector_corr():
+    print("creating feature vector files for machine learning on atom correlations")
     if not os.path.exists('feature_all_query'):
         os.makedirs('feature_all_query')  
     if not os.path.exists('feature_all_ref'):
@@ -723,10 +723,223 @@ def feature_vector():
             f2.write(dfAsString)
         #print("feature vector(subsampled reference MD run %s) = atom fluct + 5 reduced atom corr features:" % i)
         #print(feature_sub_ref_reduced) 
+ 
+def feature_vector_flux():
+    print("creating/adding feature vector files for machine learning on atom fluctuations")
+    # create fluctuation and feature vector
+    if not os.path.exists('featureFLUX_sub_query'):
+        os.makedirs('featureFLUX_sub_query')  
+    if not os.path.exists('featureFLUX_sub_ref'):
+        os.makedirs('featureFLUX_sub_ref')
+    if not os.path.exists('featureFLUX_sub_refCTL'):
+        os.makedirs('featureFLUX_sub_refCTL')
+    # create combined fluctuation and reduced correlation feature vector
+    if not os.path.exists('featureCOMBINE_sub_query'):
+        os.makedirs('featureCOMBINE_sub_query')  
+    if not os.path.exists('featureCOMBINE_sub_ref'):
+        os.makedirs('featureCOMBINE_sub_ref')
+    if not os.path.exists('featureCOMBINE_sub_refCTL'):
+        os.makedirs('featureCOMBINE_sub_refCTL')
     
     
-    
-    
+    for i in range(subsamples):
+        ############ reference protein  ##########################
+        print("creating fluctuation feature vector for subsample %s MD reference run" % i)
+        influx_sub_ref = "./atomflux_ref/fluct_%s_sub_reference.txt" % PDB_id_reference 
+        dfflux_sub_ref = pd.read_csv(influx_sub_ref, sep="\s+")
+        del dfflux_sub_ref[dfflux_sub_ref.columns[0]] # remove first column
+        #del dfflux_sub_ref[dfflux_sub_ref.columns[0]] # remove next column
+        # iterate over atom flux columns 
+        column = dfflux_sub_ref.columns[i]
+        #print(column)
+        # normalize atom fluctuations (minmax method)
+        dfflux_sub_ref[column] = (dfflux_sub_ref[column] - dfflux_sub_ref[column].min()) / (dfflux_sub_ref[column].max() - dfflux_sub_ref[column].min())
+        #dfflux_sub_ref[column] = dfflux_sub_ref[column] # option skip normalization
+        dfflux_sub_ref = dfflux_sub_ref[column]
+        #print(dfflux_sub_ref)
+        # collect adjacent flux values from nearby residues
+        featureMatrix = []
+        for j in range(length_prot):
+            if(j-2 in range(0, length_prot)):
+                my_minus2 = dfflux_sub_ref[j-2]
+            else:
+                my_minus2 = dfflux_sub_ref[j]
+            #print(my_minus2)
+            if(j-1 in range(0, length_prot)):
+                my_minus1 = dfflux_sub_ref[j-1]
+            else:
+                my_minus1 = dfflux_sub_ref[j]
+            #print(my_minus1)
+            if(j in range(0, length_prot)):
+                my_plus0 = dfflux_sub_ref[j]
+            else:
+                my_plus0 = 0
+            #print(my_plus0)
+            if(j+1 in range(0, length_prot)):
+                my_plus1 = dfflux_sub_ref[j+1]
+            else:
+                my_plus1 = dfflux_sub_ref[j]
+            #print(my_plus1)
+            if(j+2 in range(0, length_prot)):
+                my_plus2 = dfflux_sub_ref[j+2]
+            else:
+                my_plus2 = dfflux_sub_ref[j]
+            featureRow = (my_minus2, my_minus1, my_plus0, my_plus1, my_plus2)
+            featureMatrix.append(featureRow)
+        
+        featureMatrix = pd.DataFrame(featureMatrix)
+        #print(featureMatrix)
+        # print to file
+        featureFLUX_sub_ref = featureMatrix
+        df1 = featureFLUX_sub_ref
+        writePath = "./featureFLUX_sub_ref/feature_%s_sub_ref_%s.txt" % (PDB_id_reference, i)
+        with open(writePath, 'w') as f1:
+            dfAsString = df1.to_string(header=False, index=True)
+            f1.write(dfAsString)
+        #read in reduced correlations and create combined flux+corr feature vector
+        read_corr = "./feature_sub_ref_reduced/feature_%s_sub_ref_%s.txt" % (PDB_id_reference, i)    
+        df3 = pd.read_csv(read_corr, sep="\s+", header=None)
+        del df3[df3.columns[0]] # remove first column
+        df3 = df3.iloc[:,:5]  # option take first 5 columns of correlations
+        frames = [df1, df3]
+        df_combined = pd.concat(frames, axis=1, join='inner')
+        writePath = "./featureCOMBINE_sub_ref/feature_%s_sub_ref_%s.txt" % (PDB_id_reference, i)
+        with open(writePath, 'w') as f3:
+            dfAsString = df_combined.to_string(header=False, index=True)
+            f3.write(dfAsString)
+        
+        ############ query protein  ##########################
+        print("creating fluctuation feature vector for subsample %s MD query run" % i)
+        influx_sub_query = "./atomflux_query/fluct_%s_sub_query.txt" % PDB_id_query 
+        dfflux_sub_query = pd.read_csv(influx_sub_query, sep="\s+")
+        del dfflux_sub_query[dfflux_sub_query.columns[0]] # remove first column
+        #del dfflux_sub_query[dfflux_sub_query.columns[0]] # remove next column
+        # iterate over atom flux columns 
+        column = dfflux_sub_query.columns[i]
+        #print(column)
+        # normalize atom fluctuations (minmax method)
+        dfflux_sub_query[column] = (dfflux_sub_query[column] - dfflux_sub_query[column].min()) / (dfflux_sub_query[column].max() - dfflux_sub_query[column].min())
+        #dfflux_sub_query[column] = dfflux_sub_query[column] # option skip normalization
+        dfflux_sub_query = dfflux_sub_query[column]
+        #print(dfflux_sub_query)
+        # collect adjacent flux values from nearby residues
+        featureMatrix = []
+        for j in range(length_prot):
+            if(j-2 in range(0, length_prot)):
+                my_minus2 = dfflux_sub_query[j-2]
+            else:
+                my_minus2 = dfflux_sub_query[j]
+            #print(my_minus2)
+            if(j-1 in range(0, length_prot)):
+                my_minus1 = dfflux_sub_query[j-1]
+            else:
+                my_minus1 = dfflux_sub_query[j]
+            #print(my_minus1)
+            if(j in range(0, length_prot)):
+                my_plus0 = dfflux_sub_query[j]
+            else:
+                my_plus0 = 0
+            #print(my_plus0)
+            if(j+1 in range(0, length_prot)):
+                my_plus1 = dfflux_sub_query[j+1]
+            else:
+                my_plus1 = dfflux_sub_query[j]
+            #print(my_plus1)
+            if(j+2 in range(0, length_prot)):
+                my_plus2 = dfflux_sub_query[j+2]
+            else:
+                my_plus2 = dfflux_sub_query[j]
+            featureRow = (my_minus2, my_minus1, my_plus0, my_plus1, my_plus2)
+            featureMatrix.append(featureRow)
+        
+        featureMatrix = pd.DataFrame(featureMatrix)
+        #print(featureMatrix)
+        # print to file
+        featureFLUX_sub_query = featureMatrix
+        df1 = featureFLUX_sub_query
+        writePath = "./featureFLUX_sub_query/feature_%s_sub_query_%s.txt" % (PDB_id_query, i)
+        with open(writePath, 'w') as f1:
+            dfAsString = df1.to_string(header=False, index=True)
+            f1.write(dfAsString)
+        #read in reduced correlations and create combined flux+corr feature vector
+        read_corr = "./feature_sub_query_reduced/feature_%s_sub_query_%s.txt" % (PDB_id_query, i)    
+        df3 = pd.read_csv(read_corr, sep="\s+", header=None)
+        del df3[df3.columns[0]] # remove first column
+        df3 = df3.iloc[:,:5]  # option take first 5 columns of correlations
+        frames = [df1, df3]
+        df_combined = pd.concat(frames, axis=1, join='inner')
+        writePath = "./featureCOMBINE_sub_query/feature_%s_sub_query_%s.txt" % (PDB_id_query, i)
+        with open(writePath, 'w') as f3:
+            dfAsString = df_combined.to_string(header=False, index=True)
+            f3.write(dfAsString)
+        
+        ############ reference protein  ##########################
+        print("creating fluctuation feature vector for subsample %s MD reference control run" % i)
+        influx_sub_ref = "./atomflux_refCTL/fluct_%s_sub_referenceCTL.txt" % PDB_id_reference 
+        dfflux_sub_ref = pd.read_csv(influx_sub_ref, sep="\s+")
+        del dfflux_sub_ref[dfflux_sub_ref.columns[0]] # remove first column
+        #del dfflux_sub_ref[dfflux_sub_ref.columns[0]] # remove next column
+        # iterate over atom flux columns 
+        column = dfflux_sub_ref.columns[i]
+        #print(column)
+        # normalize atom fluctuations (minmax method)
+        dfflux_sub_ref[column] = (dfflux_sub_ref[column] - dfflux_sub_ref[column].min()) / (dfflux_sub_ref[column].max() - dfflux_sub_ref[column].min())
+        #dfflux_sub_ref[column] = dfflux_sub_ref[column] # option skip normalization
+        dfflux_sub_ref = dfflux_sub_ref[column]
+        #print(dfflux_sub_ref)
+        # collect adjacent flux values from nearby residues
+        featureMatrix = []
+        for j in range(length_prot):
+            if(j-2 in range(0, length_prot)):
+                my_minus2 = dfflux_sub_ref[j-2]
+            else:
+                my_minus2 = dfflux_sub_ref[j]
+            #print(my_minus2)
+            if(j-1 in range(0, length_prot)):
+                my_minus1 = dfflux_sub_ref[j-1]
+            else:
+                my_minus1 = dfflux_sub_ref[j]
+            #print(my_minus1)
+            if(j in range(0, length_prot)):
+                my_plus0 = dfflux_sub_ref[j]
+            else:
+                my_plus0 = 0
+            #print(my_plus0)
+            if(j+1 in range(0, length_prot)):
+                my_plus1 = dfflux_sub_ref[j+1]
+            else:
+                my_plus1 = dfflux_sub_ref[j]
+            #print(my_plus1)
+            if(j+2 in range(0, length_prot)):
+                my_plus2 = dfflux_sub_ref[j+2]
+            else:
+                my_plus2 = dfflux_sub_ref[j]
+            featureRow = (my_minus2, my_minus1, my_plus0, my_plus1, my_plus2)
+            featureMatrix.append(featureRow)
+        
+        featureMatrix = pd.DataFrame(featureMatrix)
+        #print(featureMatrix)
+        # print to file
+        featureFLUX_sub_ref = featureMatrix
+        df1 = featureFLUX_sub_ref
+        writePath = "./featureFLUX_sub_refCTL/feature_%s_sub_refCTL_%s.txt" % (PDB_id_reference, i)
+        with open(writePath, 'w') as f1:
+            dfAsString = df1.to_string(header=False, index=True)
+            f1.write(dfAsString)
+        #read in reduced correlations and create combined flux+corr feature vector
+        read_corr = "./feature_sub_refCTL_reduced/feature_%s_sub_refCTL_%s.txt" % (PDB_id_reference, i)    
+        df3 = pd.read_csv(read_corr, sep="\s+", header=None)
+        del df3[df3.columns[0]] # remove first column
+        df3 = df3.iloc[:,:5]  # option take first 5 columns of correlations
+        frames = [df1, df3]
+        df_combined = pd.concat(frames, axis=1, join='inner')
+        writePath = "./featureCOMBINE_sub_refCTL/feature_%s_sub_refCTL_%s.txt" % (PDB_id_reference, i)
+        with open(writePath, 'w') as f3:
+            dfAsString = df_combined.to_string(header=False, index=True)
+            f3.write(dfAsString)
+        
+        
+        
 #################################################################################
 # view movie of entire MD run
 def view_reference():
@@ -844,7 +1057,8 @@ def coordinated_dynamics():
 
 def main():
     plot_rmsd()
-    feature_vector()  
+    feature_vector_corr()
+    feature_vector_flux()
     #view_query()
     #view_reference()
     if(div_anal == "yes"):

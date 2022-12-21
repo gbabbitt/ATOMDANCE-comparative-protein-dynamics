@@ -141,7 +141,10 @@ def compare_dynamics_MMD():
             samp = j+1
             #print("collecting subsample %s" % samp)
             ######## reference protein ###########
-            infeature_reference = "./feature_sub_ref_reduced/feature_%s_sub_ref_%s.txt" % (PDB_id_reference, j)
+            #infeature_reference = "./feature_sub_ref_reduced/feature_%s_sub_ref_%s.txt" % (PDB_id_reference, j)
+            infeature_reference = "./featureFLUX_sub_ref/feature_%s_sub_ref_%s.txt" % (PDB_id_reference, j)
+            #infeature_reference = "./featureCOMBINE_sub_ref/feature_%s_sub_ref_%s.txt" % (PDB_id_reference, j)
+            
             df_feature_reference = pd.read_csv(infeature_reference, sep="\s+")
             #print(df_feature_reference)
             del df_feature_reference[df_feature_reference.columns[0]] # remove first column
@@ -151,7 +154,10 @@ def compare_dynamics_MMD():
             #print(sample_feature_reference)
             feature_reference.append(sample_feature_reference)
             ######## reference control protein #####
-            infeature_referenceCTL = "./feature_sub_refCTL_reduced/feature_%s_sub_refCTL_%s.txt" % (PDB_id_reference, j)
+            #infeature_referenceCTL = "./feature_sub_refCTL_reduced/feature_%s_sub_refCTL_%s.txt" % (PDB_id_reference, j)
+            infeature_referenceCTL = "./featureFLUX_sub_refCTL/feature_%s_sub_refCTL_%s.txt" % (PDB_id_reference, j)
+            #infeature_referenceCTL = "./featureCOMBINE_sub_refCTL/feature_%s_sub_refCTL_%s.txt" % (PDB_id_reference, j)
+            
             df_feature_referenceCTL = pd.read_csv(infeature_referenceCTL, sep="\s+")
             #print(df_feature_referenceCTL)
             del df_feature_referenceCTL[df_feature_referenceCTL.columns[0]] # remove first column
@@ -161,7 +167,10 @@ def compare_dynamics_MMD():
             #print(sample_feature_referenceCTL)
             feature_referenceCTL.append(sample_feature_referenceCTL)
             ######### query protein #########
-            infeature_query = "./feature_sub_query_reduced/feature_%s_sub_query_%s.txt" % (PDB_id_query, j)
+            #infeature_query = "./feature_sub_query_reduced/feature_%s_sub_query_%s.txt" % (PDB_id_query, j)
+            infeature_query = "./featureFLUX_sub_query/feature_%s_sub_query_%s.txt" % (PDB_id_query, j)
+            #infeature_query = "./featureCOMBINE_sub_query/feature_%s_sub_query_%s.txt" % (PDB_id_query, j)
+            
             df_feature_query = pd.read_csv(infeature_query, sep="\s+")
             #print(df_feature_query)
             del df_feature_query[df_feature_query.columns[0]] # remove first column
@@ -188,8 +197,9 @@ def compare_dynamics_MMD():
         feature_query_mean = feature_query_mean.reshape(1, -1)
         #print(feature_ref_mean)
         #print(feature_query_mean)
-        #myMMD = mmd_rbf(feature_reference, feature_query) # calulate MMD
-        myMMD = mmd_rbf(feature_ref_mean, feature_query_mean) # calulate MMD
+        myMMD = mmd_rbf(feature_reference, feature_query) # calulate MMD
+        #myMMD = mmd_rbf(df_feature_ref, df_feature_query) # calulate MMD
+        #myMMD = mmd_rbf(feature_ref_mean, feature_query_mean) # calulate MMD
         #print("obs MMD")
         #print(myMMD)
         MMD_output.append(myMMD) # build MMD list for each site
@@ -198,7 +208,7 @@ def compare_dynamics_MMD():
         cntGREATER = 1
         cntLESSER = 1
         neutralMMDs = []
-        for t in range(500):
+        for t in range(200):
             # bootstrap1 feature_reference
             rand1 = rnd.randint(0, subsamples-1)
             #print("rand1")
@@ -218,6 +228,7 @@ def compare_dynamics_MMD():
             neutralMMD = mmd_rbf(samp1, samp2) # calulate MMD
             #print("neutral MMD %s" % t)
             #print(neutralMMD)
+            #print(myMMD)
             neutralMMDs.append(neutralMMD)
             # empirical p-value  (freq neutral MMD > alternative MMD)
             if(myMMD > neutralMMD):
@@ -225,6 +236,8 @@ def compare_dynamics_MMD():
             if(myMMD <= neutralMMD):
                 cntLESSER = cntLESSER+1
         # avg neutral MMD
+        print(cntLESSER)
+        print(cntGREATER)
         mean_neutralMMD = np.mean(neutralMMDs, axis = None)
         #print("avg neutral MMD")
         #print(mean_neutralMMD)
@@ -232,7 +245,7 @@ def compare_dynamics_MMD():
         emp_P = cntGREATER/(cntGREATER+cntLESSER)
         #print("empirical P value")
         #print(emp_P)
-        cutoff = 0.99
+        cutoff = 0.95
         if(emp_P > cutoff):
             p_label = "sig"
         if(emp_P <= cutoff):

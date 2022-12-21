@@ -343,14 +343,96 @@ def feature_vector_ortho():
         feature_sub_query_reduced = M_transf
         
         df2 = feature_sub_query_reduced
+        
         writePath = "./feature_sub_ortho_reduced/feature_%s_sub_ortho_%s.txt" % (PDB_id_ortho, i)
         with open(writePath, 'w') as f2:
             dfAsString = df2.to_string(header=False, index=True)
             f2.write(dfAsString)
         #print("feature vector(subsampled reference MD run %s) = atom fluct + 5 reduced atom corr features:" % i)
         #print(feature_sub_ref_reduced) 
- 
+
+    print("creating/adding feature vector files for machine learning on atom fluctuations")
+    # create fluctuation feature vector
+    if not os.path.exists('featureFLUX_sub_ortho'):
+        os.makedirs('featureFLUX_sub_ortho')
+    # create combined fluctuation and reduced correlation feature vector
+    if not os.path.exists('featureCOMBINE_sub_ortho'):
+        os.makedirs('featureCOMBINE_sub_ortho')     
+            
+    for i in range(subsamples):
+        ############ ortholog protein  ##########################
+        print("creating fluctuation feature vector for subsample %s MD ortholog run" % i)
+        influx_sub_ortho = "./atomflux_ortho/fluct_%s_sub_ortho.txt" % PDB_id_ortho 
+        dfflux_sub_ortho = pd.read_csv(influx_sub_ortho, sep="\s+")
+        del dfflux_sub_ortho[dfflux_sub_ortho.columns[0]] # remove first column
+        #del dfflux_sub_ortho[dfflux_sub_ortho.columns[0]] # remove next column
+        # iterate over atom flux columns 
+        column = dfflux_sub_ortho.columns[i]
+        #print(column)
+        # normalize atom fluctuations (minmax method)
+        dfflux_sub_ortho[column] = (dfflux_sub_ortho[column] - dfflux_sub_ortho[column].min()) / (dfflux_sub_ortho[column].max() - dfflux_sub_ortho[column].min())
+        #dfflux_sub_ortho[column] = dfflux_sub_ortho[column] # option skip normalization
+        dfflux_sub_ortho = dfflux_sub_ortho[column]
+        #print(dfflux_sub_ortho)
+        # collect adjacent flux values from nearby residues
+        featureMatrix = []
+        for j in range(length_prot):
+            if(j-2 in range(0, length_prot-1)):
+                my_minus2 = dfflux_sub_ortho[j-2]
+            else:
+                my_minus2 = dfflux_sub_ortho[j]
+            #print(my_minus2)
+            if(j-1 in range(0, length_prot)):
+                my_minus1 = dfflux_sub_ortho[j-1]
+            else:
+                my_minus1 = dfflux_sub_ortho[j]
+            #print(my_minus1)
+            if(j in range(0, length_prot)):
+                my_plus0 = dfflux_sub_ortho[j]
+            else:
+                my_plus0 = 0
+            #print(my_plus0)
+            if(j+1 in range(0, length_prot)):
+                my_plus1 = dfflux_sub_ortho[j+1]
+            else:
+                my_plus1 = dfflux_sub_ortho[j]
+            #print(my_plus1)
+            if(j+2 in range(0, length_prot)):
+                my_plus2 = dfflux_sub_ortho[j+2]
+            else:
+                my_plus2 = dfflux_sub_ortho[j]
+            featureRow = (my_minus2, my_minus1, my_plus0, my_plus1, my_plus2)
+            featureMatrix.append(featureRow)
+        
+        featureMatrix = pd.DataFrame(featureMatrix)
+        #print(featureMatrix)
+        # print fluctuations to file
+        featureFLUX_sub_ortho = featureMatrix
+        df1 = featureFLUX_sub_ortho
+        writePath = "./featureFLUX_sub_ortho/feature_%s_sub_ortho_%s.txt" % (PDB_id_ortho, i)
+        with open(writePath, 'w') as f1:
+            dfAsString = df1.to_string(header=False, index=True)
+            f1.write(dfAsString)
+                
+        #read in reduced correlations and create combined flux+corr feature vector
+        read_corr = "./feature_sub_ortho_reduced/feature_%s_sub_ortho_%s.txt" % (PDB_id_ortho, i)    
+        df3 = pd.read_csv(read_corr, sep="\s+", header=None)
+        del df3[df3.columns[0]] # remove first column
+        df3 = df3.iloc[:,:5]  # option take first 5 columns of correlations
+        frames = [df1, df3]
+        df_combined = pd.concat(frames, axis=1, join='inner')
+        writePath = "./featureCOMBINE_sub_ortho/feature_%s_sub_ortho_%s.txt" % (PDB_id_ortho, i)
+        with open(writePath, 'w') as f3:
+            dfAsString = df_combined.to_string(header=False, index=True)
+            f3.write(dfAsString)
+
+
 def conserved_dynamics_analysis():
+    print("identifying conserved dynamics regions involving atom fluctuations and correlations")
+    
+
+
+def conserved_dynamics_analysisOLD():
     print("identifying conserved dynamics")
  
     avg_learn_profile_neutral = []
@@ -370,7 +452,8 @@ def conserved_dynamics_analysis():
             samp = j+1
             #print("collecting subsample %s" % samp)
             ######## reference protein ###########
-            infeature_reference = "./feature_sub_ref_reduced/feature_%s_sub_ref_%s.txt" % (PDB_id_reference, j)
+            #infeature_reference = "./feature_sub_ref_reduced/feature_%s_sub_ref_%s.txt" % (PDB_id_reference, j)
+            infeature_reference = "./featureCOMBINE_sub_ref/feature_%s_sub_ref_%s.txt" % (PDB_id_reference, j)
             df_feature_reference = pd.read_csv(infeature_reference, sep="\s+")
             #print(df_feature_reference)
             del df_feature_reference[df_feature_reference.columns[0]] # remove first column
@@ -380,7 +463,8 @@ def conserved_dynamics_analysis():
             #print(sample_feature_reference)
             feature_reference.append(sample_feature_reference)
             ######## reference control protein #####
-            infeature_referenceCTL = "./feature_sub_refCTL_reduced/feature_%s_sub_refCTL_%s.txt" % (PDB_id_reference, j)
+            #infeature_referenceCTL = "./feature_sub_refCTL_reduced/feature_%s_sub_refCTL_%s.txt" % (PDB_id_reference, j)
+            infeature_referenceCTL = "./featureCOMBINE_sub_refCTL/feature_%s_sub_refCTL_%s.txt" % (PDB_id_reference, j)
             df_feature_referenceCTL = pd.read_csv(infeature_referenceCTL, sep="\s+")
             #print(df_feature_referenceCTL)
             del df_feature_referenceCTL[df_feature_referenceCTL.columns[0]] # remove first column
@@ -390,7 +474,8 @@ def conserved_dynamics_analysis():
             #print(sample_feature_referenceCTL)
             feature_referenceCTL.append(sample_feature_referenceCTL)
             ######### query protein #########
-            infeature_query = "./feature_sub_query_reduced/feature_%s_sub_query_%s.txt" % (PDB_id_query, j)
+            #infeature_query = "./feature_sub_query_reduced/feature_%s_sub_query_%s.txt" % (PDB_id_query, j)
+            infeature_query = "./featureCOMBINE_sub_query/feature_%s_sub_query_%s.txt" % (PDB_id_query, j)
             df_feature_query = pd.read_csv(infeature_query, sep="\s+")
             #print(df_feature_query)
             del df_feature_query[df_feature_query.columns[0]] # remove first column
@@ -401,7 +486,8 @@ def conserved_dynamics_analysis():
             feature_query.append(sample_feature_query)
             
             ######## ortholog protein ###########
-            infeature_ortho = "./feature_sub_ortho_reduced/feature_%s_sub_ortho_%s.txt" % (PDB_id_ortho, j)
+            #infeature_ortho = "./feature_sub_ortho_reduced/feature_%s_sub_ortho_%s.txt" % (PDB_id_ortho, j)
+            infeature_ortho = "./featureCOMBINE_sub_ortho/feature_%s_sub_ortho_%s.txt" % (PDB_id_ortho, j)
             df_feature_ortho = pd.read_csv(infeature_ortho, sep="\s+")
             #print(df_feature_ortho)
             del df_feature_ortho[df_feature_ortho.columns[0]] # remove first column
@@ -662,7 +748,7 @@ def main():
     #conserved_dynamics_sampling()
     feature_vector_ortho()
     conserved_dynamics_analysis()
-    map_CONSsig()
+    #map_CONSsig()
     print("comparative analyses of molecular dynamics is completed")
     
     
