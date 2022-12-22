@@ -141,8 +141,8 @@ def compare_dynamics_MMD():
             samp = j+1
             #print("collecting subsample %s" % samp)
             ######## reference protein ###########
-            #infeature_reference = "./feature_sub_ref_reduced/feature_%s_sub_ref_%s.txt" % (PDB_id_reference, j)
-            infeature_reference = "./featureFLUX_sub_ref/feature_%s_sub_ref_%s.txt" % (PDB_id_reference, j)
+            infeature_reference = "./feature_sub_ref_reduced/feature_%s_sub_ref_%s.txt" % (PDB_id_reference, j)
+            #infeature_reference = "./featureFLUX_sub_ref/feature_%s_sub_ref_%s.txt" % (PDB_id_reference, j)
             #infeature_reference = "./featureCOMBINE_sub_ref/feature_%s_sub_ref_%s.txt" % (PDB_id_reference, j)
             
             df_feature_reference = pd.read_csv(infeature_reference, sep="\s+")
@@ -154,8 +154,8 @@ def compare_dynamics_MMD():
             #print(sample_feature_reference)
             feature_reference.append(sample_feature_reference)
             ######## reference control protein #####
-            #infeature_referenceCTL = "./feature_sub_refCTL_reduced/feature_%s_sub_refCTL_%s.txt" % (PDB_id_reference, j)
-            infeature_referenceCTL = "./featureFLUX_sub_refCTL/feature_%s_sub_refCTL_%s.txt" % (PDB_id_reference, j)
+            infeature_referenceCTL = "./feature_sub_refCTL_reduced/feature_%s_sub_refCTL_%s.txt" % (PDB_id_reference, j)
+            #infeature_referenceCTL = "./featureFLUX_sub_refCTL/feature_%s_sub_refCTL_%s.txt" % (PDB_id_reference, j)
             #infeature_referenceCTL = "./featureCOMBINE_sub_refCTL/feature_%s_sub_refCTL_%s.txt" % (PDB_id_reference, j)
             
             df_feature_referenceCTL = pd.read_csv(infeature_referenceCTL, sep="\s+")
@@ -167,8 +167,8 @@ def compare_dynamics_MMD():
             #print(sample_feature_referenceCTL)
             feature_referenceCTL.append(sample_feature_referenceCTL)
             ######### query protein #########
-            #infeature_query = "./feature_sub_query_reduced/feature_%s_sub_query_%s.txt" % (PDB_id_query, j)
-            infeature_query = "./featureFLUX_sub_query/feature_%s_sub_query_%s.txt" % (PDB_id_query, j)
+            infeature_query = "./feature_sub_query_reduced/feature_%s_sub_query_%s.txt" % (PDB_id_query, j)
+            #infeature_query = "./featureFLUX_sub_query/feature_%s_sub_query_%s.txt" % (PDB_id_query, j)
             #infeature_query = "./featureCOMBINE_sub_query/feature_%s_sub_query_%s.txt" % (PDB_id_query, j)
             
             df_feature_query = pd.read_csv(infeature_query, sep="\s+")
@@ -187,9 +187,21 @@ def compare_dynamics_MMD():
         df_feature_refCTL = pd.DataFrame(feature_referenceCTL)
         df_feature_query = pd.DataFrame(feature_query)
         feature_ref_mean = df_feature_ref.mean()
+        ref_mean = feature_ref_mean.mean()
         #print(feature_ref_mean)
+        #print(ref_mean)
         feature_query_mean = df_feature_query.mean()
+        query_mean = feature_query_mean.mean()
         #print(feature_query_mean)
+        #print(query_mean)
+        diff_mean = (query_mean-ref_mean)
+        #print(diff_mean)
+        if(diff_mean >= 0):
+            sign = "pos"
+        elif(diff_mean < 0):
+            sign = "neg"
+        else:
+            sign = "NA"
         # convert back to array for MMD calc
         feature_ref_mean = np.array(feature_ref_mean)
         feature_query_mean = np.array(feature_query_mean)
@@ -200,6 +212,8 @@ def compare_dynamics_MMD():
         myMMD = mmd_rbf(feature_reference, feature_query) # calulate MMD
         #myMMD = mmd_rbf(df_feature_ref, df_feature_query) # calulate MMD
         #myMMD = mmd_rbf(feature_ref_mean, feature_query_mean) # calulate MMD
+        if(sign == "neg"):
+            myMMD = -myMMD
         #print("obs MMD")
         #print(myMMD)
         MMD_output.append(myMMD) # build MMD list for each site
@@ -208,7 +222,8 @@ def compare_dynamics_MMD():
         cntGREATER = 1
         cntLESSER = 1
         neutralMMDs = []
-        for t in range(200):
+        sign = "NA"
+        for t in range(500):
             # bootstrap1 feature_reference
             rand1 = rnd.randint(0, subsamples-1)
             #print("rand1")
@@ -217,6 +232,8 @@ def compare_dynamics_MMD():
             samp1 = feature_reference[rand1]
             samp1 = samp1.reshape(1, -1)
             #print (samp1)
+            samp1_mean = samp1.mean()
+            #print(samp1_mean)
             # bootstrap2 feature_reference control 
             rand2 = rnd.randint(0, subsamples-1)
             #print("rand2")
@@ -224,8 +241,20 @@ def compare_dynamics_MMD():
             samp2 = feature_referenceCTL[rand2]
             samp2 = samp2.reshape(1, -1)
             #print (samp2)
+            samp2_mean = samp2.mean()
+            #print(samp2_mean)
             # neutral MMD (ref1 vs ref2)
+            diff_mean = (samp1_mean-samp2_mean)
+            #print(diff_mean)
+            if(diff_mean >= 0):
+                sign = "pos"
+            elif(diff_mean < 0):
+                sign = "neg"
+            else:
+                sign = "NA"
             neutralMMD = mmd_rbf(samp1, samp2) # calulate MMD
+            if(sign == "neg"):
+                neutralMMD = -neutralMMD
             #print("neutral MMD %s" % t)
             #print(neutralMMD)
             #print(myMMD)
@@ -236,19 +265,19 @@ def compare_dynamics_MMD():
             if(myMMD <= neutralMMD):
                 cntLESSER = cntLESSER+1
         # avg neutral MMD
-        print(cntLESSER)
-        print(cntGREATER)
+        #print(cntLESSER)
+        #print(cntGREATER)
         mean_neutralMMD = np.mean(neutralMMDs, axis = None)
         #print("avg neutral MMD")
         #print(mean_neutralMMD)
         # empiriacl p value
         emp_P = cntGREATER/(cntGREATER+cntLESSER)
-        #print("empirical P value")
-        #print(emp_P)
-        cutoff = 0.95
-        if(emp_P > cutoff):
+        print("empirical P value")
+        print(emp_P)
+        cutoff = 0.05
+        if(emp_P < cutoff):
             p_label = "sig"
-        if(emp_P <= cutoff):
+        if(emp_P >= cutoff):
             p_label = "ns"
         PVAL_output.append(p_label) # build MMD P VALUE list for each site
     
