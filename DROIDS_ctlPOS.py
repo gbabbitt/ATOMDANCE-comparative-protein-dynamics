@@ -251,7 +251,7 @@ class Ui_Dialog(object):
         self.radioButton.setText(_translate("Dialog", "light"))
         self.radioButton_2.setText(_translate("Dialog", "dark"))
         self.checkBox.setText(_translate("Dialog", "site-wise comparison of atom fluctuations (signed symmetric KL divergence)"))
-        self.checkBox_2.setText(_translate("Dialog", "site-wise comparison of atom correlations across the protein (MMD on learned features)"))
+        self.checkBox_2.setText(_translate("Dialog", "site-wise comparison of molecular dynamics across the protein (MMD on learned features)"))
         self.checkBox_3.setText(_translate("Dialog", "site-wise identification of conserved molecular dynamics (ortholog vs neutral learning profiles)"))
         self.checkBox_4.setText(_translate("Dialog", "site-wise identification of coordinated dynamics (mutual information on learned classifications)"))
         #self.checkBox_5.setText(_translate("Dialog", "site-wise comparison of genetic/drug class variants (divergence metrics on conserved dynamics)"))

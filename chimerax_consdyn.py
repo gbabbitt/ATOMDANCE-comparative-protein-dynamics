@@ -450,7 +450,7 @@ def conserved_dynamics_analysisOLD():
                 
         for j in range(subsamples): # loop over subsamples
             samp = j+1
-            #print("collecting subsample %s" % samp)
+            print("collecting subsample %s" % samp)
             ######## reference protein ###########
             #infeature_reference = "./feature_sub_ref_reduced/feature_%s_sub_ref_%s.txt" % (PDB_id_reference, j)
             infeature_reference = "./featureCOMBINE_sub_ref/feature_%s_sub_ref_%s.txt" % (PDB_id_reference, j)

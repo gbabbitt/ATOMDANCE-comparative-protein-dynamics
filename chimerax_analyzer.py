@@ -372,7 +372,7 @@ def feature_vector_corr():
     #######################################################
     print("creating feature vector for whole MD query run")
     
-    setSize = int(0.2*length_prot)  # initiate set size of reduced feature vector
+    #setSize = int(0.2*length_prot)  # initiate set size of reduced feature vector
     
     influx_all_query = "fluct_%s_all_query.txt" % PDB_id_query 
     incorr_all_query = "corr_%s_all_query_matrix.txt" % PDB_id_query    
@@ -491,24 +491,24 @@ def feature_vector_corr():
         ##################################################################################################
         #### tune size of truncation of SVD to capture 80% of variance explained by site correlations ####
         ##################################################################################################
-        if (i == 0):
-            ratio = 0.9
-            setSize = int(ratio*length_prot)
-            #print(setSize)
-            svd =  TruncatedSVD(n_components = setSize)
-            M_transf = svd.fit_transform(M)
-            tve = svd.explained_variance_ratio_.sum()
-            while (tve >= 0.8 and setSize >= 5):
-                setSize = int(ratio*length_prot)
-                #print(setSize)
-                svd =  TruncatedSVD(n_components = setSize)
-                M_transf = svd.fit_transform(M)
-                #print(svd.explained_variance_ratio_.sum())
-                tve = svd.explained_variance_ratio_.sum()
-                #print(tve)
-                ratio = ratio-0.02
-            print("determine reduced feature vector size")
-            print(setSize)
+        #if (i == 0):
+        #   ratio = 0.9
+        #    setSize = int(ratio*length_prot)
+        #    #print(setSize)
+        #    svd =  TruncatedSVD(n_components = setSize)
+        #    M_transf = svd.fit_transform(M)
+        #    tve = svd.explained_variance_ratio_.sum()
+        #    while (tve >= 0.8 and setSize >= 5):
+        #       setSize = int(ratio*length_prot)
+        #        #print(setSize)
+        #        svd =  TruncatedSVD(n_components = setSize)
+        #        M_transf = svd.fit_transform(M)
+        #        #print(svd.explained_variance_ratio_.sum())
+        #        tve = svd.explained_variance_ratio_.sum()
+        #        #print(tve)
+        #        ratio = ratio-0.02
+        #    print("determine reduced feature vector size")
+        #    print(setSize)
         ##################################################################################################
         
         svd =  TruncatedSVD(n_components = setSize)
@@ -550,7 +550,7 @@ def feature_vector_corr():
     ###############################################################
     print("creating feature vector for whole MD reference control run")
     
-    setSize = int(0.2*length_prot)  # initiate set size of reduced feature vector
+    #setSize = int(0.2*length_prot)  # initiate set size of reduced feature vector
     
     influx_all_ref = "fluct_%s_all_referenceCTL.txt" % PDB_id_reference 
     incorr_all_ref = "corr_%s_all_referenceCTL_matrix.txt" % PDB_id_reference    
@@ -671,24 +671,24 @@ def feature_vector_corr():
         ##################################################################################################
         #### tune size of truncation of SVD to capture 80% of variance explained by site correlations ####
         ##################################################################################################
-        if (i == 0):
-            ratio = 0.9
-            setSize = int(ratio*length_prot)
-            #print(setSize)
-            svd =  TruncatedSVD(n_components = setSize)
-            M_transf = svd.fit_transform(M)
-            tve = svd.explained_variance_ratio_.sum()
-            while (tve >= 0.8 and setSize >= 5):
-                setSize = int(ratio*length_prot)
-                #print(setSize)
-                svd =  TruncatedSVD(n_components = setSize)
-                M_transf = svd.fit_transform(M)
-                #print(svd.explained_variance_ratio_.sum())
-                tve = svd.explained_variance_ratio_.sum()
-                #print(tve)
-                ratio = ratio-0.02
-            print("determine reduced feature vector size")
-            print(setSize)
+        #if (i == 0):
+        #    ratio = 0.9
+        #    setSize = int(ratio*length_prot)
+        #    #print(setSize)
+        #    svd =  TruncatedSVD(n_components = setSize)
+        #    M_transf = svd.fit_transform(M)
+        #    tve = svd.explained_variance_ratio_.sum()
+        #    while (tve >= 0.8 and setSize >= 5):
+        #        setSize = int(ratio*length_prot)
+        #        #print(setSize)
+        #        svd =  TruncatedSVD(n_components = setSize)
+        #        M_transf = svd.fit_transform(M)
+        #        #print(svd.explained_variance_ratio_.sum())
+        #        tve = svd.explained_variance_ratio_.sum()
+        #        #print(tve)
+        #        ratio = ratio-0.02
+        #    print("determine reduced feature vector size")
+        #    print(setSize)
         ##################################################################################################
         
         svd =  TruncatedSVD(n_components = setSize)
@@ -1011,11 +1011,18 @@ def map_KLsig():
     cmd = "%sChimeraX color_by_attr_chimerax_KLsig.py" % chimerax_path
     os.system(cmd)
 
-def map_MMDsig():
+def map_MMDsig_flux():
     # map MMD in chimerax
     print("mapping significant MMD to reference protein %s" % PDB_id_reference)
-    cmd = "%sChimeraX color_by_attr_chimerax_MMDsig.py" % chimerax_path
+    cmd = "%sChimeraX color_by_attr_chimerax_MMDsig_flux.py" % chimerax_path
     os.system(cmd)
+    
+def map_MMDsig_corr():
+    # map MMD in chimerax
+    print("mapping significant MMD to reference protein %s" % PDB_id_reference)
+    cmd = "%sChimeraX color_by_attr_chimerax_MMDsig_corr.py" % chimerax_path
+    os.system(cmd)
+
 
 #def map_CONSsig():
 #    # map conserved dynamics in chimerax
@@ -1068,8 +1075,8 @@ def main():
         #view_KL()
     if(disc_anal == "yes"):
         compare_dynamics_MMD()
-        map_MMDsig()
-        
+        map_MMDsig_flux()
+        map_MMDsig_corr()
     if(cons_anal == "yes"):
         conserved_dynamics()
         #map_CONSsig()
