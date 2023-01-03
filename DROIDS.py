@@ -212,10 +212,10 @@ class Ui_Dialog(object):
 
     def retranslateUi(self, Dialog):
         _translate = QtCore.QCoreApplication.translate
-        Dialog.setWindowTitle(_translate("Dialog", "DROIDS/maxDemon"))
+        Dialog.setWindowTitle(_translate("Dialog", "DROIDS/maxDemon 5.0 - free software for site-wise statistical comparison of biomolecular dynamics"))
         self.label.setText(_translate("Dialog", "<html><head/><body><p><span style=\" font-size:11pt; font-weight:600;\">query protein file list</span></p></body></html>"))
-        self.label_14.setText(_translate("Dialog", "<html><head/><body><p>i.e. bound or mutant</p></body></html>"))
-        self.label_15.setText(_translate("Dialog", "<html><head/><body><p>i.e.unbound or wildtype</p></body></html>"))
+        self.label_14.setText(_translate("Dialog", "<html><head/><body><p>i.e. ligand bound</p></body></html>"))
+        self.label_15.setText(_translate("Dialog", "<html><head/><body><p>i.e.unbound wildtype</p></body></html>"))
         self.label_2.setText(_translate("Dialog", "<html><head/><body><p><span style=\" font-weight:600;\">reference protein file list</span></p></body></html>"))
         self.label_5.setText(_translate("Dialog", "<html><head/><body><p>number of subsamples</p></body></html>"))
         self.label_6.setText(_translate("Dialog", "<html><head/><body><p>frames iper subsample (e.g. 100)</p></body></html>"))
@@ -252,11 +252,11 @@ class Ui_Dialog(object):
         self.radioButton_2.setText(_translate("Dialog", "dark"))
         self.checkBox.setText(_translate("Dialog", "site-wise comparison of atom fluctuations (signed symmetric KL divergence)"))
         self.checkBox_2.setText(_translate("Dialog", "site-wise comparison of molecular dynamics across the protein (MMD on learned features)"))
-        self.checkBox_3.setText(_translate("Dialog", "site-wise identification of conserved molecular dynamics (ortholog vs neutral learning profiles)"))
+        self.checkBox_3.setText(_translate("Dialog", "site-wise identification of non-neutral evolutionary changes in molecular dynamics (via MMD)"))
         self.checkBox_4.setText(_translate("Dialog", "site-wise identification of coordinated dynamics (mutual information on learned classifications)"))
         #self.checkBox_5.setText(_translate("Dialog", "site-wise comparison of genetic/drug class variants (divergence metrics on conserved dynamics)"))
         self.label_17.setText(_translate("Dialog", "<html><head/><body><p><span style=\" font-size:12pt; font-weight:600; color:#222dc8;\">DROIDS - compare protein dynamics at each individual site</span></p></body></html>"))
-        self.label_21.setText(_translate("Dialog", "<html><head/><body><p><span style=\" font-size:12pt; font-weight:600; color:#aa0000;\">maxDemon - identify sites of conserved and/or coordinated dynamics</span></p></body></html>"))
+        self.label_21.setText(_translate("Dialog", "<html><head/><body><p><span style=\" font-size:12pt; font-weight:600; color:#aa0000;\">maxDemon - identify sites of evolving and/or coordinated dynamics</span></p></body></html>"))
         self.label_7.setText(_translate("Dialog", "<html><head/><body><p align=\"center\"><span style=\" font-size:16pt; color:#ffffff;\">DROIDS/maxDemon 5.0 </span></p><p align=\"center\"><span style=\" font-size:16pt; color:#ffffff;\">AI-assisted Comparative Molecular Dynamics</span></p></body></html>"))
         self.textBrowser.setHtml(_translate("Dialog", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"

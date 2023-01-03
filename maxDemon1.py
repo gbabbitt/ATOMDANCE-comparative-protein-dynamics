@@ -44,8 +44,8 @@ class Ui_Dialog(object):
 
     def retranslateUi(self, Dialog):
         _translate = QtCore.QCoreApplication.translate
-        Dialog.setWindowTitle(_translate("Dialog", "Dialog"))
-        self.label.setText(_translate("Dialog", "<html><head/><body><p><span style=\" font-size:12pt; font-weight:600;\">ortholog protein file list</span></p></body></html>"))
+        Dialog.setWindowTitle(_translate("Dialog", "Enter 3 files (.pdb .prmtop .nc) for ortholog/genetic variant"))
+        self.label.setText(_translate("Dialog", "<html><head/><body><p><span style=\" font-size:12pt; font-weight:600;\">ortholog/mutant files</span></p></body></html>"))
         self.label_2.setText(_translate("Dialog", "<html><head/><body><p><span style=\" font-size:12pt; font-weight:600;\">file list example</span></p></body></html>"))
         self.textBrowser.setHtml(_translate("Dialog", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
@@ -84,13 +84,13 @@ class Ui_Dialog(object):
         f.close()
         
         ############# run ortholog sampling program ###################
-        print("running DROIDS/maxDemon 5.0 ortholog trajectory sampler")
+        print("running DROIDS/maxDemon 5.0 ortholog/mutant trajectory sampler")
         cmd1 = "python3 cpptraj_ortholog_sampler.py"
         os.system(cmd1)
         print("close user interface when completed")
     
     def analyzeIt(self):
-        print("running DROIDS/maxDemon 5.0 ortholog trajectory sampler")
+        print("running DROIDS/maxDemon 5.0 ortholog/mutant trajectory sampler")
         cmd1 = "python3 chimerax_consdyn.py"
         os.system(cmd1)
     
