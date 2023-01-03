@@ -1077,11 +1077,12 @@ def main():
         compare_dynamics_MMD()
         map_MMDsig_flux()
         map_MMDsig_corr()
+    if(coord_anal == "yes"):
+        coordinated_dynamics()
     if(cons_anal == "yes"):
         conserved_dynamics()
         #map_CONSsig()
-    if(coord_anal == "yes"):
-        coordinated_dynamics()
+    
     #if(var_anal == "yes"):
     #    variant_dynamics()
     print("comparative analyses of molecular dynamics is completed")
