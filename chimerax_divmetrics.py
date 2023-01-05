@@ -229,15 +229,22 @@ def compare_dynamics_KL():
         dfAsString = df_out.to_string(header=True, index=False)
         f_out.write(dfAsString)
         f_out.close
+    
     # plot KL divergence and dFLUX
-    myplot1 = (ggplot(myKLindex) + aes(x='pos', y='KL', color='res', fill='res') + geom_bar(stat='identity') + labs(title='site-wise signed divergence in atom fluctuation', x='amino acid site', y='signed JS divergence') + theme(panel_background=element_rect(fill='black', alpha=.6)))
+    myplot1 = (ggplot(myKLindex) + aes(x='pos', y='KL', color='res', fill='res') + geom_bar(stat='identity') + labs(title='site-wise signed divergence in atom fluctuation', x='amino acid site', y='signed KL divergence') + theme(panel_background=element_rect(fill='black', alpha=.6)))
     myplot2 = (ggplot(myKLindex) + aes(x='pos', y='dFLUX', color='res', fill='res') + geom_bar(stat='identity') + labs(title='site-wise difference in atom fluctuation', x='amino acid site', y='dFLUX') + theme(panel_background=element_rect(fill='black', alpha=.6)))
     myplot5 = (ggplot(myKLindex) + aes(x='pos', y='D', color='p_value', fill='p_value') + geom_bar(stat='identity') + labs(title='bonferroni corrected significance in divergence in atom fluctuation', x='amino acid site', y='D (2 sample KS test)') + theme(panel_background=element_rect(fill='black', alpha=.6)))
     myplot7 = (ggplot() + labs(title='site-wise atom fluctuation (orange is bound or mutated state)', x='amino acid site', y='atom fluctuation') + geom_line(data = myKLindex, mapping = aes(x='pos', y='FLUX_ref'), color = 'white') + geom_line(data = myKLindex, mapping = aes(x='pos', y='FLUX_query'), color = 'orange') + theme(panel_background=element_rect(fill='black', alpha=.6)))
-    myplot3 = (ggplot(myKLindex) + aes(x='pos', y='KL', color='res', fill='res') + geom_bar(stat='identity') + labs(title='site-wise signed divergence in atom fluctuation', x='amino acid site', y='signed JS divergence') + theme(panel_background=element_rect(fill='black', alpha=.1)))
+    myplot9 = (ggplot(myKLindex) + aes(x='pos', y='KL', color='pvalue', fill='pvalue') + geom_bar(stat='identity') + labs(title='bonferroni corrected significance in divergence in atom fluctuation', x='amino acid site', y='signed KL divergence', fill= "p value", color= "p value") + theme(panel_background=element_rect(fill='black', alpha=.6)))
+    myplot11 = (ggplot(myKLindex) + aes(x='pos', y='KL', color='KL', fill='KL') + geom_bar(stat='identity') + scale_color_gradient(low="blue",high="red") + scale_fill_gradient(low="blue",high="red") + labs(title='site-wise signed divergence in atom fluctuation', x='amino acid site', y='signed KL divergence', fill= "KL divergence", color= "KL divergence") + theme(panel_background=element_rect(fill='black', alpha=.6)))
+    
+    myplot3 = (ggplot(myKLindex) + aes(x='pos', y='KL', color='res', fill='res') + geom_bar(stat='identity') + labs(title='site-wise signed divergence in atom fluctuation', x='amino acid site', y='signed KL divergence') + theme(panel_background=element_rect(fill='black', alpha=.1)))
     myplot4 = (ggplot(myKLindex) + aes(x='pos', y='dFLUX', color='res', fill='res') + geom_bar(stat='identity') + labs(title='site-wise difference in atom fluctuation', x='amino acid site', y='dFLUX') + theme(panel_background=element_rect(fill='black', alpha=.1)))
     myplot6 = (ggplot(myKLindex) + aes(x='pos', y='D', color='p_value', fill='p_value') + geom_bar(stat='identity') + labs(title='bonferroni corrected significance in divergence in atom fluctuation', x='amino acid site', y='D (2 sample KS test)') + theme(panel_background=element_rect(fill='black', alpha=.1)))
     myplot8 = (ggplot() + labs(title='site-wise atom fluctuation (red is bound or mutated state)', x='amino acid site', y='atom fluctuation') + geom_line(data = myKLindex, mapping = aes(x='pos', y='FLUX_ref'), color = 'black') + geom_line(data = myKLindex, mapping = aes(x='pos', y='FLUX_query'), color = 'red') + theme(panel_background=element_rect(fill='black', alpha=.1)))
+    myplot10 = (ggplot(myKLindex) + aes(x='pos', y='KL', color='pvalue', fill='pvalue') + geom_bar(stat='identity') + labs(title='bonferroni corrected significance in divergence in atom fluctuation', x='amino acid site', y='signed KL divergence', fill= "p value", color= "p value") + theme(panel_background=element_rect(fill='black', alpha=.1)))
+    myplot12 = (ggplot(myKLindex) + aes(x='pos', y='KL', color='KL', fill='KL') + geom_bar(stat='identity') + scale_color_gradient(low="blue",high="red") + scale_fill_gradient(low="blue",high="red") + labs(title='site-wise signed divergence in atom fluctuation', x='amino acid site', y='signed KL divergence', fill= "KL divergence", color= "KL divergence") + theme(panel_background=element_rect(fill='black', alpha=.1)))
+    
     myplot1.save("divergenceMetrics_%s/KLdivergence_dark.png" % PDB_id_reference, width=10, height=5, dpi=300)
     myplot2.save("divergenceMetrics_%s/deltaFLUX_dark.png" % PDB_id_reference, width=10, height=5, dpi=300)
     myplot3.save("divergenceMetrics_%s/KLdivergence_light.png" % PDB_id_reference, width=10, height=5, dpi=300)
@@ -246,16 +253,25 @@ def compare_dynamics_KL():
     myplot6.save("divergenceMetrics_%s/KStest_light.png" % PDB_id_reference, width=10, height=5, dpi=300)
     myplot7.save("divergenceMetrics_%s/fluxlines_dark.png" % PDB_id_reference, width=10, height=5, dpi=300)
     myplot8.save("divergenceMetrics_%s/fluxlines_light.png" % PDB_id_reference, width=10, height=5, dpi=300)
+    myplot9.save("divergenceMetrics_%s/KS_pvalue_dark.png" % PDB_id_reference, width=10, height=5, dpi=300)
+    myplot10.save("divergenceMetrics_%s/KS_pvalue_light.png" % PDB_id_reference, width=10, height=5, dpi=300)
+    myplot11.save("divergenceMetrics_%s/KL_value_dark.png" % PDB_id_reference, width=10, height=5, dpi=300)
+    myplot12.save("divergenceMetrics_%s/KL_value_light.png" % PDB_id_reference, width=10, height=5, dpi=300)
+    
     if(graph_scheme == "light"):
         print(myplot3)
         print(myplot4)
         print(myplot6)
         print(myplot8)
+        print(myplot10)
+        print(myplot12)
     if(graph_scheme == "dark"):
         print(myplot1)
         print(myplot2)
         print(myplot5)
         print(myplot7)
+        print(myplot9)
+        print(myplot11)
         
     # candlestickploy
     
