@@ -347,21 +347,26 @@ def compare_dynamics_MMD_flux():
     myplot12 = (ggplot(myMMDindex) + aes(x='pos', y='MMD', color='res', fill='res') + geom_bar(stat='identity') + labs(title='site-wise MMD of learned features between functional binding states', x='amino acid site', y='MMD (atom fluctuation upon binding)') + theme(panel_background=element_rect(fill='black', alpha=.1)))
     myplot13 = (ggplot(myMMDindex) + aes(x='pos', y='MMD', color='plab', fill='plab') + geom_bar(stat='identity') + labs(title='site-wise MMD of learned features between functional binding states', x='amino acid site', y='MMD (atom fluctuation upon binding)') + theme(panel_background=element_rect(fill='black', alpha=.6)))
     myplot14 = (ggplot(myMMDindex) + aes(x='pos', y='MMD', color='plab', fill='plab') + geom_bar(stat='identity') + labs(title='site-wise MMD of learned features between functional binding states', x='amino acid site', y='MMD (atom fluctuation upon binding)') + theme(panel_background=element_rect(fill='black', alpha=.1)))
+    myplot15 = (ggplot(myMMDindex) + aes(x='pos', y='MMD', color='MMD', fill='MMD') + geom_bar(stat='identity') + scale_color_gradient2(low="blue",mid="white",high="red",midpoint=0) + scale_fill_gradient2(low="blue",mid="white",high="red",midpoint=0) + labs(title='site-wise MMD of learned features between functional binding states', x='amino acid site', y='MMD (atom fluctuation upon binding)') + theme(panel_background=element_rect(fill='black', alpha=.6)))
+    myplot16 = (ggplot(myMMDindex) + aes(x='pos', y='MMD', color='MMD', fill='MMD') + geom_bar(stat='identity') + scale_color_gradient2(low="blue",mid="white",high="red",midpoint=0) + scale_fill_gradient2(low="blue",mid="white",high="red",midpoint=0) + labs(title='site-wise MMD of learned features between functional binding states', x='amino acid site', y='MMD (atom fluctuation upon binding)') + theme(panel_background=element_rect(fill='black', alpha=.1)))
     myplot9.save("maxMeanDiscrepancy_%s/MMD_dark_p_flux.png" % PDB_id_reference, width=10, height=5, dpi=300)
     myplot10.save("maxMeanDiscrepancy_%s/MMD_light_p_flux.png" % PDB_id_reference, width=10, height=5, dpi=300)
     myplot11.save("maxMeanDiscrepancy_%s/MMD_dark_res_flux.png" % PDB_id_reference, width=10, height=5, dpi=300)
     myplot12.save("maxMeanDiscrepancy_%s/MMD_light_res_flux.png" % PDB_id_reference, width=10, height=5, dpi=300)
     myplot13.save("maxMeanDiscrepancy_%s/MMD_dark_sig_flux.png" % PDB_id_reference, width=10, height=5, dpi=300)
     myplot14.save("maxMeanDiscrepancy_%s/MMD_light_sig_flux.png" % PDB_id_reference, width=10, height=5, dpi=300)
+    myplot15.save("maxMeanDiscrepancy_%s/MMD_dark_MMD_flux.png" % PDB_id_reference, width=10, height=5, dpi=300)
+    myplot16.save("maxMeanDiscrepancy_%s/MMD_light_MMD_flux.png" % PDB_id_reference, width=10, height=5, dpi=300)
     if(graph_scheme == "light"):
         print(myplot10)
         print(myplot12)
         print(myplot14)
+        print(myplot16)
     if(graph_scheme == "dark"):
         print(myplot9)
         print(myplot11)
         print(myplot13)
-    
+        print(myplot15)
     # create control, reference PDB and attribute file for chimerax
     os.popen('cp %s.pdb ./ChimeraXvis/query.pdb' % PDB_id_query) # linix
     #os.popen('copy %sREDUCED.pdb ./ChimeraXvis/reference.pdb' % PDB_id_reference) # Windows
@@ -599,20 +604,26 @@ def compare_dynamics_MMD_corr():
     myplot12 = (ggplot(myMMDindex) + aes(x='pos', y='MMD', color='res', fill='res') + geom_bar(stat='identity') + labs(title='site-wise MMD of learned features between functional binding states', x='amino acid site', y='MMD (site correlations upon binding)') + theme(panel_background=element_rect(fill='black', alpha=.1)))
     myplot13 = (ggplot(myMMDindex) + aes(x='pos', y='MMD', color='plab', fill='plab') + geom_bar(stat='identity') + labs(title='site-wise MMD of learned features between functional binding states', x='amino acid site', y='MMD (site correlations upon binding)') + theme(panel_background=element_rect(fill='black', alpha=.6)))
     myplot14 = (ggplot(myMMDindex) + aes(x='pos', y='MMD', color='plab', fill='plab') + geom_bar(stat='identity') + labs(title='site-wise MMD of learned features between functional binding states', x='amino acid site', y='MMD (site correlations upon binding)') + theme(panel_background=element_rect(fill='black', alpha=.1)))
+    myplot15 = (ggplot(myMMDindex) + aes(x='pos', y='MMD', color='MMD', fill='MMD') + geom_bar(stat='identity') + scale_color_gradient2(low="red",mid="yellow",high="green",midpoint=0) + scale_fill_gradient2(low="red",mid="yellow",high="green",midpoint=0) + labs(title='site-wise MMD of learned features between functional binding states', x='amino acid site', y='MMD (atom fluctuation upon binding)') + theme(panel_background=element_rect(fill='black', alpha=.6)))
+    myplot16 = (ggplot(myMMDindex) + aes(x='pos', y='MMD', color='MMD', fill='MMD') + geom_bar(stat='identity') + scale_color_gradient2(low="red",mid="yellow",high="green",midpoint=0) + scale_fill_gradient2(low="red",mid="yellow",high="green",midpoint=0) + labs(title='site-wise MMD of learned features between functional binding states', x='amino acid site', y='MMD (atom fluctuation upon binding)') + theme(panel_background=element_rect(fill='black', alpha=.1)))
     myplot9.save("maxMeanDiscrepancy_%s/MMD_dark_p_corr.png" % PDB_id_reference, width=10, height=5, dpi=300)
     myplot10.save("maxMeanDiscrepancy_%s/MMD_light_p_corr.png" % PDB_id_reference, width=10, height=5, dpi=300)
     myplot11.save("maxMeanDiscrepancy_%s/MMD_dark_res_corr.png" % PDB_id_reference, width=10, height=5, dpi=300)
     myplot12.save("maxMeanDiscrepancy_%s/MMD_light_res_corr.png" % PDB_id_reference, width=10, height=5, dpi=300)
     myplot13.save("maxMeanDiscrepancy_%s/MMD_dark_sig_corr.png" % PDB_id_reference, width=10, height=5, dpi=300)
     myplot14.save("maxMeanDiscrepancy_%s/MMD_light_sig_corr.png" % PDB_id_reference, width=10, height=5, dpi=300)
+    myplot15.save("maxMeanDiscrepancy_%s/MMD_dark_p_corr.png" % PDB_id_reference, width=10, height=5, dpi=300)
+    myplot16.save("maxMeanDiscrepancy_%s/MMD_light_p_corr.png" % PDB_id_reference, width=10, height=5, dpi=300)
     if(graph_scheme == "light"):
         print(myplot10)
         print(myplot12)
         print(myplot14)
+        print(myplot16)
     if(graph_scheme == "dark"):
         print(myplot9)
         print(myplot11)
         print(myplot13)
+        print(myplot15)
     # create control, reference PDB and attribute file for chimerax
     os.popen('cp %s.pdb ./ChimeraXvis/query.pdb' % PDB_id_query) # linix
     #os.popen('copy %sREDUCED.pdb ./ChimeraXvis/reference.pdb' % PDB_id_reference) # Windows
