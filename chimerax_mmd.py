@@ -341,12 +341,12 @@ def compare_dynamics_MMD_flux():
         f_out.write(dfAsString)
         f_out.close
     # make MMD plots
-    myplot9 = (ggplot(myMMDindex) + aes(x='pos', y='MMD', color='pval', fill='pval') + geom_bar(stat='identity') + labs(title='site-wise MMD of learned features between functional states', x='amino acid site', y='MMD (atom fluctuation)') + theme(panel_background=element_rect(fill='black', alpha=.6)))
-    myplot10 = (ggplot(myMMDindex) + aes(x='pos', y='MMD', color='pval', fill='pval') + geom_bar(stat='identity') + labs(title='site-wise MMD of learned features between functional states', x='amino acid site', y='MMD (atom fluctuation)') + theme(panel_background=element_rect(fill='black', alpha=.1)))
-    myplot11 = (ggplot(myMMDindex) + aes(x='pos', y='MMD', color='res', fill='res') + geom_bar(stat='identity') + labs(title='site-wise MMD of learned features between functional states', x='amino acid site', y='MMD (atom fluctuation)') + theme(panel_background=element_rect(fill='black', alpha=.6)))
-    myplot12 = (ggplot(myMMDindex) + aes(x='pos', y='MMD', color='res', fill='res') + geom_bar(stat='identity') + labs(title='site-wise MMD of learned features between functional states', x='amino acid site', y='MMD (atom fluctuation)') + theme(panel_background=element_rect(fill='black', alpha=.1)))
-    myplot13 = (ggplot(myMMDindex) + aes(x='pos', y='MMD', color='plab', fill='plab') + geom_bar(stat='identity') + labs(title='site-wise MMD of learned features between functional states', x='amino acid site', y='MMD (atom fluctuation)') + theme(panel_background=element_rect(fill='black', alpha=.6)))
-    myplot14 = (ggplot(myMMDindex) + aes(x='pos', y='MMD', color='plab', fill='plab') + geom_bar(stat='identity') + labs(title='site-wise MMD of learned features between functional states', x='amino acid site', y='MMD (atom fluctuation)') + theme(panel_background=element_rect(fill='black', alpha=.1)))
+    myplot9 = (ggplot(myMMDindex) + aes(x='pos', y='MMD', color='pval', fill='pval') + geom_bar(stat='identity') + labs(title='site-wise MMD of learned features between functional binding states', x='amino acid site', y='MMD (atom fluctuation upon binding)') + theme(panel_background=element_rect(fill='black', alpha=.6)))
+    myplot10 = (ggplot(myMMDindex) + aes(x='pos', y='MMD', color='pval', fill='pval') + geom_bar(stat='identity') + labs(title='site-wise MMD of learned features between functional binding states', x='amino acid site', y='MMD (atom fluctuation upon binding)') + theme(panel_background=element_rect(fill='black', alpha=.1)))
+    myplot11 = (ggplot(myMMDindex) + aes(x='pos', y='MMD', color='res', fill='res') + geom_bar(stat='identity') + labs(title='site-wise MMD of learned features between functional binding states', x='amino acid site', y='MMD (atom fluctuation upon binding)') + theme(panel_background=element_rect(fill='black', alpha=.6)))
+    myplot12 = (ggplot(myMMDindex) + aes(x='pos', y='MMD', color='res', fill='res') + geom_bar(stat='identity') + labs(title='site-wise MMD of learned features between functional binding states', x='amino acid site', y='MMD (atom fluctuation upon binding)') + theme(panel_background=element_rect(fill='black', alpha=.1)))
+    myplot13 = (ggplot(myMMDindex) + aes(x='pos', y='MMD', color='plab', fill='plab') + geom_bar(stat='identity') + labs(title='site-wise MMD of learned features between functional binding states', x='amino acid site', y='MMD (atom fluctuation upon binding)') + theme(panel_background=element_rect(fill='black', alpha=.6)))
+    myplot14 = (ggplot(myMMDindex) + aes(x='pos', y='MMD', color='plab', fill='plab') + geom_bar(stat='identity') + labs(title='site-wise MMD of learned features between functional binding states', x='amino acid site', y='MMD (atom fluctuation upon binding)') + theme(panel_background=element_rect(fill='black', alpha=.1)))
     myplot9.save("maxMeanDiscrepancy_%s/MMD_dark_p_flux.png" % PDB_id_reference, width=10, height=5, dpi=300)
     myplot10.save("maxMeanDiscrepancy_%s/MMD_light_p_flux.png" % PDB_id_reference, width=10, height=5, dpi=300)
     myplot11.save("maxMeanDiscrepancy_%s/MMD_dark_res_flux.png" % PDB_id_reference, width=10, height=5, dpi=300)
@@ -593,12 +593,12 @@ def compare_dynamics_MMD_corr():
         f_out.write(dfAsString)
         f_out.close
     # make MMD plots
-    myplot9 = (ggplot(myMMDindex) + aes(x='pos', y='MMD', color='pval', fill='pval') + geom_bar(stat='identity') + labs(title='site-wise MMD of learned features between functional states', x='amino acid site', y='MMD (atom correlation)') + theme(panel_background=element_rect(fill='black', alpha=.6)))
-    myplot10 = (ggplot(myMMDindex) + aes(x='pos', y='MMD', color='pval', fill='pval') + geom_bar(stat='identity') + labs(title='site-wise MMD of learned features between functional states', x='amino acid site', y='MMD (atom correlation)') + theme(panel_background=element_rect(fill='black', alpha=.1)))
-    myplot11 = (ggplot(myMMDindex) + aes(x='pos', y='MMD', color='res', fill='res') + geom_bar(stat='identity') + labs(title='site-wise MMD of learned features between functional states', x='amino acid site', y='MMD (atom correlation)') + theme(panel_background=element_rect(fill='black', alpha=.6)))
-    myplot12 = (ggplot(myMMDindex) + aes(x='pos', y='MMD', color='res', fill='res') + geom_bar(stat='identity') + labs(title='site-wise MMD of learned features between functional states', x='amino acid site', y='MMD (atom correlation)') + theme(panel_background=element_rect(fill='black', alpha=.1)))
-    myplot13 = (ggplot(myMMDindex) + aes(x='pos', y='MMD', color='plab', fill='plab') + geom_bar(stat='identity') + labs(title='site-wise MMD of learned features between functional states', x='amino acid site', y='MMD (atom correlation)') + theme(panel_background=element_rect(fill='black', alpha=.6)))
-    myplot14 = (ggplot(myMMDindex) + aes(x='pos', y='MMD', color='plab', fill='plab') + geom_bar(stat='identity') + labs(title='site-wise MMD of learned features between functional states', x='amino acid site', y='MMD (atom correlation)') + theme(panel_background=element_rect(fill='black', alpha=.1)))
+    myplot9 = (ggplot(myMMDindex) + aes(x='pos', y='MMD', color='pval', fill='pval') + geom_bar(stat='identity') + labs(title='site-wise MMD of learned features between functional binding states', x='amino acid site', y='MMD (site correlations upon binding)') + theme(panel_background=element_rect(fill='black', alpha=.6)))
+    myplot10 = (ggplot(myMMDindex) + aes(x='pos', y='MMD', color='pval', fill='pval') + geom_bar(stat='identity') + labs(title='site-wise MMD of learned features between functional binding states', x='amino acid site', y='MMD (site correlations upon binding)') + theme(panel_background=element_rect(fill='black', alpha=.1)))
+    myplot11 = (ggplot(myMMDindex) + aes(x='pos', y='MMD', color='res', fill='res') + geom_bar(stat='identity') + labs(title='site-wise MMD of learned features between functional binding states', x='amino acid site', y='MMD (site correlations upon binding)') + theme(panel_background=element_rect(fill='black', alpha=.6)))
+    myplot12 = (ggplot(myMMDindex) + aes(x='pos', y='MMD', color='res', fill='res') + geom_bar(stat='identity') + labs(title='site-wise MMD of learned features between functional binding states', x='amino acid site', y='MMD (site correlations upon binding)') + theme(panel_background=element_rect(fill='black', alpha=.1)))
+    myplot13 = (ggplot(myMMDindex) + aes(x='pos', y='MMD', color='plab', fill='plab') + geom_bar(stat='identity') + labs(title='site-wise MMD of learned features between functional binding states', x='amino acid site', y='MMD (site correlations upon binding)') + theme(panel_background=element_rect(fill='black', alpha=.6)))
+    myplot14 = (ggplot(myMMDindex) + aes(x='pos', y='MMD', color='plab', fill='plab') + geom_bar(stat='identity') + labs(title='site-wise MMD of learned features between functional binding states', x='amino acid site', y='MMD (site correlations upon binding)') + theme(panel_background=element_rect(fill='black', alpha=.1)))
     myplot9.save("maxMeanDiscrepancy_%s/MMD_dark_p_corr.png" % PDB_id_reference, width=10, height=5, dpi=300)
     myplot10.save("maxMeanDiscrepancy_%s/MMD_light_p_corr.png" % PDB_id_reference, width=10, height=5, dpi=300)
     myplot11.save("maxMeanDiscrepancy_%s/MMD_dark_res_corr.png" % PDB_id_reference, width=10, height=5, dpi=300)
@@ -686,13 +686,29 @@ def mmd_rbf_corr(X, Y, gamma=1.0/n_features_corr):
     YY = metrics.pairwise.rbf_kernel(Y, Y, gamma)
     XY = metrics.pairwise.rbf_kernel(X, Y, gamma)
     return XX.mean() + YY.mean() - 2 * XY.mean()
-      
+ 
+def map_MMDsig_flux():
+    # map MMD in chimerax
+    print("mapping significant MMD to reference protein %s" % PDB_id_reference)
+    cmd = "%sChimeraX color_by_attr_chimerax_MMDsig_flux.py" % chimerax_path
+    os.system(cmd)
+    
+def map_MMDsig_corr():
+    # map MMD in chimerax
+    print("mapping significant MMD to reference protein %s" % PDB_id_reference)
+    cmd = "%sChimeraX color_by_attr_chimerax_MMDsig_corr.py" % chimerax_path
+    os.system(cmd)
+   
+    
+         
 ###############################################################
 ###############################################################
 
 def main():
     compare_dynamics_MMD_flux()
-    compare_dynamics_MMD_corr()    
+    map_MMDsig_flux()
+    compare_dynamics_MMD_corr()
+    map_MMDsig_corr()
 ###############################################################
 if __name__ == '__main__':
     main()

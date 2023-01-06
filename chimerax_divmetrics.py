@@ -334,13 +334,26 @@ def compare_dynamics_KL():
             KLpos = 0.0
         #print(KLpos)
         f4.write("\t:%s\t%s\n" % (sitepos, KLpos))
-    
+
+def map_KL():    
+    # map KL divergence in chimerax
+    print("mapping significant KLdivergence to reference protein %s" % PDB_id_reference)
+    cmd = "%sChimeraX color_by_attr_chimerax_KL.py" % chimerax_path
+    os.system(cmd)
+
+def map_KLsig():
+    # map KL divergence in chimerax
+    print("mapping significant KLdivergence to reference protein %s" % PDB_id_reference)
+    cmd = "%sChimeraX color_by_attr_chimerax_KLsig.py" % chimerax_path
+    os.system(cmd)
  
 ###############################################################
 ###############################################################
 
 def main():
     compare_dynamics_KL()
+    map_KL()
+    map_KLsig()
     print("comparative analyses of molecular dynamics is completed")
     
     

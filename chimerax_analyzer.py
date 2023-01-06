@@ -999,31 +999,6 @@ def plot_rmsd():
         
 #################################################################################    
     
-def map_KL():    
-    # map KL divergence in chimerax
-    print("mapping significant KLdivergence to reference protein %s" % PDB_id_reference)
-    cmd = "%sChimeraX color_by_attr_chimerax_KL.py" % chimerax_path
-    os.system(cmd)
-
-def map_KLsig():
-    # map KL divergence in chimerax
-    print("mapping significant KLdivergence to reference protein %s" % PDB_id_reference)
-    cmd = "%sChimeraX color_by_attr_chimerax_KLsig.py" % chimerax_path
-    os.system(cmd)
-
-def map_MMDsig_flux():
-    # map MMD in chimerax
-    print("mapping significant MMD to reference protein %s" % PDB_id_reference)
-    cmd = "%sChimeraX color_by_attr_chimerax_MMDsig_flux.py" % chimerax_path
-    os.system(cmd)
-    
-def map_MMDsig_corr():
-    # map MMD in chimerax
-    print("mapping significant MMD to reference protein %s" % PDB_id_reference)
-    cmd = "%sChimeraX color_by_attr_chimerax_MMDsig_corr.py" % chimerax_path
-    os.system(cmd)
-
-
 #def map_CONSsig():
 #    # map conserved dynamics in chimerax
 #    print("mapping significant CONSERVED DYNAMICS to reference protein %s" % PDB_id_reference)
@@ -1070,14 +1045,10 @@ def main():
     #view_reference()
     if(div_anal == "yes"):
         compare_dynamics_KL()
-        map_KL()
-        map_KLsig()
         #view_KL()
     if(disc_anal == "yes"):
         compare_dynamics_MMD()
-        map_MMDsig_flux()
-        map_MMDsig_corr()
-    
+            
     if(cons_anal == "yes"):
         conserved_dynamics()
         #map_CONSsig()
