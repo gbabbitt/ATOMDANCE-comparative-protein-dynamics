@@ -52,7 +52,7 @@ class Ui_Dialog(object):
         self.lineEdit = QtWidgets.QLineEdit(self.frame_3)
         self.lineEdit.setGeometry(QtCore.QRect(20, 30, 113, 28))
         self.lineEdit.setObjectName("lineEdit")
-        self.lineEdit.setText("25")
+        self.lineEdit.setText("35")
         self.label_5 = QtWidgets.QLabel(self.frame_3)
         self.label_5.setGeometry(QtCore.QRect(20, 10, 261, 16))
         self.label_5.setObjectName("label_5")
@@ -212,7 +212,7 @@ class Ui_Dialog(object):
 
     def retranslateUi(self, Dialog):
         _translate = QtCore.QCoreApplication.translate
-        Dialog.setWindowTitle(_translate("Dialog", "ATOM DANCE - free software for site-wise statistical comparison of biomolecular dynamics"))
+        Dialog.setWindowTitle(_translate("Dialog", "ATOMDANCE - open-source software for site-wise statistical machine learning comparisons of biomolecular dynamics"))
         self.label.setText(_translate("Dialog", "<html><head/><body><p><span style=\" font-size:11pt; font-weight:600;\">query protein file list</span></p></body></html>"))
         self.label_14.setText(_translate("Dialog", "<html><head/><body><p>i.e. ligand bound</p></body></html>"))
         self.label_15.setText(_translate("Dialog", "<html><head/><body><p>i.e.unbound wildtype</p></body></html>"))
@@ -253,11 +253,11 @@ class Ui_Dialog(object):
         self.checkBox.setText(_translate("Dialog", "site-wise comparison + hypothesis test for atom fluctuations (signed KL divergence)"))
         self.checkBox_2.setText(_translate("Dialog", "site-wise comparison of molecular dynamics across the protein (MMD on learned features)"))
         self.checkBox_3.setText(_translate("Dialog", "site-wise identification of non-neutral evolutionary changes in molecular dynamics (via MMD)"))
-        self.checkBox_4.setText(_translate("Dialog", "CHOREOGRAPH - heatmaps of coordinated dynamics (site correlations + mutual information)"))
+        self.checkBox_4.setText(_translate("Dialog", "CHOREOGRAPH 1.0 - heatmaps of coordinated dynamics (site correlations + mutual information)"))
         #self.checkBox_5.setText(_translate("Dialog", "site-wise comparison of genetic/drug class variants (divergence metrics on conserved dynamics)"))
-        self.label_17.setText(_translate("Dialog", "<html><head/><body><p><span style=\" font-size:12pt; font-weight:600; color:#222dc8;\">DROIDS - compare protein dynamics at each individual site</span></p></body></html>"))
-        self.label_21.setText(_translate("Dialog", "<html><head/><body><p><span style=\" font-size:12pt; font-weight:600; color:#aa0000;\">maxDemon - machine learning for comparative protein dynamics</span></p></body></html>"))
-        self.label_7.setText(_translate("Dialog", "<html><head/><body><p align=\"center\"><span style=\" font-size:16pt; color:#ffffff;\"> ATOM DANCE SOFTWARE SUITE 5.0 </span></p><p align=\"center\"><span style=\" font-size:16pt; color:#ffffff;\">AI-assisted Comparative Molecular Dynamics</span></p></body></html>"))
+        self.label_17.setText(_translate("Dialog", "<html><head/><body><p><span style=\" font-size:12pt; font-weight:600; color:#222dc8;\">DROIDS 5.0- compare protein dynamics at each individual site</span></p></body></html>"))
+        self.label_21.setText(_translate("Dialog", "<html><head/><body><p><span style=\" font-size:12pt; font-weight:600; color:#aa0000;\">maxDemon 4.0 - kernel learning for comparative protein dynamics</span></p></body></html>"))
+        self.label_7.setText(_translate("Dialog", "<html><head/><body><p align=\"center\"><span style=\" font-size:16pt; color:#ffffff;\"> ATOMDANCE statistical machine learning post- </span></p><p align=\"center\"><span style=\" font-size:16pt; color:#ffffff;\">processor for comparative biomolecular dynamics</span></p></body></html>"))
         self.textBrowser.setHtml(_translate("Dialog", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
