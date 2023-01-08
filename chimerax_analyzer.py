@@ -177,7 +177,7 @@ def feature_vector_corr():
         os.makedirs('features/feature_sub_ref')
     if not os.path.exists('features/feature_sub_refCTL'):
         os.makedirs('features/feature_sub_refCTL')
-    if not os.path.exists('features/features/feature_sub_refLG'):
+    if not os.path.exists('features/feature_sub_refLG'):
         os.makedirs('features/feature_sub_refLG') 
     if not os.path.exists('feature_all_query_reduced'):
         os.makedirs('features/feature_all_query_reduced')  
