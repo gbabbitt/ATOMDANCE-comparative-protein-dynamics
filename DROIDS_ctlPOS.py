@@ -257,9 +257,9 @@ class Ui_Dialog(object):
         self.checkBox_3.setText(_translate("Dialog", "site-wise identification of non-neutral evolutionary changes in molecular dynamics (via MMD)"))
         self.checkBox_4.setText(_translate("Dialog", "CHOREOGRAPH 1.0 - heatmaps of coordinated site dynamics (via correlation + mutual information)"))
         #self.checkBox_5.setText(_translate("Dialog", "site-wise comparison of genetic/drug class variants (divergence metrics on conserved dynamics)"))
-        self.label_17.setText(_translate("Dialog", "<html><head/><body><p><span style=\" font-size:12pt; font-weight:600; color:#222dc8;\">DROIDS 5.0- statistically compare protein dynamics at each individual site</span></p></body></html>"))
+        self.label_17.setText(_translate("Dialog", "<html><head/><body><p><span style=\" font-size:12pt; font-weight:600; color:#222dc8;\">DROIDS 5.0 - statistically compare protein dynamics at each individual site</span></p></body></html>"))
         self.label_21.setText(_translate("Dialog", "<html><head/><body><p><span style=\" font-size:12pt; font-weight:600; color:#aa0000;\">maxDemon 4.0 - kernel learning for comparative protein dynamics</span></p></body></html>"))
-        self.label_7.setText(_translate("Dialog", "<html><head/><body><p align=\"center\"><span style=\" font-size:16pt; color:#ffffff;\"> ATOMDANCE statistical machine learning post- </span></p><p align=\"center\"><span style=\" font-size:16pt; color:#ffffff;\">processor for comparative biomolecular dynamics</span></p></body></html>"))
+        self.label_7.setText(_translate("Dialog", "<html><head/><body><p align=\"center\"><span style=\" font-size:16pt; color:#ffffff;\"> ATOMDANCE - statistical machine learning post- </span></p><p align=\"center\"><span style=\" font-size:16pt; color:#ffffff;\">processor for comparative biomolecular dynamics</span></p></body></html>"))
         self.textBrowser.setHtml(_translate("Dialog", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
