@@ -163,31 +163,36 @@ def resinfo():
 ################################################################################
 def feature_vector_corr():
     print("creating feature vector files for machine learning on atom correlations")
-    if not os.path.exists('feature_all_query'):
-        os.makedirs('feature_all_query')  
-    if not os.path.exists('feature_all_ref'):
-        os.makedirs('feature_all_ref')
-    if not os.path.exists('feature_all_refCTL'):
-        os.makedirs('feature_all_refCTL')    
-    if not os.path.exists('feature_sub_query'):
-        os.makedirs('feature_sub_query')  
-    if not os.path.exists('feature_sub_ref'):
-        os.makedirs('feature_sub_ref')
-    if not os.path.exists('feature_sub_refCTL'):
-        os.makedirs('feature_sub_refCTL')    
+    if not os.path.exists('features/feature_all_query'):
+        os.makedirs('features/feature_all_query')  
+    if not os.path.exists('features/feature_all_ref'):
+        os.makedirs('features/feature_all_ref')
+    if not os.path.exists('features/feature_all_refCTL'):
+        os.makedirs('features/feature_all_refCTL')
+    if not os.path.exists('features/feature_all_refLG'):
+        os.makedirs('features/feature_all_refLG')    
+    if not os.path.exists('features/feature_sub_query'):
+        os.makedirs('features/feature_sub_query')  
+    if not os.path.exists('features/feature_sub_ref'):
+        os.makedirs('features/feature_sub_ref')
+    if not os.path.exists('features/feature_sub_refCTL'):
+        os.makedirs('features/feature_sub_refCTL')
+    if not os.path.exists('features/features/feature_sub_refLG'):
+        os.makedirs('features/feature_sub_refLG') 
     if not os.path.exists('feature_all_query_reduced'):
-        os.makedirs('feature_all_query_reduced')  
-    if not os.path.exists('feature_all_ref_reduced'):
-        os.makedirs('feature_all_ref_reduced')
-    if not os.path.exists('feature_all_refCTL_reduced'):
-        os.makedirs('feature_all_refCTL_reduced')    
-    if not os.path.exists('feature_sub_query_reduced'):
-        os.makedirs('feature_sub_query_reduced')  
-    if not os.path.exists('feature_sub_ref_reduced'):
-        os.makedirs('feature_sub_ref_reduced')
-    if not os.path.exists('feature_sub_refCTL_reduced'):
-        os.makedirs('feature_sub_refCTL_reduced')    
-    
+        os.makedirs('features/feature_all_query_reduced')  
+    if not os.path.exists('features/feature_all_ref_reduced'):
+        os.makedirs('features/feature_all_ref_reduced')
+    if not os.path.exists('features/feature_all_refCTL_reduced'):
+        os.makedirs('features/feature_all_refCTL_reduced')    
+    if not os.path.exists('features/feature_sub_query_reduced'):
+        os.makedirs('features/feature_sub_query_reduced')  
+    if not os.path.exists('features/feature_sub_ref_reduced'):
+        os.makedirs('features/feature_sub_ref_reduced')
+    if not os.path.exists('features/feature_sub_refCTL_reduced'):
+        os.makedirs('features/feature_sub_refCTL_reduced')    
+    if not os.path.exists('features/feature_sub_refLG_reduced'):
+        os.makedirs('features/feature_sub_refLG_reduced')
     #######################################################
     ###### feature vector for whole reference MD run ######
     #######################################################
@@ -222,7 +227,7 @@ def feature_vector_corr():
     #print(feature_all_ref)
     
     df1 = feature_all_ref
-    writePath = "./feature_all_ref/feature_%s_all_ref.txt" % PDB_id_reference
+    writePath = "./features/feature_all_ref/feature_%s_all_ref.txt" % PDB_id_reference
     with open(writePath, 'w') as f1:
         dfAsString = df1.to_string(header=False, index=True)
         f1.write(dfAsString)
@@ -254,7 +259,7 @@ def feature_vector_corr():
     feature_all_ref_reduced = M_transf
     
     df2 = feature_all_ref_reduced
-    writePath = "./feature_all_ref_reduced/feature_%s_all_ref.txt" % PDB_id_reference
+    writePath = "./features/feature_all_ref_reduced/feature_%s_all_ref.txt" % PDB_id_reference
     with open(writePath, 'w') as f2:
         dfAsString = df2.to_string(header=False, index=True)
         f2.write(dfAsString)
@@ -267,8 +272,8 @@ def feature_vector_corr():
     
     for i in range(subsamples):
         print("creating reduced feature vector for subsample %s MD reference run" % i)
-        influx_sub_ref = "./atomflux_ref/fluct_%s_sub_reference.txt" % PDB_id_reference 
-        incorr_sub_ref = "./atomcorr_ref_matrix/corr_%s_sub_reference_matrix_%s.txt" % (PDB_id_reference, i)    
+        influx_sub_ref = "./subsamples/atomflux_ref/fluct_%s_sub_reference.txt" % PDB_id_reference 
+        incorr_sub_ref = "./subsamples/atomcorr_ref_matrix/corr_%s_sub_reference_matrix_%s.txt" % (PDB_id_reference, i)    
         dfflux_sub_ref = pd.read_csv(influx_sub_ref, sep="\s+")
         dfcorr_sub_ref = pd.read_csv(incorr_sub_ref, sep="\s+", header=None)
         del dfflux_sub_ref[dfflux_sub_ref.columns[0]] # remove first column
@@ -300,7 +305,7 @@ def feature_vector_corr():
         #print(dfcorr_sub_ref)
         #print(feature_sub_ref)
         df1 = feature_sub_ref
-        writePath = "./feature_sub_ref/feature_%s_sub_ref_%s.txt" % (PDB_id_reference, i)
+        writePath = "./features/feature_sub_ref/feature_%s_sub_ref_%s.txt" % (PDB_id_reference, i)
         with open(writePath, 'w') as f1:
             dfAsString = df1.to_string(header=False, index=True)
             f1.write(dfAsString)
@@ -360,7 +365,7 @@ def feature_vector_corr():
         feature_sub_ref_reduced = M_transf
         
         df2 = feature_sub_ref_reduced
-        writePath = "./feature_sub_ref_reduced/feature_%s_sub_ref_%s.txt" % (PDB_id_reference, i)
+        writePath = "./features/feature_sub_ref_reduced/feature_%s_sub_ref_%s.txt" % (PDB_id_reference, i)
         with open(writePath, 'w') as f2:
             dfAsString = df2.to_string(header=False, index=True)
             f2.write(dfAsString)
@@ -400,7 +405,7 @@ def feature_vector_corr():
     #print(dfcorr_all_query)
     #print(feature_all_query)
     df1 = feature_all_query
-    writePath = "./feature_all_query/feature_%s_all_query.txt" % PDB_id_query
+    writePath = "./features/feature_all_query/feature_%s_all_query.txt" % PDB_id_query
     with open(writePath, 'w') as f1:
         dfAsString = df1.to_string(header=False, index=True)
         f1.write(dfAsString)
@@ -430,7 +435,7 @@ def feature_vector_corr():
     feature_all_query_reduced = M_transf
     
     df2 = feature_all_query_reduced
-    writePath = "./feature_all_query_reduced/feature_%s_all_query.txt" % PDB_id_query
+    writePath = "./features/feature_all_query_reduced/feature_%s_all_query.txt" % PDB_id_query
     with open(writePath, 'w') as f2:
         dfAsString = df2.to_string(header=False, index=True)
         f2.write(dfAsString)
@@ -443,8 +448,8 @@ def feature_vector_corr():
     
     for i in range(subsamples):
         print("creating reduced feature vector for subsample %s MD query run" % i)
-        influx_sub_query = "./atomflux_query/fluct_%s_sub_query.txt" % PDB_id_query 
-        incorr_sub_query = "./atomcorr_query_matrix/corr_%s_sub_query_matrix_%s.txt" % (PDB_id_query, i)    
+        influx_sub_query = "./subsamples/atomflux_query/fluct_%s_sub_query.txt" % PDB_id_query 
+        incorr_sub_query = "./subsamples/atomcorr_query_matrix/corr_%s_sub_query_matrix_%s.txt" % (PDB_id_query, i)    
         dfflux_sub_query = pd.read_csv(influx_sub_query, sep="\s+")
         dfcorr_sub_query = pd.read_csv(incorr_sub_query, sep="\s+", header=None)
         del dfflux_sub_query[dfflux_sub_query.columns[0]] # remove first column
@@ -476,7 +481,7 @@ def feature_vector_corr():
         #print(dfcorr_sub_query)
         #print(feature_sub_query)
         df1 = feature_sub_query
-        writePath = "./feature_sub_query/feature_%s_sub_query_%s.txt" % (PDB_id_query, i)
+        writePath = "./features/feature_sub_query/feature_%s_sub_query_%s.txt" % (PDB_id_query, i)
         with open(writePath, 'w') as f1:
             dfAsString = df1.to_string(header=False, index=True)
             f1.write(dfAsString)
@@ -536,7 +541,7 @@ def feature_vector_corr():
         feature_sub_query_reduced = M_transf
         
         df2 = feature_sub_query_reduced
-        writePath = "./feature_sub_query_reduced/feature_%s_sub_query_%s.txt" % (PDB_id_query, i)
+        writePath = "./features/feature_sub_query_reduced/feature_%s_sub_query_%s.txt" % (PDB_id_query, i)
         with open(writePath, 'w') as f2:
             dfAsString = df2.to_string(header=False, index=True)
             f2.write(dfAsString)
@@ -578,7 +583,7 @@ def feature_vector_corr():
     #print(dfcorr_all_ref)
     #print(feature_all_ref)
     df1 = feature_all_ref
-    writePath = "./feature_all_refCTL/feature_%s_all_refCTL.txt" % PDB_id_reference
+    writePath = "./features/feature_all_refCTL/feature_%s_all_refCTL.txt" % PDB_id_reference
     with open(writePath, 'w') as f1:
         dfAsString = df1.to_string(header=False, index=True)
         f1.write(dfAsString)
@@ -610,7 +615,7 @@ def feature_vector_corr():
     feature_all_ref_reduced = M_transf
     
     df2 = feature_all_ref_reduced
-    writePath = "./feature_all_refCTL_reduced/feature_%s_all_refCTL.txt" % PDB_id_reference
+    writePath = "./features/feature_all_refCTL_reduced/feature_%s_all_refCTL.txt" % PDB_id_reference
     with open(writePath, 'w') as f2:
         dfAsString = df2.to_string(header=False, index=True)
         f2.write(dfAsString)
@@ -623,8 +628,8 @@ def feature_vector_corr():
     
     for i in range(subsamples):
         print("creating reduced feature vector for subsample %s MD reference control run" % i)
-        influx_sub_ref = "./atomflux_refCTL/fluct_%s_sub_referenceCTL.txt" % PDB_id_reference 
-        incorr_sub_ref = "./atomcorr_refCTL_matrix/corr_%s_sub_referenceCTL_matrix_%s.txt" % (PDB_id_reference, i)    
+        influx_sub_ref = "./subsamples/atomflux_refCTL/fluct_%s_sub_referenceCTL.txt" % PDB_id_reference 
+        incorr_sub_ref = "./subsamples/atomcorr_refCTL_matrix/corr_%s_sub_referenceCTL_matrix_%s.txt" % (PDB_id_reference, i)    
         dfflux_sub_ref = pd.read_csv(influx_sub_ref, sep="\s+")
         dfcorr_sub_ref = pd.read_csv(incorr_sub_ref, sep="\s+", header=None)
         del dfflux_sub_ref[dfflux_sub_ref.columns[0]] # remove first column
@@ -656,7 +661,7 @@ def feature_vector_corr():
         #print(dfcorr_sub_ref)
         #print(feature_sub_ref)
         df1 = feature_sub_ref
-        writePath = "./feature_sub_refCTL/feature_%s_sub_refCTL_%s.txt" % (PDB_id_reference, i)
+        writePath = "./features/feature_sub_refCTL/feature_%s_sub_refCTL_%s.txt" % (PDB_id_reference, i)
         with open(writePath, 'w') as f1:
             dfAsString = df1.to_string(header=False, index=True)
             f1.write(dfAsString)
@@ -717,7 +722,7 @@ def feature_vector_corr():
         feature_sub_ref_reduced = M_transf
         
         df2 = feature_sub_ref_reduced
-        writePath = "./feature_sub_refCTL_reduced/feature_%s_sub_refCTL_%s.txt" % (PDB_id_reference, i)
+        writePath = "./features/feature_sub_refCTL_reduced/feature_%s_sub_refCTL_%s.txt" % (PDB_id_reference, i)
         with open(writePath, 'w') as f2:
             dfAsString = df2.to_string(header=False, index=True)
             f2.write(dfAsString)
@@ -727,25 +732,25 @@ def feature_vector_corr():
 def feature_vector_flux():
     print("creating/adding feature vector files for machine learning on atom fluctuations")
     # create fluctuation and feature vector
-    if not os.path.exists('featureFLUX_sub_query'):
-        os.makedirs('featureFLUX_sub_query')  
-    if not os.path.exists('featureFLUX_sub_ref'):
-        os.makedirs('featureFLUX_sub_ref')
-    if not os.path.exists('featureFLUX_sub_refCTL'):
-        os.makedirs('featureFLUX_sub_refCTL')
+    if not os.path.exists('features/featureFLUX_sub_query'):
+        os.makedirs('features/featureFLUX_sub_query')  
+    if not os.path.exists('features/featureFLUX_sub_ref'):
+        os.makedirs('features/featureFLUX_sub_ref')
+    if not os.path.exists('features/featureFLUX_sub_refCTL'):
+        os.makedirs('features/featureFLUX_sub_refCTL')
     # create combined fluctuation and reduced correlation feature vector
-    if not os.path.exists('featureCOMBINE_sub_query'):
-        os.makedirs('featureCOMBINE_sub_query')  
-    if not os.path.exists('featureCOMBINE_sub_ref'):
-        os.makedirs('featureCOMBINE_sub_ref')
-    if not os.path.exists('featureCOMBINE_sub_refCTL'):
-        os.makedirs('featureCOMBINE_sub_refCTL')
+    if not os.path.exists('features/featureCOMBINE_sub_query'):
+        os.makedirs('features/featureCOMBINE_sub_query')  
+    if not os.path.exists('features/featureCOMBINE_sub_ref'):
+        os.makedirs('features/featureCOMBINE_sub_ref')
+    if not os.path.exists('features/featureCOMBINE_sub_refCTL'):
+        os.makedirs('features/featureCOMBINE_sub_refCTL')
     
     
     for i in range(subsamples):
         ############ reference protein  ##########################
         print("creating fluctuation feature vector for subsample %s MD reference run" % i)
-        influx_sub_ref = "./atomflux_ref/fluct_%s_sub_reference.txt" % PDB_id_reference 
+        influx_sub_ref = "./subsamples/atomflux_ref/fluct_%s_sub_reference.txt" % PDB_id_reference 
         dfflux_sub_ref = pd.read_csv(influx_sub_ref, sep="\s+")
         del dfflux_sub_ref[dfflux_sub_ref.columns[0]] # remove first column
         #del dfflux_sub_ref[dfflux_sub_ref.columns[0]] # remove next column
@@ -792,25 +797,25 @@ def feature_vector_flux():
         # print to file
         featureFLUX_sub_ref = featureMatrix
         df1 = featureFLUX_sub_ref
-        writePath = "./featureFLUX_sub_ref/feature_%s_sub_ref_%s.txt" % (PDB_id_reference, i)
+        writePath = "./features/featureFLUX_sub_ref/feature_%s_sub_ref_%s.txt" % (PDB_id_reference, i)
         with open(writePath, 'w') as f1:
             dfAsString = df1.to_string(header=False, index=True)
             f1.write(dfAsString)
         #read in reduced correlations and create combined flux+corr feature vector
-        read_corr = "./feature_sub_ref_reduced/feature_%s_sub_ref_%s.txt" % (PDB_id_reference, i)    
+        read_corr = "./features/feature_sub_ref_reduced/feature_%s_sub_ref_%s.txt" % (PDB_id_reference, i)    
         df3 = pd.read_csv(read_corr, sep="\s+", header=None)
         del df3[df3.columns[0]] # remove first column
         df3 = df3.iloc[:,:5]  # option take first 5 columns of correlations
         frames = [df1, df3]
         df_combined = pd.concat(frames, axis=1, join='inner')
-        writePath = "./featureCOMBINE_sub_ref/feature_%s_sub_ref_%s.txt" % (PDB_id_reference, i)
+        writePath = "./features/featureCOMBINE_sub_ref/feature_%s_sub_ref_%s.txt" % (PDB_id_reference, i)
         with open(writePath, 'w') as f3:
             dfAsString = df_combined.to_string(header=False, index=True)
             f3.write(dfAsString)
         
         ############ query protein  ##########################
         print("creating fluctuation feature vector for subsample %s MD query run" % i)
-        influx_sub_query = "./atomflux_query/fluct_%s_sub_query.txt" % PDB_id_query 
+        influx_sub_query = "./subsamples/atomflux_query/fluct_%s_sub_query.txt" % PDB_id_query 
         dfflux_sub_query = pd.read_csv(influx_sub_query, sep="\s+")
         del dfflux_sub_query[dfflux_sub_query.columns[0]] # remove first column
         #del dfflux_sub_query[dfflux_sub_query.columns[0]] # remove next column
@@ -857,25 +862,25 @@ def feature_vector_flux():
         # print to file
         featureFLUX_sub_query = featureMatrix
         df1 = featureFLUX_sub_query
-        writePath = "./featureFLUX_sub_query/feature_%s_sub_query_%s.txt" % (PDB_id_query, i)
+        writePath = "./features/featureFLUX_sub_query/feature_%s_sub_query_%s.txt" % (PDB_id_query, i)
         with open(writePath, 'w') as f1:
             dfAsString = df1.to_string(header=False, index=True)
             f1.write(dfAsString)
         #read in reduced correlations and create combined flux+corr feature vector
-        read_corr = "./feature_sub_query_reduced/feature_%s_sub_query_%s.txt" % (PDB_id_query, i)    
+        read_corr = "./features/feature_sub_query_reduced/feature_%s_sub_query_%s.txt" % (PDB_id_query, i)    
         df3 = pd.read_csv(read_corr, sep="\s+", header=None)
         del df3[df3.columns[0]] # remove first column
         df3 = df3.iloc[:,:5]  # option take first 5 columns of correlations
         frames = [df1, df3]
         df_combined = pd.concat(frames, axis=1, join='inner')
-        writePath = "./featureCOMBINE_sub_query/feature_%s_sub_query_%s.txt" % (PDB_id_query, i)
+        writePath = "./features/featureCOMBINE_sub_query/feature_%s_sub_query_%s.txt" % (PDB_id_query, i)
         with open(writePath, 'w') as f3:
             dfAsString = df_combined.to_string(header=False, index=True)
             f3.write(dfAsString)
         
         ############ reference protein  ##########################
         print("creating fluctuation feature vector for subsample %s MD reference control run" % i)
-        influx_sub_ref = "./atomflux_refCTL/fluct_%s_sub_referenceCTL.txt" % PDB_id_reference 
+        influx_sub_ref = "./subsamples/atomflux_refCTL/fluct_%s_sub_referenceCTL.txt" % PDB_id_reference 
         dfflux_sub_ref = pd.read_csv(influx_sub_ref, sep="\s+")
         del dfflux_sub_ref[dfflux_sub_ref.columns[0]] # remove first column
         #del dfflux_sub_ref[dfflux_sub_ref.columns[0]] # remove next column
@@ -922,18 +927,18 @@ def feature_vector_flux():
         # print to file
         featureFLUX_sub_ref = featureMatrix
         df1 = featureFLUX_sub_ref
-        writePath = "./featureFLUX_sub_refCTL/feature_%s_sub_refCTL_%s.txt" % (PDB_id_reference, i)
+        writePath = "./features/featureFLUX_sub_refCTL/feature_%s_sub_refCTL_%s.txt" % (PDB_id_reference, i)
         with open(writePath, 'w') as f1:
             dfAsString = df1.to_string(header=False, index=True)
             f1.write(dfAsString)
         #read in reduced correlations and create combined flux+corr feature vector
-        read_corr = "./feature_sub_refCTL_reduced/feature_%s_sub_refCTL_%s.txt" % (PDB_id_reference, i)    
+        read_corr = "./features/feature_sub_refCTL_reduced/feature_%s_sub_refCTL_%s.txt" % (PDB_id_reference, i)    
         df3 = pd.read_csv(read_corr, sep="\s+", header=None)
         del df3[df3.columns[0]] # remove first column
         df3 = df3.iloc[:,:5]  # option take first 5 columns of correlations
         frames = [df1, df3]
         df_combined = pd.concat(frames, axis=1, join='inner')
-        writePath = "./featureCOMBINE_sub_refCTL/feature_%s_sub_refCTL_%s.txt" % (PDB_id_reference, i)
+        writePath = "./features/featureCOMBINE_sub_refCTL/feature_%s_sub_refCTL_%s.txt" % (PDB_id_reference, i)
         with open(writePath, 'w') as f3:
             dfAsString = df_combined.to_string(header=False, index=True)
             f3.write(dfAsString)

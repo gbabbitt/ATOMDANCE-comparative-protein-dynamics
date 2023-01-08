@@ -102,24 +102,24 @@ length_prot = int(l_pr)
 #traj_query = pt.iterload(traj_file_query, top_file_query)
 
 # make directories
-if not os.path.exists('atomflux_ref'):
-    os.makedirs('atomflux_ref')
-if not os.path.exists('atomflux_refCTL'):
-    os.makedirs('atomflux_refCTL')
-if not os.path.exists('atomflux_query'):
-    os.makedirs('atomflux_query')
-if not os.path.exists('atomcorr_ref'):
-    os.makedirs('atomcorr_ref')
-if not os.path.exists('atomcorr_refCTL'):
-    os.makedirs('atomcorr_refCTL')  
-if not os.path.exists('atomcorr_query'):
-    os.makedirs('atomcorr_query')
-if not os.path.exists('atomcorr_ref_matrix'):
-    os.makedirs('atomcorr_ref_matrix')
-if not os.path.exists('atomcorr_refCTL_matrix'):
-    os.makedirs('atomcorr_refCTL_matrix')    
-if not os.path.exists('atomcorr_query_matrix'):
-    os.makedirs('atomcorr_query_matrix')
+if not os.path.exists('subsamples/atomflux_ref'):
+    os.makedirs('subsamples/atomflux_ref')
+if not os.path.exists('subsamples/atomflux_refCTL'):
+    os.makedirs('subsamples/atomflux_refCTL')
+if not os.path.exists('subsamples/atomflux_query'):
+    os.makedirs('subsamples/atomflux_query')
+if not os.path.exists('subsamples/atomcorr_ref'):
+    os.makedirs('subsamples/atomcorr_ref')
+if not os.path.exists('subsamples/atomcorr_refCTL'):
+    os.makedirs('subsamples/atomcorr_refCTL')  
+if not os.path.exists('subsamples/atomcorr_query'):
+    os.makedirs('subsamples/atomcorr_query')
+if not os.path.exists('subsamples/atomcorr_ref_matrix'):
+    os.makedirs('subsamples/atomcorr_ref_matrix')
+if not os.path.exists('subsamples/atomcorr_refCTL_matrix'):
+    os.makedirs('subsamples/atomcorr_refCTL_matrix')    
+if not os.path.exists('subsamples/atomcorr_query_matrix'):
+    os.makedirs('subsamples/atomcorr_query_matrix')
 
 
 # collect atom information
@@ -176,7 +176,7 @@ def write_control_files():
         f1.write("atomicfluct out fluct_%s_sub_reference.txt @CA,C,O,N&!(:WAT) byres start %s stop %s\n" % (PDB_id_reference, start, stop))
         f1.write("run\n")
         f2.write("trajin %s %s %s\n"% (traj_file_reference, start, stop))
-        f2.write("atomiccorr out ./atomcorr_ref/corr_%s_sub_reference_%s.txt @CA,C,O,N&!(:WAT) byres\n" % (PDB_id_reference, x))
+        f2.write("atomiccorr out ./subsamples/atomcorr_ref/corr_%s_sub_reference_%s.txt @CA,C,O,N&!(:WAT) byres\n" % (PDB_id_reference, x))
         f2.write("run\n")
     f1.close()
     f2.close()
@@ -232,7 +232,7 @@ def write_control_files():
         f1.write("atomicfluct out fluct_%s_sub_query.txt @CA,C,O,N&!(:WAT) byres start %s stop %s\n" % (PDB_id_query, start, stop))
         f1.write("run\n")
         f2.write("trajin %s %s %s\n"% (traj_file_query, start, stop))
-        f2.write("atomiccorr out ./atomcorr_query/corr_%s_sub_query_%s.txt @CA,C,O,N&!(:WAT) byres\n" % (PDB_id_query, x))
+        f2.write("atomiccorr out ./subsamples/atomcorr_query/corr_%s_sub_query_%s.txt @CA,C,O,N&!(:WAT) byres\n" % (PDB_id_query, x))
         f2.write("run\n")
     f1.close()
     f2.close()
@@ -288,7 +288,7 @@ def write_control_files():
         f1.write("atomicfluct out fluct_%s_sub_referenceCTL.txt @CA,C,O,N&!(:WAT) byres start %s stop %s\n" % (PDB_id_reference, start, stop))
         f1.write("run\n")
         f2.write("trajin %s %s %s\n"% (traj_file_reference, start, stop))
-        f2.write("atomiccorr out ./atomcorr_refCTL/corr_%s_sub_referenceCTL_%s.txt @CA,C,O,N&!(:WAT) byres\n" % (PDB_id_reference, x))
+        f2.write("atomiccorr out ./subsamples/atomcorr_refCTL/corr_%s_sub_referenceCTL_%s.txt @CA,C,O,N&!(:WAT) byres\n" % (PDB_id_reference, x))
         f2.write("run\n")
     f1.close()
     f2.close()
@@ -505,8 +505,8 @@ def matrix_maker_batch_old():
 
     for i in range(subsamples):
         print("converting atomiccorr output to matrix - subsample %s (query protein)" % i)
-        f_in = open("./atomcorr_query/corr_%s_sub_query_%s.txt" % (PDB_id_query, i), "r")
-        f_out = open("./atomcorr_query_matrix/corr_%s_sub_query_matrix_%s.txt" % (PDB_id_query, i), "w")
+        f_in = open("./subsamples/atomcorr_query/corr_%s_sub_query_%s.txt" % (PDB_id_query, i), "r")
+        f_out = open("./subsamples/atomcorr_query_matrix/corr_%s_sub_query_matrix_%s.txt" % (PDB_id_query, i), "w")
         f_in_lines = f_in.readlines()
         site_counter = 0
         pos_counter = 0
@@ -542,8 +542,8 @@ def matrix_maker_batch_old():
                 site_counter = 1
                 pos_counter = pos_counter+1
         print("converting atomiccorr output to matrix - subsample %s (reference protein)" % i)
-        f_in = open("./atomcorr_ref/corr_%s_sub_reference_%s.txt" % (PDB_id_reference, i), "r")
-        f_out = open("./atomcorr_ref_matrix/corr_%s_sub_reference_matrix_%s.txt" % (PDB_id_reference, i), "w")
+        f_in = open("./subsamples/atomcorr_ref/corr_%s_sub_reference_%s.txt" % (PDB_id_reference, i), "r")
+        f_out = open("./subsamples/atomcorr_ref_matrix/corr_%s_sub_reference_matrix_%s.txt" % (PDB_id_reference, i), "w")
         f_in_lines = f_in.readlines()
         site_counter = 0
         pos_counter = 0
@@ -579,8 +579,8 @@ def matrix_maker_batch_old():
                 site_counter = 1
                 pos_counter = pos_counter+1
         print("converting atomiccorr output to matrix - subsample %s (reference control protein)" % i)
-        f_in = open("./atomcorr_refCTL/corr_%s_sub_referenceCTL_%s.txt" % (PDB_id_reference, i), "r")
-        f_out = open("./atomcorr_refCTL_matrix/corr_%s_sub_referenceCTL_matrix_%s.txt" % (PDB_id_reference, i), "w")
+        f_in = open("./subsamples/atomcorr_refCTL/corr_%s_sub_referenceCTL_%s.txt" % (PDB_id_reference, i), "r")
+        f_out = open("./subsamples/atomcorr_refCTL_matrix/corr_%s_sub_referenceCTL_matrix_%s.txt" % (PDB_id_reference, i), "w")
         f_in_lines = f_in.readlines()
         site_counter = 0
         pos_counter = 0
@@ -682,8 +682,8 @@ def matrix_maker_batch_new():
     
     for i in range(subsamples):
         print("converting atomiccorr output to matrix - subsample %s (query protein)" % i)
-        f_in = open("./atomcorr_query/corr_%s_sub_query_%s.txt" % (PDB_id_query, i), "r")
-        f_out = open("./atomcorr_query_matrix/corr_%s_sub_query_matrix_%s.txt" % (PDB_id_query, i), "w")
+        f_in = open("./subsamples/atomcorr_query/corr_%s_sub_query_%s.txt" % (PDB_id_query, i), "r")
+        f_out = open("./subsamples/atomcorr_query_matrix/corr_%s_sub_query_matrix_%s.txt" % (PDB_id_query, i), "w")
         f_in_lines = f_in.readlines()
         line_counter = 0
         for x in range(len(f_in_lines)-1):
@@ -702,8 +702,8 @@ def matrix_maker_batch_new():
             f_out.write("\n")
             
         print("converting atomiccorr output to matrix - subsample %s (reference protein)" % i)
-        f_in = open("./atomcorr_ref/corr_%s_sub_reference_%s.txt" % (PDB_id_reference, i), "r")
-        f_out = open("./atomcorr_ref_matrix/corr_%s_sub_reference_matrix_%s.txt" % (PDB_id_reference, i), "w")
+        f_in = open("./subsamples/atomcorr_ref/corr_%s_sub_reference_%s.txt" % (PDB_id_reference, i), "r")
+        f_out = open("./subsamples/atomcorr_ref_matrix/corr_%s_sub_reference_matrix_%s.txt" % (PDB_id_reference, i), "w")
         f_in_lines = f_in.readlines()
         line_counter = 0
         for x in range(len(f_in_lines)-1):
@@ -722,8 +722,8 @@ def matrix_maker_batch_new():
             f_out.write("\n")
         
         print("converting atomiccorr output to matrix - subsample %s (reference control protein)" % i)
-        f_in = open("./atomcorr_refCTL/corr_%s_sub_referenceCTL_%s.txt" % (PDB_id_reference, i), "r")
-        f_out = open("./atomcorr_refCTL_matrix/corr_%s_sub_referenceCTL_matrix_%s.txt" % (PDB_id_reference, i), "w")
+        f_in = open("./subsamples/atomcorr_refCTL/corr_%s_sub_referenceCTL_%s.txt" % (PDB_id_reference, i), "r")
+        f_out = open("./subsamples/atomcorr_refCTL_matrix/corr_%s_sub_referenceCTL_matrix_%s.txt" % (PDB_id_reference, i), "w")
         f_in_lines = f_in.readlines()
         line_counter = 0
         for x in range(len(f_in_lines)-1):
@@ -744,9 +744,9 @@ def matrix_maker_batch_new():
 
 def copy_flux():
     print("copying atom flux files to atomflux folder")
-    os.system('cp fluct_%s_sub_query.txt ./atomflux_query/fluct_%s_sub_query.txt' % (PDB_id_query, PDB_id_query))
-    os.system('cp fluct_%s_sub_reference.txt ./atomflux_ref/fluct_%s_sub_reference.txt' % (PDB_id_reference, PDB_id_reference))
-    os.system('cp fluct_%s_sub_referenceCTL.txt ./atomflux_refCTL/fluct_%s_sub_referenceCTL.txt' % (PDB_id_reference, PDB_id_reference))
+    os.system('cp fluct_%s_sub_query.txt ./subsamples/atomflux_query/fluct_%s_sub_query.txt' % (PDB_id_query, PDB_id_query))
+    os.system('cp fluct_%s_sub_reference.txt ./subsamples/atomflux_ref/fluct_%s_sub_reference.txt' % (PDB_id_reference, PDB_id_reference))
+    os.system('cp fluct_%s_sub_referenceCTL.txt ./subsamples/atomflux_refCTL/fluct_%s_sub_referenceCTL.txt' % (PDB_id_reference, PDB_id_reference))
     
 def resinfo():
     ### collect residue info
@@ -780,16 +780,16 @@ def runProgressBar():
     import time
     from progress.bar import IncrementalBar
     bar = IncrementalBar('subsamples_completed', max=subsamples)
-    lst = os.listdir('atomcorr_ref') # your directory path
+    lst = os.listdir('subsamples/atomcorr_ref') # your directory path
     num_files = 0
     next_num_files = 0
     while (num_files < subsamples):
         if(num_files != next_num_files):
             bar.next()
-        lst = os.listdir('atomcorr_ref') # your directory path
+        lst = os.listdir('subsamples/atomcorr_ref') # your directory path
         num_files = len(lst)
         time.sleep(2)
-        lst = os.listdir('atomcorr_ref') # your directory path
+        lst = os.listdir('subsamples/atomcorr_ref') # your directory path
         next_num_files = len(lst)
     bar.finish()
 ###############################################################
@@ -821,10 +821,10 @@ def main():
     t7.join()
     
     print("subsampling of MD trajectories is completed") 
-    #matrix_maker_old()  # for older version of cpptraj
-    #matrix_maker_batch_old() # for older version of cpptraj
-    matrix_maker_new()
-    matrix_maker_batch_new()
+    matrix_maker_old()  # for older version of cpptraj
+    matrix_maker_batch_old() # for older version of cpptraj
+    #matrix_maker_new()
+    #matrix_maker_batch_new()
     copy_flux()
     resinfo()
     print("parsing of MD trajectories is completed")    

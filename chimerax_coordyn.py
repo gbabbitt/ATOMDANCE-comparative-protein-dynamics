@@ -132,10 +132,10 @@ coord_anal = ""+coord_anal+""
 ###############################################################################
 ###############################################################################
 # set number of features for tuning gamma in RBF kernel
-infeature_ref = "./featureFLUX_sub_ref/feature_%s_sub_ref_0.txt" % PDB_id_reference
+infeature_ref = "./features/featureFLUX_sub_ref/feature_%s_sub_ref_0.txt" % PDB_id_reference
 df_feature_ref = pd.read_csv(infeature_ref, sep="\s+")
 n_features_flux = df_feature_ref.shape[1] - 1
-infeature_ref = "./feature_sub_ref_reduced/feature_%s_sub_ref_0.txt" % PDB_id_reference
+infeature_ref = "./features/feature_sub_ref_reduced/feature_%s_sub_ref_0.txt" % PDB_id_reference
 df_feature_ref = pd.read_csv(infeature_ref, sep="\s+")
 n_features_corr = df_feature_ref.shape[1] - 1      
 
@@ -176,7 +176,7 @@ def coordinated_site_matrix():
             ######## reference protein ###########
             #infeature_reference = "./feature_sub_ref_reduced/feature_%s_sub_ref_%s.txt" % (PDB_id_reference, j)
             #infeature_reference = "./featureFLUX_sub_ref/feature_%s_sub_ref_%s.txt" % (PDB_id_reference, j)
-            infeature_reference = "./featureCOMBINE_sub_ref/feature_%s_sub_ref_%s.txt" % (PDB_id_reference, j)
+            infeature_reference = "./features/featureCOMBINE_sub_ref/feature_%s_sub_ref_%s.txt" % (PDB_id_reference, j)
             df_feature_reference = pd.read_csv(infeature_reference, sep="\s+")
             #print(df_feature_reference)
             del df_feature_reference[df_feature_reference.columns[0]] # remove first column
@@ -188,7 +188,7 @@ def coordinated_site_matrix():
             ######## reference control protein #####
             #infeature_referenceCTL = "./feature_sub_refCTL_reduced/feature_%s_sub_refCTL_%s.txt" % (PDB_id_reference, j)
             #infeature_referenceCTL = "./featureFLUX_sub_refCTL/feature_%s_sub_refCTL_%s.txt" % (PDB_id_reference, j)
-            infeature_referenceCTL = "./featureCOMBINE_sub_refCTL/feature_%s_sub_refCTL_%s.txt" % (PDB_id_reference, j)
+            infeature_referenceCTL = "./features/featureCOMBINE_sub_refCTL/feature_%s_sub_refCTL_%s.txt" % (PDB_id_reference, j)
             df_feature_referenceCTL = pd.read_csv(infeature_referenceCTL, sep="\s+")
             #print(df_feature_referenceCTL)
             del df_feature_referenceCTL[df_feature_referenceCTL.columns[0]] # remove first column
@@ -200,7 +200,7 @@ def coordinated_site_matrix():
             ######### query protein #########
             #infeature_query = "./feature_sub_query_reduced/feature_%s_sub_query_%s.txt" % (PDB_id_query, j)
             #infeature_query = "./featureFLUX_sub_query/feature_%s_sub_query_%s.txt" % (PDB_id_query, j)
-            infeature_query = "./featureCOMBINE_sub_query/feature_%s_sub_query_%s.txt" % (PDB_id_query, j)
+            infeature_query = "./features/featureCOMBINE_sub_query/feature_%s_sub_query_%s.txt" % (PDB_id_query, j)
             df_feature_query = pd.read_csv(infeature_query, sep="\s+")
             #print(df_feature_query)
             del df_feature_query[df_feature_query.columns[0]] # remove first column
@@ -316,7 +316,7 @@ def coordinated_dynamics():
     print(len_matrix)
     matrixI =[]
     matrixJ =[]
-    matrixMI =[]
+    MI =[]
     for i in range(len_matrix):
         print("computing MI values from site %s" % i)
         site1 = df_matrix_in.iloc[i]
@@ -333,19 +333,19 @@ def coordinated_dynamics():
             #print(myMI)
             matrixI.append(pos1)
             matrixJ.append(pos2)
-            matrixMI.append(myMI)
+            MI.append(myMI)
             
     matrixI = pd.DataFrame(matrixI)
     #print(matrixI)
     matrixJ = pd.DataFrame(matrixJ)
     #print(matrixJ)
-    matrixMI = pd.DataFrame(matrixMI)
-    #print(matrixMI)    
+    MI = pd.DataFrame(MI)
+    #print(MI)    
     # join columns
-    myMATRIX = pd.concat([matrixI, matrixJ, matrixMI], keys = ['matrixI', 'matrixJ', 'matrixMI'], axis=1, join="inner")
+    myMATRIX = pd.concat([matrixI, matrixJ, MI], keys = ['matrixI', 'matrixJ', 'MI'], axis=1, join="inner")
     print(myMATRIX)
     # plot MI matrix   
-    myMATRIX_plot =  (ggplot(myMATRIX, aes('matrixI', 'matrixJ', fill='matrixMI')) + geom_tile())
+    myMATRIX_plot =  (ggplot(myMATRIX, aes('matrixI', 'matrixJ', fill='MI')) + scale_fill_gradient(low="white",high="purple") + geom_tile() + labs(title='mutual information on learned classifications defining functional binding states', x='amino acid position', y='amino acid position'))
     myMATRIX_plot.save("./coordinatedDynamics_%s/coordinatedDynamics.png" % PDB_id_reference, width=10, height=5, dpi=300)
     print(myMATRIX_plot)
 ###############################################################

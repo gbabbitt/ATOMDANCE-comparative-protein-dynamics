@@ -129,10 +129,10 @@ coord_anal = ""+coord_anal+""
 ###############################################################################
 ###############################################################################
 # set number of features for tuning gamma in RBF kernel
-infeature_ref = "./featureFLUX_sub_ref/feature_%s_sub_ref_0.txt" % PDB_id_reference
+infeature_ref = "./features/featureFLUX_sub_ref/feature_%s_sub_ref_0.txt" % PDB_id_reference
 df_feature_ref = pd.read_csv(infeature_ref, sep="\s+")
 n_features_flux = df_feature_ref.shape[1] - 1
-infeature_ref = "./feature_sub_ref_reduced/feature_%s_sub_ref_0.txt" % PDB_id_reference
+infeature_ref = "./features/feature_sub_ref_reduced/feature_%s_sub_ref_0.txt" % PDB_id_reference
 df_feature_ref = pd.read_csv(infeature_ref, sep="\s+")
 n_features_corr = df_feature_ref.shape[1] - 1      
 
@@ -168,7 +168,7 @@ def compare_dynamics_MMD_flux():
             #print("collecting subsample %s" % samp)
             ######## reference protein ###########
             #infeature_reference = "./feature_sub_ref_reduced/feature_%s_sub_ref_%s.txt" % (PDB_id_reference, j)
-            infeature_reference = "./featureFLUX_sub_ref/feature_%s_sub_ref_%s.txt" % (PDB_id_reference, j)
+            infeature_reference = "./features/featureFLUX_sub_ref/feature_%s_sub_ref_%s.txt" % (PDB_id_reference, j)
             #infeature_reference = "./featureCOMBINE_sub_ref/feature_%s_sub_ref_%s.txt" % (PDB_id_reference, j)
             
             df_feature_reference = pd.read_csv(infeature_reference, sep="\s+")
@@ -181,7 +181,7 @@ def compare_dynamics_MMD_flux():
             feature_reference.append(sample_feature_reference)
             ######## reference control protein #####
             #infeature_referenceCTL = "./feature_sub_refCTL_reduced/feature_%s_sub_refCTL_%s.txt" % (PDB_id_reference, j)
-            infeature_referenceCTL = "./featureFLUX_sub_refCTL/feature_%s_sub_refCTL_%s.txt" % (PDB_id_reference, j)
+            infeature_referenceCTL = "./features/featureFLUX_sub_refCTL/feature_%s_sub_refCTL_%s.txt" % (PDB_id_reference, j)
             #infeature_referenceCTL = "./featureCOMBINE_sub_refCTL/feature_%s_sub_refCTL_%s.txt" % (PDB_id_reference, j)
             
             df_feature_referenceCTL = pd.read_csv(infeature_referenceCTL, sep="\s+")
@@ -194,7 +194,7 @@ def compare_dynamics_MMD_flux():
             feature_referenceCTL.append(sample_feature_referenceCTL)
             ######### query protein #########
             #infeature_query = "./feature_sub_query_reduced/feature_%s_sub_query_%s.txt" % (PDB_id_query, j)
-            infeature_query = "./featureFLUX_sub_query/feature_%s_sub_query_%s.txt" % (PDB_id_query, j)
+            infeature_query = "./features/featureFLUX_sub_query/feature_%s_sub_query_%s.txt" % (PDB_id_query, j)
             #infeature_query = "./featureCOMBINE_sub_query/feature_%s_sub_query_%s.txt" % (PDB_id_query, j)
             
             df_feature_query = pd.read_csv(infeature_query, sep="\s+")
@@ -424,7 +424,7 @@ def compare_dynamics_MMD_corr():
             samp = j+1
             #print("collecting subsample %s" % samp)
             ######## reference protein ###########
-            infeature_reference = "./feature_sub_ref_reduced/feature_%s_sub_ref_%s.txt" % (PDB_id_reference, j)
+            infeature_reference = "./features/feature_sub_ref_reduced/feature_%s_sub_ref_%s.txt" % (PDB_id_reference, j)
             #infeature_reference = "./featureFLUX_sub_ref/feature_%s_sub_ref_%s.txt" % (PDB_id_reference, j)
             #infeature_reference = "./featureCOMBINE_sub_ref/feature_%s_sub_ref_%s.txt" % (PDB_id_reference, j)
             
@@ -437,7 +437,7 @@ def compare_dynamics_MMD_corr():
             #print(sample_feature_reference)
             feature_reference.append(sample_feature_reference)
             ######## reference control protein #####
-            infeature_referenceCTL = "./feature_sub_refCTL_reduced/feature_%s_sub_refCTL_%s.txt" % (PDB_id_reference, j)
+            infeature_referenceCTL = "./features/feature_sub_refCTL_reduced/feature_%s_sub_refCTL_%s.txt" % (PDB_id_reference, j)
             #infeature_referenceCTL = "./featureFLUX_sub_refCTL/feature_%s_sub_refCTL_%s.txt" % (PDB_id_reference, j)
             #infeature_referenceCTL = "./featureCOMBINE_sub_refCTL/feature_%s_sub_refCTL_%s.txt" % (PDB_id_reference, j)
             
@@ -450,7 +450,7 @@ def compare_dynamics_MMD_corr():
             #print(sample_feature_referenceCTL)
             feature_referenceCTL.append(sample_feature_referenceCTL)
             ######### query protein #########
-            infeature_query = "./feature_sub_query_reduced/feature_%s_sub_query_%s.txt" % (PDB_id_query, j)
+            infeature_query = "./features/feature_sub_query_reduced/feature_%s_sub_query_%s.txt" % (PDB_id_query, j)
             #infeature_query = "./featureFLUX_sub_query/feature_%s_sub_query_%s.txt" % (PDB_id_query, j)
             #infeature_query = "./featureCOMBINE_sub_query/feature_%s_sub_query_%s.txt" % (PDB_id_query, j)
             

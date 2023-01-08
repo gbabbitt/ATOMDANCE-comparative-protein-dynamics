@@ -139,13 +139,13 @@ def compare_dynamics_KL():
     dfflux_all_ref = pd.read_csv(influx_all_ref, sep="\s+")
     del dfflux_all_ref[dfflux_all_ref.columns[0]] # remove first column
     # read subsampled flux files and trim unneeded columns
-    influx_sub_query = "./atomflux_query/fluct_%s_sub_query.txt" % PDB_id_query 
+    influx_sub_query = "./subsamples/atomflux_query/fluct_%s_sub_query.txt" % PDB_id_query 
     dfflux_sub_query = pd.read_csv(influx_sub_query, sep="\s+")
     del dfflux_sub_query[dfflux_sub_query.columns[0]] # remove first column
     del dfflux_sub_query[dfflux_sub_query.columns[0]] # remove next column
     dfflux_sub_query = dfflux_sub_query.transpose()
     #print(dfflux_sub_query)
-    influx_sub_ref = "./atomflux_ref/fluct_%s_sub_reference.txt" % PDB_id_reference 
+    influx_sub_ref = "./subsamples/atomflux_ref/fluct_%s_sub_reference.txt" % PDB_id_reference 
     dfflux_sub_ref = pd.read_csv(influx_sub_ref, sep="\s+")
     del dfflux_sub_ref[dfflux_sub_ref.columns[0]] # remove first column
     del dfflux_sub_ref[dfflux_sub_ref.columns[0]] # remove next column
