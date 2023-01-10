@@ -156,6 +156,12 @@ cons_anal = ""+cons_anal+""
 coord_anal = ""+coord_anal+""
 #var_anal = ""+var_anal+""
 
+n_bootstrap = subsamples*5
+if(n_bootstrap > 500):
+    n_bootstrap = 500
+if(n_bootstrap < 50):
+    n_bootstrap = 50
+
 #def conserved_dynamics_sampling():
 #    print("identifying conserved dynamics")
 #    # cpptraj subsampler on ortholog files
@@ -165,14 +171,14 @@ coord_anal = ""+coord_anal+""
 # build feature vector for ortholog subsamples
 def feature_vector_ortho():
     print("creating feature vector files for machine learning")
-    if not os.path.exists('feature_all_ortho'):
-        os.makedirs('feature_all_ortho')  
-    if not os.path.exists('feature_sub_ortho'):
-        os.makedirs('feature_sub_ortho')  
-    if not os.path.exists('feature_all_ortho_reduced'):
-        os.makedirs('feature_all_ortho_reduced')  
-    if not os.path.exists('feature_sub_ortho_reduced'):
-        os.makedirs('feature_sub_ortho_reduced')  
+    if not os.path.exists('features/feature_all_ortho'):
+        os.makedirs('features/feature_all_ortho')  
+    if not os.path.exists('features/feature_sub_ortho'):
+        os.makedirs('features/feature_sub_ortho')  
+    if not os.path.exists('features/feature_all_ortho_reduced'):
+        os.makedirs('features/feature_all_ortho_reduced')  
+    if not os.path.exists('features/feature_sub_ortho_reduced'):
+        os.makedirs('features/feature_sub_ortho_reduced')  
         
     #######################################################
     ###### feature vector for whole ortholog MD run #######
@@ -207,7 +213,7 @@ def feature_vector_ortho():
     #print(dfcorr_all_query)
     #print(feature_all_query)
     df1 = feature_all_query
-    writePath = "./feature_all_ortho/feature_%s_all_ortho.txt" % PDB_id_ortho
+    writePath = "./features/feature_all_ortho/feature_%s_all_ortho.txt" % PDB_id_ortho
     with open(writePath, 'w') as f1:
         dfAsString = df1.to_string(header=False, index=True)
         f1.write(dfAsString)
@@ -237,7 +243,7 @@ def feature_vector_ortho():
     feature_all_query_reduced = M_transf
     
     df2 = feature_all_query_reduced
-    writePath = "./feature_all_query_reduced/feature_%s_all_query.txt" % PDB_id_query
+    writePath = "./features/feature_all_query_reduced/feature_%s_all_query.txt" % PDB_id_query
     with open(writePath, 'w') as f2:
         dfAsString = df2.to_string(header=False, index=True)
         f2.write(dfAsString)
@@ -250,8 +256,8 @@ def feature_vector_ortho():
     
     for i in range(subsamples):
         print("creating reduced feature vector for subsample %s MD ortholog run" % i)
-        influx_sub_query = "./atomflux_ortho/fluct_%s_sub_ortho.txt" % PDB_id_ortho 
-        incorr_sub_query = "./atomcorr_ortho_matrix/corr_%s_sub_ortho_matrix_%s.txt" % (PDB_id_ortho, i)    
+        influx_sub_query = "./subsamples/atomflux_ortho/fluct_%s_sub_ortho.txt" % PDB_id_ortho 
+        incorr_sub_query = "./subsamples/atomcorr_ortho_matrix/corr_%s_sub_ortho_matrix_%s.txt" % (PDB_id_ortho, i)    
         dfflux_sub_query = pd.read_csv(influx_sub_query, sep="\s+")
         dfcorr_sub_query = pd.read_csv(incorr_sub_query, sep="\s+", header=None)
         del dfflux_sub_query[dfflux_sub_query.columns[0]] # remove first column
@@ -283,7 +289,7 @@ def feature_vector_ortho():
         #print(dfcorr_sub_query)
         #print(feature_sub_query)
         df1 = feature_sub_query
-        writePath = "./feature_sub_ortho/feature_%s_sub_ortho_%s.txt" % (PDB_id_ortho, i)
+        writePath = "./features/feature_sub_ortho/feature_%s_sub_ortho_%s.txt" % (PDB_id_ortho, i)
         with open(writePath, 'w') as f1:
             dfAsString = df1.to_string(header=False, index=True)
             f1.write(dfAsString)
@@ -344,7 +350,7 @@ def feature_vector_ortho():
         
         df2 = feature_sub_query_reduced
         
-        writePath = "./feature_sub_ortho_reduced/feature_%s_sub_ortho_%s.txt" % (PDB_id_ortho, i)
+        writePath = "./features/feature_sub_ortho_reduced/feature_%s_sub_ortho_%s.txt" % (PDB_id_ortho, i)
         with open(writePath, 'w') as f2:
             dfAsString = df2.to_string(header=False, index=True)
             f2.write(dfAsString)
@@ -353,16 +359,16 @@ def feature_vector_ortho():
 
     print("creating/adding feature vector files for machine learning on atom fluctuations")
     # create fluctuation feature vector
-    if not os.path.exists('featureFLUX_sub_ortho'):
-        os.makedirs('featureFLUX_sub_ortho')
+    if not os.path.exists('features/featureFLUX_sub_ortho'):
+        os.makedirs('features/featureFLUX_sub_ortho')
     # create combined fluctuation and reduced correlation feature vector
-    if not os.path.exists('featureCOMBINE_sub_ortho'):
-        os.makedirs('featureCOMBINE_sub_ortho')     
+    if not os.path.exists('features/featureCOMBINE_sub_ortho'):
+        os.makedirs('features/featureCOMBINE_sub_ortho')     
             
     for i in range(subsamples):
         ############ ortholog protein  ##########################
         print("creating fluctuation feature vector for subsample %s MD ortholog run" % i)
-        influx_sub_ortho = "./atomflux_ortho/fluct_%s_sub_ortho.txt" % PDB_id_ortho 
+        influx_sub_ortho = "./subsamples/atomflux_ortho/fluct_%s_sub_ortho.txt" % PDB_id_ortho 
         dfflux_sub_ortho = pd.read_csv(influx_sub_ortho, sep="\s+")
         del dfflux_sub_ortho[dfflux_sub_ortho.columns[0]] # remove first column
         #del dfflux_sub_ortho[dfflux_sub_ortho.columns[0]] # remove next column
@@ -409,19 +415,19 @@ def feature_vector_ortho():
         # print fluctuations to file
         featureFLUX_sub_ortho = featureMatrix
         df1 = featureFLUX_sub_ortho
-        writePath = "./featureFLUX_sub_ortho/feature_%s_sub_ortho_%s.txt" % (PDB_id_ortho, i)
+        writePath = "./features/featureFLUX_sub_ortho/feature_%s_sub_ortho_%s.txt" % (PDB_id_ortho, i)
         with open(writePath, 'w') as f1:
             dfAsString = df1.to_string(header=False, index=True)
             f1.write(dfAsString)
                 
         #read in reduced correlations and create combined flux+corr feature vector
-        read_corr = "./feature_sub_ortho_reduced/feature_%s_sub_ortho_%s.txt" % (PDB_id_ortho, i)    
+        read_corr = "./features/feature_sub_ortho_reduced/feature_%s_sub_ortho_%s.txt" % (PDB_id_ortho, i)    
         df3 = pd.read_csv(read_corr, sep="\s+", header=None)
         del df3[df3.columns[0]] # remove first column
         df3 = df3.iloc[:,:5]  # option take first 5 columns of correlations
         frames = [df1, df3]
         df_combined = pd.concat(frames, axis=1, join='inner')
-        writePath = "./featureCOMBINE_sub_ortho/feature_%s_sub_ortho_%s.txt" % (PDB_id_ortho, i)
+        writePath = "./features/featureCOMBINE_sub_ortho/feature_%s_sub_ortho_%s.txt" % (PDB_id_ortho, i)
         with open(writePath, 'w') as f3:
             dfAsString = df_combined.to_string(header=False, index=True)
             f3.write(dfAsString)
@@ -453,7 +459,8 @@ def conserved_dynamics_analysisOLD():
             print("collecting subsample %s" % samp)
             ######## reference protein ###########
             #infeature_reference = "./feature_sub_ref_reduced/feature_%s_sub_ref_%s.txt" % (PDB_id_reference, j)
-            infeature_reference = "./featureCOMBINE_sub_ref/feature_%s_sub_ref_%s.txt" % (PDB_id_reference, j)
+            infeature_reference = "./featureFLUX_sub_ref/feature_%s_sub_ref_%s.txt" % (PDB_id_reference, j)
+            #infeature_reference = "./featureCOMBINE_sub_ref/feature_%s_sub_ref_%s.txt" % (PDB_id_reference, j)
             df_feature_reference = pd.read_csv(infeature_reference, sep="\s+")
             #print(df_feature_reference)
             del df_feature_reference[df_feature_reference.columns[0]] # remove first column
@@ -464,7 +471,8 @@ def conserved_dynamics_analysisOLD():
             feature_reference.append(sample_feature_reference)
             ######## reference control protein #####
             #infeature_referenceCTL = "./feature_sub_refCTL_reduced/feature_%s_sub_refCTL_%s.txt" % (PDB_id_reference, j)
-            infeature_referenceCTL = "./featureCOMBINE_sub_refCTL/feature_%s_sub_refCTL_%s.txt" % (PDB_id_reference, j)
+            infeature_referenceCTL = "./featureFLUX_sub_refCTL/feature_%s_sub_refCTL_%s.txt" % (PDB_id_reference, j)
+            #infeature_referenceCTL = "./featureCOMBINE_sub_refCTL/feature_%s_sub_refCTL_%s.txt" % (PDB_id_reference, j)
             df_feature_referenceCTL = pd.read_csv(infeature_referenceCTL, sep="\s+")
             #print(df_feature_referenceCTL)
             del df_feature_referenceCTL[df_feature_referenceCTL.columns[0]] # remove first column
@@ -475,7 +483,8 @@ def conserved_dynamics_analysisOLD():
             feature_referenceCTL.append(sample_feature_referenceCTL)
             ######### query protein #########
             #infeature_query = "./feature_sub_query_reduced/feature_%s_sub_query_%s.txt" % (PDB_id_query, j)
-            infeature_query = "./featureCOMBINE_sub_query/feature_%s_sub_query_%s.txt" % (PDB_id_query, j)
+            infeature_query = "./featureFLUX_sub_query/feature_%s_sub_query_%s.txt" % (PDB_id_query, j)
+            #infeature_query = "./featureCOMBINE_sub_query/feature_%s_sub_query_%s.txt" % (PDB_id_query, j)
             df_feature_query = pd.read_csv(infeature_query, sep="\s+")
             #print(df_feature_query)
             del df_feature_query[df_feature_query.columns[0]] # remove first column
@@ -487,7 +496,8 @@ def conserved_dynamics_analysisOLD():
             
             ######## ortholog protein ###########
             #infeature_ortho = "./feature_sub_ortho_reduced/feature_%s_sub_ortho_%s.txt" % (PDB_id_ortho, j)
-            infeature_ortho = "./featureCOMBINE_sub_ortho/feature_%s_sub_ortho_%s.txt" % (PDB_id_ortho, j)
+            infeature_ortho = "./featureFLUX_sub_ortho/feature_%s_sub_ortho_%s.txt" % (PDB_id_ortho, j)
+            #infeature_ortho = "./featureCOMBINE_sub_ortho/feature_%s_sub_ortho_%s.txt" % (PDB_id_ortho, j)
             df_feature_ortho = pd.read_csv(infeature_ortho, sep="\s+")
             #print(df_feature_ortho)
             del df_feature_ortho[df_feature_ortho.columns[0]] # remove first column
@@ -556,8 +566,8 @@ def conserved_dynamics_analysisOLD():
         # observed model
         gpc = GaussianProcessClassifier(kernel=kernel,random_state=0).fit(X_obs, y_train)
         training_accuracy = gpc.score(X_obs, y_train)
-        #print("training accuracy")
-        #print(training_accuracy)
+        print("training accuracy")
+        print(training_accuracy)
         # now deploy
         myPred = gpc.predict(Z)
         #print(myPred)
@@ -566,16 +576,16 @@ def conserved_dynamics_analysisOLD():
         #print(myProb)
         # calculate obs learning performance frequency over subsamples and push to list
         testing_accuracy = gpc.score(Z, y_test)
-        #print("testing accuracy")
-        #print(testing_accuracy)
+        print("testing accuracy")
+        print(testing_accuracy)
         learn_profile_obs.append(testing_accuracy)
         
         # null model (pivot)
         # train on classifier on ref vs ref ctl and deploy on ortholog ctl
         gpc_neutral = GaussianProcessClassifier(kernel=kernel,random_state=0).fit(X_exp, y_train)
         training_accuracy_neutral = gpc_neutral.score(X_exp, y_train)
-        #print("training accuracy (neutral)")
-        #print(training_accuracy_neutral)
+        print("training accuracy (neutral)")
+        print(training_accuracy_neutral)
         # now deploy
         myPred_neutral = gpc_neutral.predict(Z)
         #print(myPred_neutral)
@@ -583,8 +593,8 @@ def conserved_dynamics_analysisOLD():
         #print(myProb_neutral)
         # calculate null learning performance frequency and push to list
         testing_accuracy_neutral = gpc_neutral.score(Z, y_test)
-        #print("testing accuracy (neutral)")
-        #print(testing_accuracy_neutral)
+        print("testing accuracy (neutral)")
+        print(testing_accuracy_neutral)
         learn_profile_neutral.append(testing_accuracy_neutral)
         
         # bootstrap null learning performance and count for empirical p value )
@@ -592,7 +602,7 @@ def conserved_dynamics_analysisOLD():
         cntGREATER = 1
         cntLESSER = 1
         neutralCONs = []
-        for t in range(500):
+        for t in range(n_bootstrap):
             # bootstrap1 neutral predictions
             #print(myPred_neutral)
             n_learn = len(myPred_neutral)
@@ -615,13 +625,13 @@ def conserved_dynamics_analysisOLD():
                 cntLESSER = cntLESSER+1
         # avg neutral MMD
         mean_neutralCON = np.mean(neutralCONs, axis = None)
-        #print("avg neutral CON")
-        #print(mean_neutralCON)
+        print("avg neutral CON")
+        print(mean_neutralCON)
         avg_learn_profile_neutral.append(mean_neutralCON)
         # empiriacl p value
         emp_P = cntGREATER/(cntGREATER+cntLESSER)
-        #print("empirical P value")
-        #print(emp_P)
+        print("empirical P value")
+        print(emp_P)
         cutoff = 0.99
         if(emp_P > cutoff):
             p_label = "sig"
@@ -745,7 +755,6 @@ def map_CONSsig():
 ###############################################################
 
 def main():
-    #conserved_dynamics_sampling()
     feature_vector_ortho()
     conserved_dynamics_analysis()
     #map_CONSsig()
