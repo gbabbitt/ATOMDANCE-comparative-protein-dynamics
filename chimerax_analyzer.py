@@ -1022,9 +1022,9 @@ def compare_dynamics_MMD():
 #################################################################################   
 def conserved_dynamics():
     print("running DROIDS/maxDemon 5.0 conserved dynamics analyses")
-    if(pdb_id_query == '1ubq_bound'):
+    if(PDB_id_query == '1ubq'):
         cmd3 = "python3 maxDemon1.py"
-    if(pdb_id_query == '1cdw_bound'):
+    elif(PDB_id_query == '1cdw_bound'):
         cmd3 = "python3 maxDemon2.py"
     else:
         cmd3 = "python3 maxDemon3.py"
