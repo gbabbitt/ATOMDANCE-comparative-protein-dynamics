@@ -44,7 +44,7 @@ class Ui_Dialog(object):
 
     def retranslateUi(self, Dialog):
         _translate = QtCore.QCoreApplication.translate
-        Dialog.setWindowTitle(_translate("Dialog", "Enter 3 files (.pdb .prmtop .nc) for ortholog/genetic variant"))
+        Dialog.setWindowTitle(_translate("Dialog", "Enter 5 files for ortholog/genetic variant comparison to query"))
         self.label.setText(_translate("Dialog", "<html><head/><body><p><span style=\" font-size:12pt; font-weight:600;\">ortholog/mutant files</span></p></body></html>"))
         self.label_2.setText(_translate("Dialog", "<html><head/><body><p><span style=\" font-size:12pt; font-weight:600;\">file list example</span></p></body></html>"))
         self.textBrowser.setHtml(_translate("Dialog", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
@@ -54,6 +54,8 @@ class Ui_Dialog(object):
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:12pt;\">1pdb_ortholog.pdb</span></p>\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:12pt;\">1pdb_ortholog.prmtop</span></p>\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:12pt;\">1pdb_ortholog.nc</span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:12pt;\">1pdb_bound.fas</span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:12pt;\">1pdb_ortholog.fas</span></p>\n"
 "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br /></p>\n"
 "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br /></p></body></html>"))
         self.pushButton.setText(_translate("Dialog", "run sampling"))
@@ -73,7 +75,8 @@ class Ui_Dialog(object):
         ortho_id = ortho_pdb[:-4]
         ortho_top = ortho_list[1]
         ortho_traj = ortho_list[2]
-        
+        query_fas = ortho_list[3]
+        ortho_fas = ortho_list[4]
                 
         # write file
         f = open("./maxDemon.ctl", "w") 
@@ -81,6 +84,8 @@ class Ui_Dialog(object):
         f.write("orthoPDB,%s,#pdb file for ortholog structure\n" % ortho_pdb)
         f.write("orthoTOP,%s,#topology for ortholog structure\n" % ortho_top)
         f.write("orthoTRAJ,%s,#trajectory for ortholog structure\n" % ortho_traj)
+        f.write("queryFAS,%s,#alignment sequence for query structure\n" % query_fas)
+        f.write("orthoFAS,%s,#alignment sequence for ortholog structure\n" % ortho_fas)
         f.close()
         
         ############# run ortholog sampling program ###################
