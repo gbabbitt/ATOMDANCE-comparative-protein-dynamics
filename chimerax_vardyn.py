@@ -129,6 +129,24 @@ var_anal = ""+var_anal+""
 
 def variant_dynamics():
     print("comparing conserved dynamics in genetic and/or drug class variants")
+    # loop over variants
+        # cpptraj subsampler on variant files
+    
+    # loop over variants
+        # build feature vector for each variant subsamples
+    
+    # loop over variants
+        # loop over sites
+            # loop or vectorize over subsamples
+            # train on classifier on ref vs query and deploy on variant
+            # calculate obs learning performance frequency and push to list
+            # train on classifier on ref vs ref ctl and deploy on variant
+            # calculate null learning performance frequency and push to list
+            # bootstrap null learning performance and count for empical p value )
+            # calculate empirical p value
+        
+        # plot obs and null learning performance and null bootstrap CI
+        
     
 ###############################################################
 ###############################################################

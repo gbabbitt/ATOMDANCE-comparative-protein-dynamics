@@ -603,9 +603,9 @@ def plot_rmsd():
     print(myRMSFindex)
     #make and save plot
     myRMSFplot = (ggplot() + labs(title='root mean square fluctuation (red is bound or mutated state)', x='frame number', y='RMSF') + geom_line(data = myRMSFindex, mapping = aes(x='#FrameR', y='ToFirstR'), color = 'black') + geom_line(data = myRMSFindex, mapping = aes(x='#FrameQ', y='ToFirstQ'), color = 'red') + theme(panel_background=element_rect(fill='black', alpha=.1)))
-    if not os.path.exists('rmsd'):
-        os.mkdir('rmsd')
-    myRMSFplot.save("rmsd/RMSF_plot.png", width=10, height=5, dpi=300)
+    if not os.path.exists('rmsd_%s'% PDB_id_reference):
+        os.mkdir('rmsd_%s'% PDB_id_reference)
+    myRMSFplot.save("rmsd_%s/RMSF_plot.png" % PDB_id_reference, width=10, height=5, dpi=300)
     print(myRMSFplot)
     
         
@@ -702,10 +702,10 @@ def compare_dynamics_KL():
     myKLindex = myKLindex.set_axis(['pos', 'res', 'dFLUX', 'KL', 'D', 'pvalue', 'p_value', 'FLUX_ref', 'FLUX_query'], axis=1, inplace=False)
     print(myKLindex)
      # write to output file
-    if not os.path.exists('divergenceMetrics'):
-        os.mkdir('divergenceMetrics')
+    if not os.path.exists('divergenceMetrics_%s' % PDB_id_reference):
+        os.mkdir('divergenceMetrics_%s' % PDB_id_reference)
     df_out = myKLindex
-    writePath = "./divergenceMetrics/divergenceMetrics.txt"
+    writePath = "./divergenceMetrics_%s/divergenceMetrics.txt" % PDB_id_reference
     with open(writePath, 'w') as f_out:
         dfAsString = df_out.to_string(header=True, index=False)
         f_out.write(dfAsString)
@@ -719,14 +719,14 @@ def compare_dynamics_KL():
     myplot4 = (ggplot(myKLindex) + aes(x='pos', y='dFLUX', color='res', fill='res') + geom_bar(stat='identity') + labs(title='site-wise difference in atom fluctuation', x='amino acid site', y='dFLUX') + theme(panel_background=element_rect(fill='black', alpha=.1)))
     myplot6 = (ggplot(myKLindex) + aes(x='pos', y='D', color='p_value', fill='p_value') + geom_bar(stat='identity') + labs(title='bonferroni corrected significance in divergence in atom fluctuation', x='amino acid site', y='D (2 sample KS test)') + theme(panel_background=element_rect(fill='black', alpha=.1)))
     myplot8 = (ggplot() + labs(title='site-wise atom fluctuation (red is bound or mutated state)', x='amino acid site', y='atom fluctuation') + geom_line(data = myKLindex, mapping = aes(x='pos', y='FLUX_ref'), color = 'black') + geom_line(data = myKLindex, mapping = aes(x='pos', y='FLUX_query'), color = 'red') + theme(panel_background=element_rect(fill='black', alpha=.1)))
-    myplot1.save("divergenceMetrics/KLdivergence_dark.png", width=10, height=5, dpi=300)
-    myplot2.save("divergenceMetrics/deltaFLUX_dark.png", width=10, height=5, dpi=300)
-    myplot3.save("divergenceMetrics/KLdivergence_light.png", width=10, height=5, dpi=300)
-    myplot4.save("divergenceMetrics/deltaFLUX_light.png", width=10, height=5, dpi=300)
-    myplot5.save("divergenceMetrics/KStest_dark.png", width=10, height=5, dpi=300)
-    myplot6.save("divergenceMetrics/KStest_light.png", width=10, height=5, dpi=300)
-    myplot7.save("divergenceMetrics/fluxlines_dark.png", width=10, height=5, dpi=300)
-    myplot8.save("divergenceMetrics/fluxlines_light.png", width=10, height=5, dpi=300)
+    myplot1.save("divergenceMetrics_%s/KLdivergence_dark.png" % PDB_id_reference, width=10, height=5, dpi=300)
+    myplot2.save("divergenceMetrics_%s/deltaFLUX_dark.png" % PDB_id_reference, width=10, height=5, dpi=300)
+    myplot3.save("divergenceMetrics_%s/KLdivergence_light.png" % PDB_id_reference, width=10, height=5, dpi=300)
+    myplot4.save("divergenceMetrics_%s/deltaFLUX_light.png" % PDB_id_reference, width=10, height=5, dpi=300)
+    myplot5.save("divergenceMetrics_%s/KStest_dark.png" % PDB_id_reference, width=10, height=5, dpi=300)
+    myplot6.save("divergenceMetrics_%s/KStest_light.png" % PDB_id_reference, width=10, height=5, dpi=300)
+    myplot7.save("divergenceMetrics_%s/fluxlines_dark.png" % PDB_id_reference, width=10, height=5, dpi=300)
+    myplot8.save("divergenceMetrics_%s/fluxlines_light.png" % PDB_id_reference, width=10, height=5, dpi=300)
     if(graph_scheme == "light"):
         print(myplot3)
         print(myplot4)
@@ -959,10 +959,10 @@ def compare_dynamics_MMD():
     myMMDindex = myMMDindex.set_axis(['pos', 'res', 'MMD', 'pval'], axis=1, inplace=False)
     print(myMMDindex)
     # write to output file
-    if not os.path.exists('maxMeanDiscrepancy'):
-        os.mkdir('maxMeanDiscrepancy')
+    if not os.path.exists('maxMeanDiscrepancy_%s' % PDB_id_reference):
+        os.mkdir('maxMeanDiscrepancy_%s' % PDB_id_reference)
     df_out = myMMDindex
-    writePath = "./maxMeanDiscrepancy/maxMeanDiscrepancy.txt"
+    writePath = "./maxMeanDiscrepancy_%s/maxMeanDiscrepancy.txt" % PDB_id_reference
     with open(writePath, 'w') as f_out:
         dfAsString = df_out.to_string(header=True, index=False)
         f_out.write(dfAsString)
@@ -972,10 +972,10 @@ def compare_dynamics_MMD():
     myplot10 = (ggplot(myMMDindex) + aes(x='pos', y='MMD', color='pval', fill='pval') + geom_bar(stat='identity') + labs(title='site-wise MMD of learned features between functional states', x='amino acid site', y='MMD') + theme(panel_background=element_rect(fill='black', alpha=.1)))
     myplot11 = (ggplot(myMMDindex) + aes(x='pos', y='MMD', color='res', fill='res') + geom_bar(stat='identity') + labs(title='site-wise MMD of learned features between functional states', x='amino acid site', y='MMD') + theme(panel_background=element_rect(fill='black', alpha=.6)))
     myplot12 = (ggplot(myMMDindex) + aes(x='pos', y='MMD', color='res', fill='res') + geom_bar(stat='identity') + labs(title='site-wise MMD of learned features between functional states', x='amino acid site', y='MMD') + theme(panel_background=element_rect(fill='black', alpha=.1)))
-    myplot9.save("maxMeanDiscrepancy/MMD_dark_sig.png", width=10, height=5, dpi=300)
-    myplot10.save("maxMeanDiscrepancy/MMD_light_sig.png", width=10, height=5, dpi=300)
-    myplot11.save("maxMeanDiscrepancy/MMD_dark_res.png", width=10, height=5, dpi=300)
-    myplot12.save("maxMeanDiscrepancy/MMD_light_res.png", width=10, height=5, dpi=300)
+    myplot9.save("maxMeanDiscrepancy_%s/MMD_dark_sig.png" % PDB_id_reference, width=10, height=5, dpi=300)
+    myplot10.save("maxMeanDiscrepancy_%s/MMD_light_sig.png" % PDB_id_reference, width=10, height=5, dpi=300)
+    myplot11.save("maxMeanDiscrepancy_%s/MMD_dark_res.png" % PDB_id_reference, width=10, height=5, dpi=300)
+    myplot12.save("maxMeanDiscrepancy_%s/MMD_light_res.png" % PDB_id_reference, width=10, height=5, dpi=300)
     if(graph_scheme == "light"):
         print(myplot10)
         print(myplot12)
