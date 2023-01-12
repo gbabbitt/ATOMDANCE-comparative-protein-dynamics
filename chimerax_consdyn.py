@@ -58,6 +58,12 @@ for x in range(len(infileALT_lines)):
     if(header == "orthoTRAJ"):
         ortho_traj = value
         print("my ortho TRAJ is",ortho_traj)
+    if(header == "queryFAS"):
+        query_fas = value
+        print("my query FAS is",query_fas)
+    if(header == "orthoFAS"):
+        ortho_fas = value
+        print("my ortho FAS is",ortho_fas)
 
 infile = open("DROIDS.ctl", "r")
 infile_lines = infile.readlines()
@@ -156,11 +162,28 @@ cons_anal = ""+cons_anal+""
 coord_anal = ""+coord_anal+""
 #var_anal = ""+var_anal+""
 
+# set number of features for tuning gamma in RBF kernel
+infeature_ref = "./features/featureFLUX_sub_ref/feature_%s_sub_ref_0.txt" % PDB_id_reference
+df_feature_ref = pd.read_csv(infeature_ref, sep="\s+")
+n_features_flux = df_feature_ref.shape[1] - 1
+infeature_ref = "./features/feature_sub_ref_reduced/feature_%s_sub_ref_0.txt" % PDB_id_reference
+df_feature_ref = pd.read_csv(infeature_ref, sep="\s+")
+n_features_corr = df_feature_ref.shape[1] - 1      
+
 n_bootstrap = subsamples*5
 if(n_bootstrap > 500):
     n_bootstrap = 500
 if(n_bootstrap < 50):
     n_bootstrap = 50
+
+print('n features (fluctuations)')
+print(n_features_flux)
+print('n features (correlations)')
+print(n_features_corr)
+print('n bootstrap')
+print(n_bootstrap)
+
+n_features_comb = n_features_flux*2
 
 #def conserved_dynamics_sampling():
 #    print("identifying conserved dynamics")
@@ -434,12 +457,310 @@ def feature_vector_ortho():
 
 
 def conserved_dynamics_analysis():
-    print("identifying conserved dynamics regions involving atom fluctuations and correlations")
+    print("identify adaptive and conserved dynamics regions involving atom fluctuations and correlations")
+    # read sequence files for query and ortholog sequences
+    print('compared sequences')
+    inseq = "%s" % query_fas 
+    with open(inseq, 'r') as file:
+        seq_query = file.readlines()
+        seq_query = seq_query[1]
+        seq_query = seq_query.strip()
+    print(seq_query)
+    inseq = "%s" % ortho_fas 
+    with open(inseq, 'r') as file:
+        seq_ortho = file.readlines()
+        seq_ortho = seq_ortho[1]
+        seq_ortho = seq_ortho.strip()
+    print(seq_ortho)
+    seq_query_list = list(seq_query)
+    #print(seq_query_list)
+    seq_ortho_list = list(seq_ortho)
+    #print(seq_ortho_list)
+       
+    # initialize
+    neutralMMDs = []
     
+    # generate null distribution (list of MMD) between random sites and subsamples on query vs ortholog protein
+    # loop through N bootstraps (function of protein length)
+    print("generating neutral MMD distribution for %s" % PDB_id_query)
+    
+    for i in range(n_bootstrap):
+                
+        # select two random sites
+        rnd_int_query = rnd.randint(0, length_prot-2)
+        rnd_int_ortho = rnd.randint(0, length_prot-2)
+        #print(rnd_int_query)
+        #print(rnd_int_ortho)
+        rnd_site_query = seq_query_list[rnd_int_query]
+        rnd_site_ortho = seq_ortho_list[rnd_int_ortho]
+        #print(rnd_site_query)
+        #print(rnd_site_ortho)
+        
+        ### collect feature data
+        feature_query = []
+        feature_ortho = []
+                
+        for j in range(subsamples): # loop over subsamples
+            samp = j+1
+            #print("collecting subsample %s" % samp)
+            ######### query protein #########
+            #infeature_query = "./features/feature_sub_query_reduced/feature_%s_sub_query_%s.txt" % (PDB_id_query, j)
+            #infeature_query = "./features/featureFLUX_sub_query/feature_%s_sub_query_%s.txt" % (PDB_id_query, j)
+            infeature_query = "./features/featureCOMBINE_sub_query/feature_%s_sub_query_%s.txt" % (PDB_id_query, j)
+            df_feature_query = pd.read_csv(infeature_query, sep="\s+")
+            #print(df_feature_query)
+            del df_feature_query[df_feature_query.columns[0]] # remove first column
+            #print(df_feature_query)
+            sample_feature_query = df_feature_query.iloc[rnd_int_query]
+            sample_feature_query= np.array(sample_feature_query)
+            #print(sample_feature_query)
+            feature_query.append(sample_feature_query)
+            
+            ######## ortholog protein ###########
+            #infeature_ortho = "./features/feature_sub_ortho_reduced/feature_%s_sub_ortho_%s.txt" % (PDB_id_ortho, j)
+            #infeature_ortho = "./features/featureFLUX_sub_ortho/feature_%s_sub_ortho_%s.txt" % (PDB_id_ortho, j)
+            infeature_ortho = "./features/featureCOMBINE_sub_ortho/feature_%s_sub_ortho_%s.txt" % (PDB_id_ortho, j)
+            df_feature_ortho = pd.read_csv(infeature_ortho, sep="\s+")
+            #print(df_feature_ortho)
+            del df_feature_ortho[df_feature_ortho.columns[0]] # remove first column
+            #print(df_feature_ortho)
+            sample_feature_ortho = df_feature_ortho.iloc[rnd_int_ortho]
+            sample_feature_ortho = np.array(sample_feature_ortho)
+            #print(sample_feature_ortho)
+            feature_ortho.append(sample_feature_ortho) 
+        
+        #print(feature_query)
+        #print(feature_ortho)
+        df_feature_query = pd.DataFrame(feature_query)
+        df_feature_ortho = pd.DataFrame(feature_ortho)
+        #print(df_feature_query)
+        #print(df_feature_ortho)
+        feature_ortho_mean = df_feature_ortho.mean()
+        ortho_mean = feature_ortho_mean.mean()
+        #print(feature_ortho_mean)
+        #print(ortho_mean)
+        feature_query_mean = df_feature_query.mean()
+        query_mean = feature_query_mean.mean()
+        #print(feature_query_mean)
+        #print(query_mean)
+        diff_mean = (query_mean-ortho_mean)
+        #print(diff_mean)
+        if(diff_mean >= 0):
+            sign = "pos"
+        elif(diff_mean < 0):
+            sign = "neg"
+        else:
+            sign = "NA"
+        # convert back to array for MMD calc
+        feature_ortho_mean = np.array(feature_ortho_mean)
+        feature_query_mean = np.array(feature_query_mean)
+        feature_ortho_mean = feature_ortho_mean.reshape(1, -1)
+        feature_query_mean = feature_query_mean.reshape(1, -1)
+        #print(feature_ortho_mean)
+        #print(feature_query_mean)
+        # calculate neutral MMD query to ortholog 
+        neutralMMD = mmd_rbf_comb(feature_ortho, feature_query) # calulate MMD
+        if(sign == "neg"):
+            neutralMMD = -neutralMMD
+        #print("neutral MMD")
+        #print(neutralMMD)
+        print("calc neutral MMD on random sites %s%s (query) and %s%s (ortho/variant) on %s" % (rnd_site_query, rnd_int_query, rnd_site_ortho, rnd_int_ortho, PDB_id_query))
+        if(rnd_int_query==rnd_int_ortho):
+            print("skip calc - sites are orthologous")
+            continue
+        if(rnd_site_query==rnd_site_ortho):
+            print("skip calc - amino acids are same")
+            continue
+        neutralMMDs.append(neutralMMD) # build MMD list for each site
+               
+    #print("list for neutral MMDs")
+    df_neutralMMDs = pd.DataFrame(neutralMMDs)
+    #print(df_neutralMMDs)
+    
+    # loop over query protein backbone to calculate observed MMD of base mismatch
+    
+    # initialize
+    siteMMDs = []
+    obsMMDs = []
+    PVAL_list = []
+    PLAB_list = []
+    
+    for i in range(length_prot-1):
+        pos = i+1
+        query_base = seq_query_list[i]
+        ortho_base = seq_ortho_list[i] 
+        ### collect feature data
+        feature_query = []
+        feature_ortho = []
+                
+        for j in range(subsamples): # loop over subsamples
+            samp = j+1
+            #print("collecting subsample %s" % samp)
+            ######### query protein #########
+            #infeature_query = "./features/feature_sub_query_reduced/feature_%s_sub_query_%s.txt" % (PDB_id_query, j)
+            #infeature_query = "./features/featureFLUX_sub_query/feature_%s_sub_query_%s.txt" % (PDB_id_query, j)
+            infeature_query = "./features/featureCOMBINE_sub_query/feature_%s_sub_query_%s.txt" % (PDB_id_query, j)
+            df_feature_query = pd.read_csv(infeature_query, sep="\s+")
+            #print(df_feature_query)
+            del df_feature_query[df_feature_query.columns[0]] # remove first column
+            #print(df_feature_query)
+            sample_feature_query = df_feature_query.iloc[i]
+            sample_feature_query= np.array(sample_feature_query)
+            #print(sample_feature_query)
+            feature_query.append(sample_feature_query)
+            
+            ######## ortholog protein ###########
+            #infeature_ortho = "./features/feature_sub_ortho_reduced/feature_%s_sub_ortho_%s.txt" % (PDB_id_ortho, j)
+            #infeature_ortho = "./features/featureFLUX_sub_ortho/feature_%s_sub_ortho_%s.txt" % (PDB_id_ortho, j)
+            infeature_ortho = "./features/featureCOMBINE_sub_ortho/feature_%s_sub_ortho_%s.txt" % (PDB_id_ortho, j)
+            df_feature_ortho = pd.read_csv(infeature_ortho, sep="\s+")
+            #print(df_feature_ortho)
+            del df_feature_ortho[df_feature_ortho.columns[0]] # remove first column
+            #print(df_feature_ortho)
+            sample_feature_ortho = df_feature_ortho.iloc[i]
+            sample_feature_ortho = np.array(sample_feature_ortho)
+            #print(sample_feature_ortho)
+            feature_ortho.append(sample_feature_ortho) 
+        
+        #print(feature_query)
+        #print(feature_ortho)
+        df_feature_query = pd.DataFrame(feature_query)
+        df_feature_ortho = pd.DataFrame(feature_ortho)
+        #print(df_feature_query)
+        #print(df_feature_ortho)
+        feature_ortho_mean = df_feature_ortho.mean()
+        ortho_mean = feature_ortho_mean.mean()
+        #print(feature_ortho_mean)
+        #print(ortho_mean)
+        feature_query_mean = df_feature_query.mean()
+        query_mean = feature_query_mean.mean()
+        #print(feature_query_mean)
+        #print(query_mean)
+        diff_mean = (query_mean-ortho_mean)
+        #print(diff_mean)
+        if(diff_mean >= 0):
+            sign = "pos"
+        elif(diff_mean < 0):
+            sign = "neg"
+        else:
+            sign = "NA"
+        # convert back to array for MMD calc
+        feature_ortho_mean = np.array(feature_ortho_mean)
+        feature_query_mean = np.array(feature_query_mean)
+        feature_ortho_mean = feature_ortho_mean.reshape(1, -1)
+        feature_query_mean = feature_query_mean.reshape(1, -1)
+        #print(feature_ortho_mean)
+        #print(feature_query_mean)
+        # calculate neutral MMD query to ortholog 
+        siteMMD = mmd_rbf_comb(feature_ortho, feature_query) # calulate MMD
+        if(sign == "neg"):
+            siteMMD = -siteMMD
+        #print("site MMD")
+        #print(siteMMD)
+        
+        
+        
+        
+        
+        print("calc MMD on orthologous sites %s%s (query) and %s%s (ortho/variant) on %s" % (query_base, pos, ortho_base, pos, PDB_id_query))
+        siteMMDs.append(siteMMD) # build MMD list for each site
+        if(query_base==ortho_base):
+            #print("base match")
+            siteMMD = 0
+            obsMMDs.append(siteMMD)
+            pval = 0.5
+            plab = "ns"
+            PVAL_list.append(pval)
+            PLAB_list.append(plab)
+            continue
+        if(query_base!=ortho_base):
+            #print("base mismatch")
+            obsMMDs.append(siteMMD)
+            
+            # calculate p value and specify significance labels
+            cntLESSER = 0
+            cntGREATER = 0
+            plab = "NA"
+            pval = 0.5
+            for k in range(len(neutralMMDs)):
+                neutralMMD = neutralMMDs[k]
+                if(siteMMD > neutralMMD):
+                    cntGREATER = cntGREATER+1
+                if(siteMMD <= neutralMMD):
+                    cntLESSER = cntLESSER+1
+            cntTOTAL = cntGREATER+cntLESSER
+            pval = cntLESSER/cntTOTAL
+            if(pval <= 0.05 or pval >= 0.95):
+                plab = "sig"
+            else:
+                plab = "ns"
+            PVAL_list.append(pval)
+            PLAB_list.append(plab)
+            #print("p value")
+            #print(pval)
+            continue
+                   
+    #print("list for site MMDs")
+    df_siteMMDs = pd.DataFrame(siteMMDs)
+    #print(df_siteMMDs)
+    
+    #print("list for obs MMDs")
+    df_obsMMDs = pd.DataFrame(obsMMDs)
+    #print(df_obsMMDs)
+    
+    #print("list for p values")
+    df_PVAL = pd.DataFrame(PVAL_list)
+    #print(df_PVAL)    
+    
+    #print("list for p value labels")
+    df_PLAB = pd.DataFrame(PLAB_list)
+    #print(df_PLAB) 
+     
+    # index position on protein
+    myPOS = [i for i in range(1,length_prot+1)]
+    myPOS = pd.DataFrame(myPOS)
+    #print(myPOS)
+    
+    AAquery = pd.DataFrame(seq_query_list) 
+    AAortho = pd.DataFrame(seq_ortho_list) 
+    #print(AAquery) 
+    
+    # export data
+    myFrames = (myPOS, AAquery, AAortho, df_siteMMDs, df_obsMMDs, df_PVAL, df_PLAB)
+    myMMDindex = pd.concat(myFrames, axis = 1, join="inner")
+    myMMDindex = myMMDindex.set_axis(['pos', 'AAquery', 'AAortho', 'MMDall', 'MMDmismatch', 'pval', 'plab'], axis=1, inplace=False)
+    print(myMMDindex)
+    # copy learning matrix for heatmapping coordinated dynamics
+    if not os.path.exists('conservedDynamics_%s' % PDB_id_reference):
+        os.mkdir('conservedDynamics_%s' % PDB_id_reference)
+    df_out = myMMDindex
+    writePath = "./conservedDynamics_%s/conservedDynamics.txt" % PDB_id_reference
+    with open(writePath, 'w') as f_out:
+        dfAsString = df_out.to_string(header=True, index=False)
+        f_out.write(dfAsString)
+        f_out.close
+    
+    # plot MMD profile and obs mismatch MMD colored via p value
+    myplot1 = (ggplot(myMMDindex) + aes(x='pos', y='MMDmismatch', color='pval', fill='pval') + geom_bar(stat='identity') + labs(title='site-wise MMD of learned features between amino acid replacements', x='amino acid site', y='MMD (strength of selection)') + theme(panel_background=element_rect(fill='black', alpha=.6)))
+    myplot2 = (ggplot(myMMDindex) + aes(x='pos', y='MMDmismatch', color='pval', fill='pval') + geom_bar(stat='identity') + labs(title='site-wise MMD of learned features between amino acid replacements', x='amino acid site', y='MMD (strength of selection)') + theme(panel_background=element_rect(fill='black', alpha=.1)))
+    myplot3 = (ggplot(myMMDindex) + aes(x='pos', y='MMDall', color='pval', fill='pval') + geom_bar(stat='identity') + labs(title='site-wise MMD of learned features between amino acid replacements', x='amino acid site', y='MMD (strength of selection)') + theme(panel_background=element_rect(fill='black', alpha=.6)))
+    myplot4 = (ggplot(myMMDindex) + aes(x='pos', y='MMDall', color='pval', fill='pval') + geom_bar(stat='identity') + labs(title='site-wise MMD of learned features between amino acid replacements', x='amino acid site', y='MMD (strength of selection)') + theme(panel_background=element_rect(fill='black', alpha=.1)))
+    myplot1.save("conservedDynamics_%s/MMD_dark_p.png" % PDB_id_reference, width=10, height=5, dpi=300)
+    myplot2.save("conservedDynamics_%s/MMD_light_p.png" % PDB_id_reference, width=10, height=5, dpi=300)
+    myplot3.save("conservedDynamics_%s/MMD_dark_sig.png" % PDB_id_reference, width=10, height=5, dpi=300)
+    myplot4.save("conservedDynamics_%s/MMD_light_sig.png" % PDB_id_reference, width=10, height=5, dpi=300)
+    if(graph_scheme == "light"):
+        print(myplot2)
+        print(myplot4)
+    if(graph_scheme == "dark"):
+        print(myplot3)
+        print(myplot4)
+        
+    # map p values to protein sites on query PDB
 
 
 def conserved_dynamics_analysisOLD():
-    print("identifying conserved dynamics")
+    print("identifying conserved dynamics regions involving atom fluctuations and correlations")
  
     avg_learn_profile_neutral = []
     PVAL_output = []
@@ -750,12 +1071,59 @@ def map_CONSsig():
     print("mapping significant CONSERVED DYNAMICS to reference protein %s" % PDB_id_reference)
     cmd = "%sChimeraX color_by_attr_chimerax_CONSsig.py" % chimerax_path
     os.system(cmd)    
-         
+
+
+def mmd_rbf_comb(X, Y, gamma=1.0/n_features_comb):
+    """MMD using rbf (gaussian) kernel (i.e., k(x,y) = exp(-gamma * ||x-y||^2 / 2))
+    Arguments:
+        X {[n_sample1, dim]} -- [X matrix]
+        Y {[n_sample2, dim]} -- [Y matrix]
+    Keyword Arguments:
+        gamma {float} -- [kernel parameter] (default: {1.0})
+    Returns:
+        [scalar] -- [MMD value]
+    """
+    XX = metrics.pairwise.rbf_kernel(X, X, gamma)
+    YY = metrics.pairwise.rbf_kernel(Y, Y, gamma)
+    XY = metrics.pairwise.rbf_kernel(X, Y, gamma)
+    return XX.mean() + YY.mean() - 2 * XY.mean()
+
+def mmd_rbf_flux(X, Y, gamma=1.0/n_features_flux):
+    """MMD using rbf (gaussian) kernel (i.e., k(x,y) = exp(-gamma * ||x-y||^2 / 2))
+    Arguments:
+        X {[n_sample1, dim]} -- [X matrix]
+        Y {[n_sample2, dim]} -- [Y matrix]
+    Keyword Arguments:
+        gamma {float} -- [kernel parameter] (default: {1.0})
+    Returns:
+        [scalar] -- [MMD value]
+    """
+    XX = metrics.pairwise.rbf_kernel(X, X, gamma)
+    YY = metrics.pairwise.rbf_kernel(Y, Y, gamma)
+    XY = metrics.pairwise.rbf_kernel(X, Y, gamma)
+    return XX.mean() + YY.mean() - 2 * XY.mean()    
+
+def mmd_rbf_corr(X, Y, gamma=1.0/n_features_corr):
+    """MMD using rbf (gaussian) kernel (i.e., k(x,y) = exp(-gamma * ||x-y||^2 / 2))
+    Arguments:
+        X {[n_sample1, dim]} -- [X matrix]
+        Y {[n_sample2, dim]} -- [Y matrix]
+    Keyword Arguments:
+        gamma {float} -- [kernel parameter] (default: {1.0})
+    Returns:
+        [scalar] -- [MMD value]
+    """
+    XX = metrics.pairwise.rbf_kernel(X, X, gamma)
+    YY = metrics.pairwise.rbf_kernel(Y, Y, gamma)
+    XY = metrics.pairwise.rbf_kernel(X, Y, gamma)
+    return XX.mean() + YY.mean() - 2 * XY.mean()
+
+        
 ###############################################################
 ###############################################################
 
 def main():
-    feature_vector_ortho()
+    #feature_vector_ortho()
     conserved_dynamics_analysis()
     #map_CONSsig()
     print("comparative analyses of molecular dynamics is completed")
