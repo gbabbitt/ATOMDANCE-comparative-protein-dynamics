@@ -158,7 +158,8 @@ def compare_dynamics_MMD_flux():
     MMD_output = []
     PVAL_output = []
     PLAB_output = []
-    for i in range(length_prot-1):
+    
+    for i in range(length_prot):
         # initiatize arrays
         feature_reference = []
         feature_referenceCTL = []
@@ -170,12 +171,12 @@ def compare_dynamics_MMD_flux():
             #infeature_reference = "./feature_sub_ref_reduced/feature_%s_sub_ref_%s.txt" % (PDB_id_reference, j)
             infeature_reference = "./features/featureFLUX_sub_ref/feature_%s_sub_ref_%s.txt" % (PDB_id_reference, j)
             #infeature_reference = "./featureCOMBINE_sub_ref/feature_%s_sub_ref_%s.txt" % (PDB_id_reference, j)
-            
+            #print(infeature_reference)
             df_feature_reference = pd.read_csv(infeature_reference, sep="\s+")
             #print(df_feature_reference)
             del df_feature_reference[df_feature_reference.columns[0]] # remove first column
             #print(df_feature_reference)
-            sample_feature_reference = df_feature_reference.iloc[i]
+            sample_feature_reference = df_feature_reference.iloc[i-1]
             sample_feature_reference = np.array(sample_feature_reference)
             #print(sample_feature_reference)
             feature_reference.append(sample_feature_reference)
@@ -188,7 +189,7 @@ def compare_dynamics_MMD_flux():
             #print(df_feature_referenceCTL)
             del df_feature_referenceCTL[df_feature_referenceCTL.columns[0]] # remove first column
             #print(df_feature_referenceCTL)
-            sample_feature_referenceCTL = df_feature_referenceCTL.iloc[i]
+            sample_feature_referenceCTL = df_feature_referenceCTL.iloc[i-1]
             sample_feature_referenceCTL = np.array(sample_feature_referenceCTL)
             #print(sample_feature_referenceCTL)
             feature_referenceCTL.append(sample_feature_referenceCTL)
@@ -201,7 +202,7 @@ def compare_dynamics_MMD_flux():
             #print(df_feature_query)
             del df_feature_query[df_feature_query.columns[0]] # remove first column
             #print(df_feature_query)
-            sample_feature_query = df_feature_query.iloc[i]
+            sample_feature_query = df_feature_query.iloc[i-1]
             sample_feature_query= np.array(sample_feature_query)
             #print(sample_feature_query)
             feature_query.append(sample_feature_query)
@@ -216,6 +217,7 @@ def compare_dynamics_MMD_flux():
         ref_mean = feature_ref_mean.mean()
         #print(feature_ref_mean)
         #print(ref_mean)
+        #print(df_feature_ref)
         feature_query_mean = df_feature_query.mean()
         query_mean = feature_query_mean.mean()
         #print(feature_query_mean)
@@ -399,7 +401,7 @@ def compare_dynamics_MMD_flux():
     f6.write("attribute: MMDsig\n")
     f6.write("\n")
     #print(myKLneg)
-    for x in range(length_prot-1):
+    for x in range(length_prot):
         sitepos = x+1
         #MMDpos = MMD_output.iat[x,0]
         MMDyn = PVAL_output.iat[x,0]
@@ -426,7 +428,7 @@ def compare_dynamics_MMD_corr():
     MMD_output = []
     PVAL_output = []
     PLAB_output = []
-    for i in range(length_prot-1):
+    for i in range(length_prot):
         # initiatize arrays
         feature_reference = []
         feature_referenceCTL = []
@@ -443,7 +445,7 @@ def compare_dynamics_MMD_corr():
             #print(df_feature_reference)
             del df_feature_reference[df_feature_reference.columns[0]] # remove first column
             #print(df_feature_reference)
-            sample_feature_reference = df_feature_reference.iloc[i]
+            sample_feature_reference = df_feature_reference.iloc[i-1]
             sample_feature_reference = np.array(sample_feature_reference)
             #print(sample_feature_reference)
             feature_reference.append(sample_feature_reference)
@@ -456,7 +458,7 @@ def compare_dynamics_MMD_corr():
             #print(df_feature_referenceCTL)
             del df_feature_referenceCTL[df_feature_referenceCTL.columns[0]] # remove first column
             #print(df_feature_referenceCTL)
-            sample_feature_referenceCTL = df_feature_referenceCTL.iloc[i]
+            sample_feature_referenceCTL = df_feature_referenceCTL.iloc[i-1]
             sample_feature_referenceCTL = np.array(sample_feature_referenceCTL)
             #print(sample_feature_referenceCTL)
             feature_referenceCTL.append(sample_feature_referenceCTL)
@@ -469,7 +471,7 @@ def compare_dynamics_MMD_corr():
             #print(df_feature_query)
             del df_feature_query[df_feature_query.columns[0]] # remove first column
             #print(df_feature_query)
-            sample_feature_query = df_feature_query.iloc[i]
+            sample_feature_query = df_feature_query.iloc[i-1]
             sample_feature_query= np.array(sample_feature_query)
             #print(sample_feature_query)
             feature_query.append(sample_feature_query)
@@ -667,7 +669,7 @@ def compare_dynamics_MMD_corr():
     f6.write("attribute: MMDsig\n")
     f6.write("\n")
     #print(myKLneg)
-    for x in range(length_prot-1):
+    for x in range(length_prot):
         sitepos = x+1
         #MMDpos = MMD_output.iat[x,0]
         MMDyn = PVAL_output.iat[x,0]

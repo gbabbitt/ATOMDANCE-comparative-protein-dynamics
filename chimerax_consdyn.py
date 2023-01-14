@@ -585,7 +585,7 @@ def conserved_dynamics_analysis():
     PVAL_list = []
     PLAB_list = []
     
-    for i in range(length_prot-1):
+    for i in range(length_prot):
         pos = i+1
         query_base = seq_query_list[i]
         ortho_base = seq_ortho_list[i] 
@@ -604,7 +604,7 @@ def conserved_dynamics_analysis():
             #print(df_feature_query)
             del df_feature_query[df_feature_query.columns[0]] # remove first column
             #print(df_feature_query)
-            sample_feature_query = df_feature_query.iloc[i]
+            sample_feature_query = df_feature_query.iloc[i-1]
             sample_feature_query= np.array(sample_feature_query)
             #print(sample_feature_query)
             feature_query.append(sample_feature_query)
@@ -617,7 +617,7 @@ def conserved_dynamics_analysis():
             #print(df_feature_ortho)
             del df_feature_ortho[df_feature_ortho.columns[0]] # remove first column
             #print(df_feature_ortho)
-            sample_feature_ortho = df_feature_ortho.iloc[i]
+            sample_feature_ortho = df_feature_ortho.iloc[i-1]
             sample_feature_ortho = np.array(sample_feature_ortho)
             #print(sample_feature_ortho)
             feature_ortho.append(sample_feature_ortho) 
@@ -786,7 +786,7 @@ def conserved_dynamics_analysis():
     f6.write("attribute: CONSsig\n")
     f6.write("\n")
     #print(myKLneg)
-    for x in range(length_prot-1):
+    for x in range(length_prot):
         sitepos = x+1
         CONSyn = PVAL_output.iat[x,0]
         #print(CONSyn)
@@ -796,6 +796,7 @@ def conserved_dynamics_analysis():
         if(CONSyn == "ns"):
             CONSpos = 0.0
         #print(CONSpos)
+        #CONSpos = CONS_output.iat[x,0] # option to see ns p values
         f6.write("\t:%s\t%s\n" % (sitepos, CONSpos))
 
     

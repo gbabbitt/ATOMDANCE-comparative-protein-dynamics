@@ -1,12 +1,16 @@
 #!/usr/bin/env python
 
 #############################################################################
-######   This script is a python+julia script to conduct machine-learning
+######   This script is a python script to conduct machine-learning
 ######   comparative analyses of two molecular dynamics trajectories
 ######   It is part of the DROIDS v6.0 ChimeraX plug-in suite for
 ######   machine-learning assisted comparative protein dynamics
 ######   produced by Dr. Gregory A. Babbitt and students at the 
 ######   Rochester Instituteof Technology in 2022.   License under GPL v3.0
+#############################################################################
+#### use 'old'  for cpptraj version 18 or earlier
+cpptraj_version = "old"
+#cpptraj_version = "new"
 #############################################################################
 
 import getopt, sys # Allows for command line arguments
@@ -884,7 +888,7 @@ def coordinated_dynamics():
     myMATRIX = pd.concat([matrixI, matrixJ, MI], keys = ['matrixI', 'matrixJ', 'MI'], axis=1, join="inner")
     print(myMATRIX)
     # plot MI matrix   
-    myMATRIX_plot =  (ggplot(myMATRIX, aes('matrixI', 'matrixJ', fill='MI')) + scale_fill_gradient(low="white",high="purple") + geom_tile() + labs(title='mutual information on learned classifications defining functional binding states', x='amino acid position', y='amino acid position'))
+    myMATRIX_plot =  (ggplot(myMATRIX, aes('matrixI', 'matrixJ', fill='MI')) + scale_fill_gradient(low="white",high="purple") + geom_tile() + labs(title='mutual information across AA sites on SVM classifications defining functional binding states', x='amino acid position', y='amino acid position'))
     myMATRIX_plot.save("./coordinatedDynamics_%s/coordinatedDynamics.png" % PDB_id_reference, width=10, height=5, dpi=300)
     print(myMATRIX_plot)
 
@@ -923,10 +927,12 @@ def main():
     t3.join() 
     
     print("subsampling of MD trajectories is completed") 
-    matrix_maker_old_queryLG()  # for older version of cpptraj
-    matrix_maker_batch_old_queryLG() # for older version of cpptraj
-    #matrix_maker_new_queryLG()
-    #matrix_maker_batch_new_queryLG()
+    if(cpptraj_version == "old"):
+        matrix_maker_old_queryLG()  # for older version of cpptraj
+        matrix_maker_batch_old_queryLG() # for older version of cpptraj
+    if(cpptraj_version == "new"):
+        matrix_maker_new_queryLG()
+        matrix_maker_batch_new_queryLG()
     feature_deploy()
     coordinated_site_matrix()
     coordinated_dynamics()
