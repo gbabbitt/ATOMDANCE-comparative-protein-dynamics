@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 #############################################################################
-######   This script is a python+julia script to conduct machine-learning
+######   This script is a python script to conduct machine-learning
 ######   comparative analyses of two molecular dynamics trajectories
 ######   It is part of the DROIDS v6.0 ChimeraX plug-in suite for
 ######   machine-learning assisted comparative protein dynamics
@@ -722,6 +722,10 @@ def conserved_dynamics_analysis():
     #print(AAquery) 
     
     # export data
+    myFrames = (df_neutralMMDs, df_neutralMMDs)
+    myMMDneutral = pd.concat(myFrames, axis = 1, join="inner")
+    myMMDneutral = myMMDneutral.set_axis(['MMDneutral', 'MMDneutralAgain'], axis=1, inplace=False)
+    print(myMMDneutral)
     myFrames = (myPOS, AAquery, AAortho, df_siteMMDs, df_obsMMDs, df_PVAL, df_PLAB)
     myMMDindex = pd.concat(myFrames, axis = 1, join="inner")
     myMMDindex = myMMDindex.set_axis(['pos', 'AAquery', 'AAortho', 'MMDall', 'MMDmismatch', 'pval', 'plab'], axis=1, inplace=False)
@@ -741,16 +745,22 @@ def conserved_dynamics_analysis():
     myplot2 = (ggplot(myMMDindex) + aes(x='pos', y='MMDall', color='plab', fill='plab') + geom_bar(stat='identity') + labs(title='site-wise MMD of learned features between amino acid replacements', x='amino acid site', y='MMD (strength of selection)') + theme(panel_background=element_rect(fill='black', alpha=.1)))
     myplot3 = (ggplot(myMMDindex) + aes(x='pos', y='MMDall', color='pval', fill='pval') + geom_bar(stat='identity') + scale_color_gradient2(low="red",mid="white",high="green",midpoint=0.5,limits=(0,1)) + scale_fill_gradient2(low="red",mid="white",high="green",midpoint=0.5,limits=(0,1)) + labs(title='site-wise MMD of learned features between amino acid replacements', x='amino acid site', y='MMD (strength of selection)') + theme(panel_background=element_rect(fill='black', alpha=.6)))
     myplot4 = (ggplot(myMMDindex) + aes(x='pos', y='MMDall', color='pval', fill='pval') + geom_bar(stat='identity') + scale_color_gradient2(low="red",mid="white",high="green",midpoint=0.5,limits=(0,1)) + scale_fill_gradient2(low="red",mid="white",high="green",midpoint=0.5,limits=(0,1))  + labs(title='site-wise MMD of learned features between amino acid replacements', x='amino acid site', y='MMD (strength of selection)') + theme(panel_background=element_rect(fill='black', alpha=.1)))
+    myplot5 = (ggplot(myMMDneutral) + aes(x='MMDneutral') + geom_histogram(fill="white") + labs(title='distribution of neutral MMD of learned features between amino acid replacements', x='MMD (neutral evolution)', y='frequency') + theme(panel_background=element_rect(fill='black', alpha=.6)))
+    myplot6 = (ggplot(myMMDneutral) + aes(x='MMDneutral') + geom_histogram() + labs(title='distribution of neutral MMD of learned features between amino acid replacements', x='MMD (neutral evolution)', y='frequency') + theme(panel_background=element_rect(fill='black', alpha=.1)))
     myplot1.save("conservedDynamics_%s/MMD_dark_p.png" % PDB_id_reference, width=10, height=5, dpi=300)
     myplot2.save("conservedDynamics_%s/MMD_light_p.png" % PDB_id_reference, width=10, height=5, dpi=300)
     myplot3.save("conservedDynamics_%s/MMD_dark_sig.png" % PDB_id_reference, width=10, height=5, dpi=300)
     myplot4.save("conservedDynamics_%s/MMD_light_sig.png" % PDB_id_reference, width=10, height=5, dpi=300)
+    myplot5.save("conservedDynamics_%s/MMD_dark_histo.png" % PDB_id_reference, width=10, height=5, dpi=300)
+    myplot6.save("conservedDynamics_%s/MMD_light_histo.png" % PDB_id_reference, width=10, height=5, dpi=300)
     if(graph_scheme == "light"):
+        print(myplot6)
         print(myplot2)
         print(myplot4)
     if(graph_scheme == "dark"):
+        print(myplot5)
+        print(myplot1)
         print(myplot3)
-        print(myplot4)
     
     PVAL_output = df_PLAB
     CONS_output = df_obsMMDs
