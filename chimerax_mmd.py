@@ -380,6 +380,45 @@ def compare_dynamics_MMD_flux():
         print(myplot11)
         print(myplot13)
         print(myplot15)
+    
+    # create control, reference PDB and attribute file for chimerax
+    os.popen('cp %s.pdb ./ChimeraXvis/query.pdb' % PDB_id_query) # linix
+    #os.popen('copy %sREDUCED.pdb ./ChimeraXvis/reference.pdb' % PDB_id_reference) # Windows
+    f5 = open("ChimeraXvis_MMD_flux.ctl", "w")
+    f6= open("./ChimeraXvis/attributeMMD_flux.dat", "w")
+    # ctl for sig KL map
+    f5.write("model\t#1\n")
+    f5.write("structure\tChimeraXvis/query.pdb\n")
+    f5.write("structureADD	ChimeraXvis/reference.pdb\n")
+    f5.write("attr_file\tChimeraXvis/attributeMMD_flux.dat\n")
+    f5.write("length\t%s\n" % length_prot)
+    f5.write("attr\tMMD\n")
+    #f5.write("palette\tGreens-5\n")
+    f5.write("palette\tbluered\n")
+    f5.write("lighting\tsimple\n")
+    f5.write("transparency\t50\n")
+    f5.write("background\tgray\n")
+    f6.write("recipient: residues\n")
+    f6.write("attribute: MMD\n")
+    f6.write("\n")
+    #print(myKLneg)
+    for x in range(length_prot):
+        sitepos = x+1
+        #MMDpos = MMD_output.iat[x,0]
+        MMDyn = PVAL_output.iat[x,0]
+        #print(MMDyn)
+        #print((MMDpos))
+        MMDpos = MMD_output.iat[x,0] # option for p-value gradient
+        
+        # option for p-value binary
+        #if(MMDyn == "sig"):
+        #    MMDpos = MMD_output.iat[x,0]
+        #if(MMDyn == "ns"):
+        #    MMDpos = 0.0
+        
+        #print(MMDpos)
+        f6.write("\t:%s\t%s\n" % (sitepos, MMDpos))
+    
     # create control, reference PDB and attribute file for chimerax
     os.popen('cp %s.pdb ./ChimeraXvis/query.pdb' % PDB_id_query) # linix
     #os.popen('copy %sREDUCED.pdb ./ChimeraXvis/reference.pdb' % PDB_id_reference) # Windows
@@ -407,13 +446,13 @@ def compare_dynamics_MMD_flux():
         MMDyn = PVAL_output.iat[x,0]
         #print(MMDyn)
         #print((MMDpos))
-        MMDpos = MMD_output.iat[x,0] # option for p-value gradient
+        #MMDpos = MMD_output.iat[x,0] # option for p-value gradient
         
         # option for p-value binary
-        #if(MMDyn == "sig"):
-        #    MMDpos = MMD_output.iat[x,0]
-        #if(MMDyn == "ns"):
-        #    MMDpos = 0.0
+        if(MMDyn == "sig"):
+            MMDpos = MMD_output.iat[x,0]
+        if(MMDyn == "ns"):
+            MMDpos = 0.0
         
         #print(MMDpos)
         f6.write("\t:%s\t%s\n" % (sitepos, MMDpos))
@@ -648,6 +687,47 @@ def compare_dynamics_MMD_corr():
         print(myplot11)
         print(myplot13)
         print(myplot15)
+    
+    # create control, reference PDB and attribute file for chimerax
+    os.popen('cp %s.pdb ./ChimeraXvis/query.pdb' % PDB_id_query) # linix
+    #os.popen('copy %sREDUCED.pdb ./ChimeraXvis/reference.pdb' % PDB_id_reference) # Windows
+    f5 = open("ChimeraXvis_MMD_corr.ctl", "w")
+    f6= open("./ChimeraXvis/attributeMMD_corr.dat", "w")
+    # ctl for sig KL map
+    f5.write("model\t#1\n")
+    f5.write("structure\tChimeraXvis/query.pdb\n")
+    f5.write("structureADD	ChimeraXvis/reference.pdb\n")
+    f5.write("attr_file\tChimeraXvis/attributeMMD_corr.dat\n")
+    f5.write("length\t%s\n" % length_prot)
+    f5.write("attr\tMMD\n")
+    #f5.write("palette\tGreens-5\n")
+    f5.write("palette\tRdYlGn-7\n")
+    f5.write("lighting\tsimple\n")
+    f5.write("transparency\t50\n")
+    f5.write("background\tgray\n")
+    f6.write("recipient: residues\n")
+    f6.write("attribute: MMD\n")
+    f6.write("\n")
+    #print(myKLneg)
+    for x in range(length_prot):
+        sitepos = x+1
+        #MMDpos = MMD_output.iat[x,0]
+        MMDyn = PVAL_output.iat[x,0]
+        #print(MMDyn)
+        #print((MMDpos))
+        MMDpos = MMD_output.iat[x,0] # option for p-value gradient
+        
+        # option for p-value binary
+        #if(MMDyn == "sig"):
+        #    MMDpos = MMD_output.iat[x,0]
+        #if(MMDyn == "ns"):
+        #    MMDpos = 0.0
+        
+        #print(MMDpos)
+        f6.write("\t:%s\t%s\n" % (sitepos, MMDpos))
+    
+    
+    
     # create control, reference PDB and attribute file for chimerax
     os.popen('cp %s.pdb ./ChimeraXvis/query.pdb' % PDB_id_query) # linix
     #os.popen('copy %sREDUCED.pdb ./ChimeraXvis/reference.pdb' % PDB_id_reference) # Windows
@@ -675,13 +755,13 @@ def compare_dynamics_MMD_corr():
         MMDyn = PVAL_output.iat[x,0]
         #print(MMDyn)
         #print((MMDpos))
-        MMDpos = MMD_output.iat[x,0] # option for p-value gradient
+        #MMDpos = MMD_output.iat[x,0] # option for p-value gradient
         
         # option for p-value binary
-        #if(MMDyn == "sig"):
-        #    MMDpos = MMD_output.iat[x,0]
-        #if(MMDyn == "ns"):
-        #    MMDpos = 0.0
+        if(MMDyn == "sig"):
+            MMDpos = MMD_output.iat[x,0]
+        if(MMDyn == "ns"):
+            MMDpos = 0.0
         
         #print(MMDpos)
         f6.write("\t:%s\t%s\n" % (sitepos, MMDpos))
@@ -733,7 +813,18 @@ def map_MMDsig_corr():
     print("mapping significant MMD to reference protein %s" % PDB_id_reference)
     cmd = "%sChimeraX color_by_attr_chimerax_MMDsig_corr.py" % chimerax_path
     os.system(cmd)
-   
+
+def map_MMD_flux():
+    # map MMD in chimerax
+    print("mapping MMD to reference protein %s" % PDB_id_reference)
+    cmd = "%sChimeraX color_by_attr_chimerax_MMD_flux.py" % chimerax_path
+    os.system(cmd)
+    
+def map_MMD_corr():
+    # map MMD in chimerax
+    print("mapping MMD to reference protein %s" % PDB_id_reference)
+    cmd = "%sChimeraX color_by_attr_chimerax_MMD_corr.py" % chimerax_path
+    os.system(cmd)
     
          
 ###############################################################
@@ -741,8 +832,10 @@ def map_MMDsig_corr():
 
 def main():
     compare_dynamics_MMD_flux()
+    map_MMD_flux()
     map_MMDsig_flux()
     compare_dynamics_MMD_corr()
+    map_MMD_corr()
     map_MMDsig_corr()
 ###############################################################
 if __name__ == '__main__':
