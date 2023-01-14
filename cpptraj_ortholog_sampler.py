@@ -7,6 +7,11 @@
 ######   produced by Dr. Gregory A. Babbitt and students at the 
 ######   Rochester Instituteof Technology in 2022.   License under GPL v3.0
 #############################################################################
+#### use 'old'  for cpptraj version 18 or earlier
+cpptraj_version = "old"
+#cpptraj_version = "new"
+#############################################################################
+
 
 import getopt, sys # Allows for command line arguments
 import os
@@ -452,10 +457,12 @@ def main():
     
     
     print("subsampling of MD trajectories is completed") 
-    matrix_maker_old()  # for older version of cpptraj
-    matrix_maker_batch_old() # for older version of cpptraj
-    #matrix_maker_new()
-    #matrix_maker_batch_new()
+    if(cpptraj_version == "old"):
+        matrix_maker_old()  # for older version of cpptraj
+        matrix_maker_batch_old() # for older version of cpptraj
+    if(cpptraj_version == "new"):
+        matrix_maker_new()
+        matrix_maker_batch_new()
     copy_flux()
     resinfo()
     print("parsing of MD trajectories is completed")    
