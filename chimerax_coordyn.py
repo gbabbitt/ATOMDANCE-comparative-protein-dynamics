@@ -9,8 +9,8 @@
 ######   Rochester Instituteof Technology in 2022.   License under GPL v3.0
 #############################################################################
 #### use 'old'  for cpptraj version 18 or earlier
-#cpptraj_version = "old"
-cpptraj_version = "new"
+cpptraj_version = "old"
+#cpptraj_version = "new"
 #############################################################################
 
 import getopt, sys # Allows for command line arguments
@@ -888,7 +888,7 @@ def coordinated_dynamics():
     myMATRIX = pd.concat([matrixI, matrixJ, MI], keys = ['matrixI', 'matrixJ', 'MI'], axis=1, join="inner")
     print(myMATRIX)
     # plot MI matrix   
-    myMATRIX_plot =  (ggplot(myMATRIX, aes('matrixI', 'matrixJ', fill='MI')) + scale_fill_gradient(low="white",high="purple") + geom_tile() + labs(title='mutual information across AA sites on SVM classifications defining functional binding states', x='amino acid position', y='amino acid position'))
+    myMATRIX_plot =  (ggplot(myMATRIX, aes('matrixI', 'matrixJ', fill='MI')) + scale_fill_gradient(low="white",high="purple") + geom_tile() + labs(title='mutual information (i.e. coordinated motion) across sites derived from SVM classifications trained upon binding states', x='amino acid position', y='amino acid position'))
     myMATRIX_plot.save("./coordinatedDynamics_%s/coordinatedDynamics.png" % PDB_id_reference, width=10, height=5, dpi=300)
     print(myMATRIX_plot)
 

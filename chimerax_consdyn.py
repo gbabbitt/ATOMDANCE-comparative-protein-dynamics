@@ -560,8 +560,8 @@ def conserved_dynamics_analysis():
         #print(feature_query_mean)
         # calculate neutral MMD query to ortholog 
         neutralMMD = mmd_rbf_comb(feature_ortho, feature_query) # calulate MMD
-        if(sign == "neg"):
-            neutralMMD = -neutralMMD
+        #if(sign == "neg"): # sign MMD deactivated
+        #    neutralMMD = -neutralMMD
         #print("neutral MMD")
         #print(neutralMMD)
         print("calc neutral MMD on random sites %s%s (query) and %s%s (ortho/variant) on %s" % (rnd_site_query, rnd_int_query, rnd_site_ortho, rnd_int_ortho, PDB_id_query))
@@ -653,8 +653,8 @@ def conserved_dynamics_analysis():
         #print(feature_query_mean)
         # calculate neutral MMD query to ortholog 
         siteMMD = mmd_rbf_comb(feature_ortho, feature_query) # calulate MMD
-        if(sign == "neg"):
-            siteMMD = -siteMMD
+        #if(sign == "neg"):
+        #    siteMMD = -siteMMD
         #print("site MMD")
         #print(siteMMD)
         
@@ -685,7 +685,7 @@ def conserved_dynamics_analysis():
                 if(siteMMD <= neutralMMD):
                     cntLESSER = cntLESSER+1
             cntTOTAL = cntGREATER+cntLESSER
-            pval = cntLESSER/cntTOTAL
+            pval = cntGREATER/cntTOTAL
             if(pval <= 0.05 or pval >= 0.95):
                 plab = "sig"
             else:
@@ -741,10 +741,10 @@ def conserved_dynamics_analysis():
         f_out.close
     
     # plot MMD profile and obs mismatch MMD colored via p value
-    myplot1 = (ggplot(myMMDindex) + aes(x='pos', y='MMDall', color='plab', fill='plab') + geom_bar(stat='identity') + labs(title='site-wise MMD of learned features between amino acid replacements', x='amino acid site', y='MMD (strength of selection)') + theme(panel_background=element_rect(fill='black', alpha=.6)))
-    myplot2 = (ggplot(myMMDindex) + aes(x='pos', y='MMDall', color='plab', fill='plab') + geom_bar(stat='identity') + labs(title='site-wise MMD of learned features between amino acid replacements', x='amino acid site', y='MMD (strength of selection)') + theme(panel_background=element_rect(fill='black', alpha=.1)))
-    myplot3 = (ggplot(myMMDindex) + aes(x='pos', y='MMDall', color='pval', fill='pval') + geom_bar(stat='identity') + scale_color_gradient2(low="red",mid="white",high="green",midpoint=0.5,limits=(0,1)) + scale_fill_gradient2(low="red",mid="white",high="green",midpoint=0.5,limits=(0,1)) + labs(title='site-wise MMD of learned features between amino acid replacements', x='amino acid site', y='MMD (strength of selection)') + theme(panel_background=element_rect(fill='black', alpha=.6)))
-    myplot4 = (ggplot(myMMDindex) + aes(x='pos', y='MMDall', color='pval', fill='pval') + geom_bar(stat='identity') + scale_color_gradient2(low="red",mid="white",high="green",midpoint=0.5,limits=(0,1)) + scale_fill_gradient2(low="red",mid="white",high="green",midpoint=0.5,limits=(0,1))  + labs(title='site-wise MMD of learned features between amino acid replacements', x='amino acid site', y='MMD (strength of selection)') + theme(panel_background=element_rect(fill='black', alpha=.1)))
+    myplot1 = (ggplot(myMMDindex) + aes(x='pos', y='MMDall', color='plab', fill='plab') + geom_bar(stat='identity') + labs(title='significant site-wise MMD of learned features during amino acid replacement (i.e. mutational impact)', x='amino acid site', y='MMD (mutational impact)') + theme(panel_background=element_rect(fill='black', alpha=.6)))
+    myplot2 = (ggplot(myMMDindex) + aes(x='pos', y='MMDall', color='plab', fill='plab') + geom_bar(stat='identity') + labs(title='significant site-wise MMD of learned features during amino acid replacement (i.e. mutational impact)', x='amino acid site', y='MMD (mutational impact)') + theme(panel_background=element_rect(fill='black', alpha=.1)))
+    myplot3 = (ggplot(myMMDindex) + aes(x='pos', y='MMDall', color='pval', fill='pval') + geom_bar(stat='identity') + scale_color_gradient2(low="red",mid="white",high="green",midpoint=0.5,limits=(0,1)) + scale_fill_gradient2(low="red",mid="white",high="green",midpoint=0.5,limits=(0,1)) + labs(title='significant site-wise MMD of learned features during amino acid replacements (i.e. mutational impact)', x='amino acid site (red - functionally conserved / green - adaptively altered)', y='MMD (mutational impact)') + theme(panel_background=element_rect(fill='black', alpha=.6)))
+    myplot4 = (ggplot(myMMDindex) + aes(x='pos', y='MMDall', color='pval', fill='pval') + geom_bar(stat='identity') + scale_color_gradient2(low="red",mid="white",high="green",midpoint=0.5,limits=(0,1)) + scale_fill_gradient2(low="red",mid="white",high="green",midpoint=0.5,limits=(0,1))  + labs(title='significant site-wise MMD of learned features during amino acid replacements (i.e. mutational impact)', x='amino acid site (red - functionally conserved / green - adaptively altered)', y='MMD (mutational impact)') + theme(panel_background=element_rect(fill='black', alpha=.1)))
     myplot5 = (ggplot(myMMDneutral) + aes(x='MMDneutral') + geom_histogram(fill="white") + labs(title='distribution of neutral MMD of learned features between amino acid replacements', x='MMD (neutral evolution)', y='frequency') + theme(panel_background=element_rect(fill='black', alpha=.6)))
     myplot6 = (ggplot(myMMDneutral) + aes(x='MMDneutral') + geom_histogram() + labs(title='distribution of neutral MMD of learned features between amino acid replacements', x='MMD (neutral evolution)', y='frequency') + theme(panel_background=element_rect(fill='black', alpha=.1)))
     myplot1.save("conservedDynamics_%s/MMD_dark_p.png" % PDB_id_reference, width=10, height=5, dpi=300)
@@ -778,7 +778,7 @@ def conserved_dynamics_analysis():
     f5.write("attr_file\tChimeraXvis/attributeCONSsig.dat\n")
     f5.write("length\t%s\n" % length_prot)
     f5.write("attr\tCONSsig\n")
-    f5.write("palette\tBrBG-9\n")
+    f5.write("palette\tGreys-9\n")
     f5.write("lighting\tsimple\n")
     f5.write("transparency\t50\n")
     f5.write("background\tgray\n")
