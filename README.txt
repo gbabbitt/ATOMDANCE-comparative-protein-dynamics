@@ -14,8 +14,9 @@ more about the BabbittLab@RIT
 https://people.rit.edu/gabsbi/
 
 more on cpptraj
-https://github.com/Amber-MD/cpptrajGitHub repo for cpptraj
+https://github.com/Amber-MD/cpptraj
 
+GitHub repo for cpptraj
 https://amber-md.github.io/cpptraj/CPPTRAJ.xhtml
 
 TO INSTALL cpptraj
