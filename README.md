@@ -16,6 +16,8 @@ https://people.rit.edu/gabsbi/
 
 more on cpptraj
 https://github.com/Amber-MD/cpptraj
+
+GitHub repo for cpptraj
 https://amber-md.github.io/cpptraj/CPPTRAJ.xhtml
 
 TO INSTALL cpptraj
@@ -58,7 +60,6 @@ Babbitt G.A. Coppola E.E. Mortensen J.S. Adams L.E. Liao J. K. 2018. DROIDS 1.2 
 Babbitt G.A. Fokoue E. Evans J.R. Diller K.I. Adams L.E. 2020. DROIDS 3.0 - Detection of genetic and drug class variant impact on conserved protein binding dynamics. BIOPHYSICAL JOURNAL 118: 541-551 CELL Press.
 
 Babbitt G.A. Fokoue E.P. Srivastava H.R. Callahan B. Rajendran M. 2022. Statistical machine learning for comparative protein dynamics with the DROIDS/maxDemon software pipeline. In press.  STAR Protocols CELL Press.
-
 
 
 
