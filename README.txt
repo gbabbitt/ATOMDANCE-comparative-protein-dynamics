@@ -1,9 +1,21 @@
 ATOMDANCE software containing DROIDS 5.0/maxDemon 4.0/Choreograph 1.0 is a python-based suite of machine learning assisted statistical methods for comparing molecular dynamic trajectories of proteins in two functional states (e.g. unbound vs. bound to something or wildtype vs mutated or hot vs. cold).  It was developed on a python 3 science stack and only additionally requires the cpptraj library software and UCSF Chimerax molecular visualization software to be installed.  The methods and software is offered freely (without guarantee) under GPL 3.0 and was developed by Dr. Gragory A. Babbitt and bioinformatics students at the Rochester Institute of Technology in 2017-2023. 
 
+ATOMDANCE combines 3 main programs
+
+DROIDS 5.0 - (Detecting Relative Outlier Impacts in Dynamic Simulation) providing stie-wise comparisons (i.e. divergence metrics) and hypothesis testing for amino acid fluctuations
+
+maxDemon 4.0 - (kernel-based macine learning for comparative protein dynamics) This provides (A) site-wise comparisons of atom fluctuations and atom correlations in molecular dynamics simulations utilizing max mean discrepancy (MMD) on learned features (B) site-wise identification of non-neutral evolutionary changes in molecular dynamics (also via MMD).
+
+Choreograph 1.0 - provides heatmaps of coordinated site dynamics (via mutual information of learned feature classifications obtained by a support vector machine)
+
+ATOMDANCE utilizes the cpptraj program (Daniel Roe) and UCSF ChimeraX and a minimal number of python libraries.  More information about installing these can be read below. 
+
 more about the BabbittLab@RIT
 https://people.rit.edu/gabsbi/
 
 more on cpptraj
+https://github.com/Amber-MD/cpptrajGitHub repo for cpptraj
+
 https://amber-md.github.io/cpptraj/CPPTRAJ.xhtml
 
 TO INSTALL cpptraj
