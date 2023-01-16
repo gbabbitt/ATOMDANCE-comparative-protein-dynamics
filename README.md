@@ -10,9 +10,10 @@ maxDemon 4.0 - (kernel-based macine learning for comparative protein dynamics) T
 Choreograph 1.0 - provides heatmaps of coordinated site dynamics (via mutual information of learned feature classifications obtained by a support vector machine)
 
 to see GUI layout - 
+
 (https://github.com/gbabbitt/DROIDS-5.0-comparative-protein-dynamics/blob/main/atomdance_gui.png)
 
-SOME EXAMPLES
+SOME EXAMPLES (blue indicates dampened atom motion while red indicate amplified atom motion)
 
 machine learning identification of functional binding sites in TATA binding protein (via MMD)
 
