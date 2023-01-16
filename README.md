@@ -9,7 +9,8 @@ maxDemon 4.0 - (kernel-based macine learning for comparative protein dynamics) T
 
 Choreograph 1.0 - provides heatmaps of coordinated site dynamics (via mutual information of learned feature classifications obtained by a support vector machine)
 
-https://github.com/gbabbitt/DROIDS-5.0-comparative-protein-dynamics/blob/main/atomdance_gui.png
+![screenshot]
+(https://github.com/gbabbitt/DROIDS-5.0-comparative-protein-dynamics/blob/main/atomdance_gui.png)
 
 ATOMDANCE utilizes the cpptraj program (Daniel Roe) and UCSF ChimeraX and a minimal number of python libraries.  More information about installing these can be read below. 
 
