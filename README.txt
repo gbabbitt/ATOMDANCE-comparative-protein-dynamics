@@ -1,4 +1,4 @@
-ATOMDANCE software containing DROIDS 5.0/maxDemon 4.0/Choreograph 1.0 is a python-based suite of machine learning assisted statistical methods for comparing molecular dynamic trajectories of proteins in two functional states (e.g. unbound vs. bound to something or wildtype vs mutated or hot vs. cold).  It was developed on a python 3 science stack and only additionally requires the cpptraj library software and UCSF Chimerax molecular visualization software to be installed.  The methods and software is offered freely (without guarantee) under GPL 3.0 and was developed by Dr. Gragory A. Babbitt and bioinformatics students at the Rochester Institute of Technology in 2017-2023. 
+ATOMDANCE software containing DROIDS 5.0/maxDemon 4.0/Choreograph 1.0 is a python-based suite of machine learning assisted statistical methods for comparing molecular dynamic trajectories of proteins in two functional states (e.g. unbound vs. bound to something or wildtype vs mutated or hot vs. cold). It was developed on a python 3 science stack and only additionally requires the cpptraj library software and UCSF Chimerax molecular visualization software to be installed. The methods and software is offered freely (without guarantee) under GPL 3.0 and was developed by Dr. Gragory A. Babbitt and bioinformatics students at the Rochester Institute of Technology in 2017-2023.
 
 ATOMDANCE combines 3 main programs
 
@@ -8,49 +8,60 @@ maxDemon 4.0 - (kernel-based macine learning for comparative protein dynamics) T
 
 Choreograph 1.0 - provides heatmaps of coordinated site dynamics (via mutual information of learned feature classifications obtained by a support vector machine)
 
-ATOMDANCE utilizes the cpptraj program (Daniel Roe) and UCSF ChimeraX and a minimal number of python libraries.  More information about installing these can be read below. 
+to see GUI layout - 
 
-more about the BabbittLab@RIT
-https://people.rit.edu/gabsbi/
+(https://github.com/gbabbitt/DROIDS-5.0-comparative-protein-dynamics/blob/main/atomdance_gui.png)
 
-more on cpptraj
-https://github.com/Amber-MD/cpptraj
+SOME EXAMPLES (blue indicates dampened atom motion while red indicate amplified atom motion)
 
-GitHub repo for cpptraj
-https://amber-md.github.io/cpptraj/CPPTRAJ.xhtml
+machine learning identification of functional binding sites in TATA binding protein (via MMD)
+
+(https://github.com/gbabbitt/DROIDS-5.0-comparative-protein-dynamics/blob/main/TBPplot.png)
+
+...and mapped to structure (PDB: 1cdw) in ChimeraX
+
+(https://github.com/gbabbitt/DROIDS-5.0-comparative-protein-dynamics/blob/main/TBPmap.png)
+
+machine learning identification of BRAF activation loop during drug binding of ATP pocket
+
+(https://github.com/gbabbitt/DROIDS-5.0-comparative-protein-dynamics/blob/main/BRAFplot.png)
+
+...and mapped to structure (PDB: 1uwh) in ChimeraX
+
+(https://github.com/gbabbitt/DROIDS-5.0-comparative-protein-dynamics/blob/main/BRAFmap.png)
+
+ATOMDANCE utilizes the cpptraj program (Daniel Roe) and UCSF ChimeraX and a minimal number of python libraries. More information about installing these can be read below.
+
+more about the BabbittLab@RIT https://people.rit.edu/gabsbi/
+
+more on cpptraj https://github.com/Amber-MD/cpptraj
+
+GitHub repo for cpptraj https://amber-md.github.io/cpptraj/CPPTRAJ.xhtml
 
 TO INSTALL cpptraj
-1. check/install gcc, g++ and gfortran compilers (e.g. sudo apt install gcc g++ gfortran)
-2. sudo ./configure gcc
-3. make install
 
-NOTE: after installing cpptraj then open bashrc file (e.g. $ gedit .bashrc), then add the following lines to open cpptraj from everywhere.  
+check/install gcc, g++ and gfortran compilers (e.g. sudo apt install gcc g++ gfortran)
+sudo ./configure gcc
+make install
+NOTE: after installing cpptraj then open bashrc file (e.g. $ gedit .bashrc), then add the following lines to open cpptraj from everywhere.
 
-export CPPTRAJ_HOME=/home/myUserName/Desktop/cpptraj-master
-export PATH=$PATH:$CPPTRAJ_HOME/bin
+export CPPTRAJ_HOME=/home/myUserName/Desktop/cpptraj-master export PATH=$PATH:$CPPTRAJ_HOME/bin
 
-To check this, open a terminal and type 'cpptraj'.  If the program opens, this has worked. If you get an error message, you'll likely need to correct the bashrc file and try again
+To check this, open a terminal and type 'cpptraj'. If the program opens, this has worked. If you get an error message, you'll likely need to correct the bashrc file and try again
 
-NOTE: to use older versions of cpptraj (version 18 and prior) open the three following files (cpptraj_parser.py, cpptraj_ortholog_sampler.py, and chimerax_coordyn.py) and change the line of code in the header part of the script to read 'cpptraj_version = 'old'' instead of 'cpptraj_version = 'new''. 
+NOTE: to use older versions of cpptraj (version 18 and prior) open the three following files (cpptraj_parser.py, cpptraj_ortholog_sampler.py, and chimerax_coordyn.py) and change the line of code in the header part of the script to read 'cpptraj_version = 'old'' instead of 'cpptraj_version = 'new''.
 
+more on UCSF ChimeraX https://www.rbvi.ucsf.edu/chimerax/
 
-more on UCSF ChimeraX
-https://www.rbvi.ucsf.edu/chimerax/
+FOR OUR CODE: python module dependencies (os, getopt, sys, threading, random, re, chimerax.core.commands) python modules to be installed (PyQt5, numpy, scipy, pandas, sklearn, matplotlib, plotnine, progress) NOTE: for best results, the CPU on the computer should support at least 4-6 cores
 
-FOR OUR CODE: 
-python module dependencies (os, getopt, sys, threading, random, re, chimerax.core.commands) 
-python modules to be installed (PyQt5, numpy, scipy, pandas, sklearn, matplotlib, plotnine, progress)
-NOTE: for best results, the CPU on the computer should support at least 4-6 cores
+Molecular dynamics file inputs to ATOMDANCE include 6 files (3 for each functional state including a .pdb formatted structure file, a .prmtop formatted topology file and a .nc (i.e. NetCDF) formatted trajectory file. To run the program put these input files in the local folder you have downloaded from us, open a terminal or cmd line from that folder and type 'python3 ATOMDANCE.py'. Then follow directions on the graphical interface. These files can be generated on any molecular dynamics engine the user prefers (e.g. QwikMD using NAMD, OpenMM in python, or Amber/Ambertools in Linux). For beginners, we also offer a useful GUI for Amber MD simulations on Linux available here
 
-Molecular dynamics file inputs to ATOMDANCE include 6 files (3 for each functional state including a .pdb formatted structure file, a .prmtop formatted topology file and a .nc (i.e. NetCDF) formatted trajectory file.  To run the program put these input files in the local folder you have downloaded from us, open a terminal or cmd line from that folder and type 'python3 ATOMDANCE.py'.  Then follow directions on the graphical interface. These files can be generated on any molecular dynamics engine the user prefers (e.g. QwikMD using NAMD, OpenMM in python, or Amber/Ambertools in Linux).  For beginners, we also offer a useful GUI for Amber MD simulations on Linux available here
-
-https://gbabbitt.github.io/amberMDgui/
-https://github.com/gbabbitt/amberMDgui
+https://gbabbitt.github.io/amberMDgui/ https://github.com/gbabbitt/amberMDgui
 
 NOTE: before statistical comparison, your MD simulations should be appropriately set up (e.g. PDB should be cleaned up removing crystallographic waters and other stray molecules used in crytallization cocktails), your simulations should be appropriately equilibrated for stability, and your trajectory should be appropriately long enough to allow statsitical resampling of many conformational states. This is very different for various protein systems. However, it can often requires 10-100+ nanoseconds of simulation which can take many days even on the fastest GPU processors. The example files included with the ATOMDANCE software only have been run for relatively shorter periods on relatively stable proteins to allow ease of download from our website. To demonstrate the software, we include a negative control consisting of two MD runs on a small protein ubiquitin (1ubq) in identical function states and a positive control consisting of TATA binding protein simulated in both its DNA-bound and unbound functional state. To run these
 
-python3 ATOMDANCE_ctlNEG.py
-python3 ATOMDANCE_ctlPOS.py
+python3 ATOMDANCE_ctlNEG.py python3 ATOMDANCE_ctlPOS.py
 
 please cite us (as well as ChimeraX and cpptraj)
 
@@ -58,6 +69,6 @@ Babbitt G.A. Coppola E.E. Mortensen J.S. Adams L.E. Liao J. K. 2018. DROIDS 1.2 
 
 Babbitt G.A. Fokoue E. Evans J.R. Diller K.I. Adams L.E. 2020. DROIDS 3.0 - Detection of genetic and drug class variant impact on conserved protein binding dynamics. BIOPHYSICAL JOURNAL 118: 541-551 CELL Press.
 
-Babbitt G.A. Fokoue E.P. Srivastava H.R. Callahan B. Rajendran M. 2022. Statistical machine learning for comparative protein dynamics with the DROIDS/maxDemon software pipeline. In press.  STAR Protocols CELL Press.
+Babbitt G.A. Fokoue E.P. Srivastava H.R. Callahan B. Rajendran M. 2022. Statistical machine learning for comparative protein dynamics with the DROIDS/maxDemon software pipeline. In press. STAR Protocols CELL Press.
 
 
