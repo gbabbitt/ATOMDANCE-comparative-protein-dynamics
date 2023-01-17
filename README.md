@@ -31,7 +31,7 @@ machine learning identification of BRAF activation loop during drug binding of A
 
 (https://github.com/gbabbitt/DROIDS-5.0-comparative-protein-dynamics/blob/main/BRAFmap.png)
 
-ALSO ...identifying non-neutral evolutionary changes to amino acid sites (i.e. mutational impacts)
+ALSO ...identifying non-neutral evolutionary changes to dynamics of amino acid sites (i.e. mutational impacts)
 
 (https://github.com/gbabbitt/DROIDS-5.0-comparative-protein-dynamics/blob/main/MutImpact.png)
 
