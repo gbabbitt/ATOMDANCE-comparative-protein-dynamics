@@ -31,6 +31,10 @@ machine learning identification of BRAF activation loop during drug binding of A
 
 (https://github.com/gbabbitt/DROIDS-5.0-comparative-protein-dynamics/blob/main/BRAFmap.png)
 
+ALSO ...identifying non-neutral evolutionary changes to amino acid sites (i.e. mutational impacts)
+
+(https://github.com/gbabbitt/DROIDS-5.0-comparative-protein-dynamics/blob/main/MutImpact.png)
+
 ATOMDANCE utilizes the cpptraj program (Daniel Roe) and UCSF ChimeraX and a minimal number of python libraries.  More information about installing these can be read below. 
 
 more about the BabbittLab@RIT
