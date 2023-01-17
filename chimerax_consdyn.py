@@ -791,12 +791,12 @@ def conserved_dynamics_analysis():
         CONSyn = PVAL_output.iat[x,0]
         #print(CONSyn)
         #print((CONSpos))
-        if(CONSyn == "sig"):
+        if(CONSyn == "sig"):    # option to see only significant p values
             CONSpos = CONS_output.iat[x,0]
         if(CONSyn == "ns"):
             CONSpos = 0.0
         #print(CONSpos)
-        #CONSpos = CONS_output.iat[x,0] # option to see ns p values
+        #CONSpos = CONS_output.iat[x,0] # option to see non-significant p values
         f6.write("\t:%s\t%s\n" % (sitepos, CONSpos))
 
     
