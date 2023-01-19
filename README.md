@@ -66,7 +66,7 @@ https://www.rbvi.ucsf.edu/chimerax/
 
 FOR OUR CODE: 
 python module dependencies (os, getopt, sys, threading, random, re, chimerax.core.commands) 
-python modules to be installed (PyQt5, numpy, scipy, pandas, sklearn, matplotlib, plotnine, progress)
+python modules to be installed (PyQt5, numpy, scipy, pandas, sklearn, scikit-learn, matplotlib, plotnine, progress)
 NOTE: for best results, the CPU on the computer should support at least 4-6 cores
 
 Molecular dynamics file inputs to ATOMDANCE include 6 files (3 for each functional state including a .pdb formatted structure file, a .prmtop formatted topology file and a .nc (i.e. NetCDF) formatted trajectory file.  To run the program put these input files in the local folder you have downloaded from us, open a terminal or cmd line from that folder and type 'python3 ATOMDANCE.py'.  Then follow directions on the graphical interface. These files can be generated on any molecular dynamics engine the user prefers (e.g. QwikMD using NAMD, OpenMM in python, or Amber/Ambertools in Linux).  For beginners, we also offer a useful GUI for Amber MD simulations on Linux available here
