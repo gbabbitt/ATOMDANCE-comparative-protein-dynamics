@@ -833,10 +833,10 @@ def map_MMD_corr():
 def main():
     compare_dynamics_MMD_flux()
     map_MMD_flux()
-    map_MMDsig_flux()
+    #map_MMDsig_flux()
     compare_dynamics_MMD_corr()
     map_MMD_corr()
-    map_MMDsig_corr()
+    #map_MMDsig_corr()
 ###############################################################
 if __name__ == '__main__':
     main()
