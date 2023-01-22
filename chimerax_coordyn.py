@@ -91,6 +91,9 @@ for x in range(len(infile_lines)):
     if(header == "length"):
         l_pr = value
         print("my total protein length is",l_pr)    
+    if(header == "start"):
+        st_pr = value
+        print("my N start protein is",st_pr)
     if(header == "chimerax"):
         ch_path = value
         print("my chimerax path is",ch_path)
@@ -126,6 +129,7 @@ frame_size = int(fr_sz)
 n_frames = int(n_fr)
 num_chains = int(n_ch)
 length_prot = int(l_pr)
+start_prot = int(st_pr)
 chimerax_path = ""+ch_path+""
 #chimerax_path = "/usr/lib/ucsf-chimerax/bin/"
 graph_scheme = ""+bg_color+""
@@ -863,11 +867,11 @@ def coordinated_dynamics():
     for i in range(len_matrix):
         print("computing MI values from site %s" % i)
         site1 = df_matrix_in.iloc[i]
-        pos1 = i+1
+        pos1 = start_prot+i+1
         # loop over sites j
         for j in range(len_matrix):
             site2 = df_matrix_in.iloc[j]
-            pos2 = j+1
+            pos2 = start_prot+j+1
             #print(i)
             #print(j)
             #print(site1)

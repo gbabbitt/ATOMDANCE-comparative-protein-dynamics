@@ -83,6 +83,9 @@ for x in range(len(infile_lines)):
     if(header == "length"):
         l_pr = value
         print("my total protein length is",l_pr)    
+    if(header == "start"):
+        st_pr = value
+        print("my N start protein is",st_pr)
     if(header == "chimerax"):
         ch_path = value
         print("my chimerax path is",ch_path)
@@ -118,6 +121,7 @@ frame_size = int(fr_sz)
 n_frames = int(n_fr)
 num_chains = int(n_ch)
 length_prot = int(l_pr)
+start_prot = int(st_pr)
 chimerax_path = ""+ch_path+""
 #chimerax_path = "/usr/lib/ucsf-chimerax/bin/"
 graph_scheme = ""+bg_color+""
@@ -201,7 +205,7 @@ def compare_dynamics_KL():
     myKLneg = pd.DataFrame(myKLneg)
     #print(myKLneg)
     # index position on protein
-    myPOS = [i for i in range(1,length_prot+1)]
+    myPOS = [i for i in range(start_prot,start_prot+length_prot+1)]
     myPOS = pd.DataFrame(myPOS)
     #print(myPOS)
     inres_ref = "./resinfo_ref/cpptraj_resinfo_%s.txt" % PDB_id_reference
