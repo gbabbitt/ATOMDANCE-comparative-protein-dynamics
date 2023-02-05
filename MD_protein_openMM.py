@@ -1,5 +1,5 @@
 from __future__ import print_function
-#import parmed as pmd
+import parmed as pmd
 from simtk.openmm import app
 import simtk.openmm as mm
 from simtk import unit
