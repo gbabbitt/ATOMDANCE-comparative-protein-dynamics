@@ -371,7 +371,6 @@ class Ui_Dialog(object):
         if(user_input == "yes" or user_input == "y"):
             #what_version = input("\n Enter AmberTools version number (e.g. 22)")
             #os.system("conda activate AmberTools%s\n" % what_version)
-            os.system("x-terminal-emulator\n")
             print("\nRUN THE FOLLOWING CMD'S/SCRIPTS IN THE NEW TERMINAL\n")
             print("conda activate OR conda activate AmberTools22 (as set on your system)")
             print("python3 MD_protein_pdb4amber.py")
@@ -381,7 +380,8 @@ class Ui_Dialog(object):
             print("\n\n")
             #os.system("conda deactivate\n")
             print("CLOSE TERMINAL WHEN MD SIMULATION PREPARATIONS ARE COMPLETED\n\n")
-                           
+            os.system("x-terminal-emulator\n")
+            
         if(user_input == "no" or user_input == "n"):
             if(pdb4amber == "yes"):
                 print("reducing/drying PDB structure")
@@ -403,7 +403,6 @@ class Ui_Dialog(object):
         
         if(user_input == "yes" or user_input == "y"):
             #os.system("conda config --set auto_activate_base true\n")
-            os.system("x-terminal-emulator\n")
             print("\nRUN THE FOLLOWING CMD's/SCRIPTS IN THE NEW TERMINAL\n")
             print("conda activate OR conda activate openmm (as set on your system)")
             print("python3 MD_protein_openMM.py")
@@ -412,6 +411,7 @@ class Ui_Dialog(object):
             print("\n\n")
             #os.system("conda config --set auto_activate_base false\n")
             print("CLOSE TERMINAL WHEN MD SIMULATION IS COMPLETED\n\n")
+            os.system("x-terminal-emulator\n")
         
         if(user_input == "no" or user_input == "n"):
             os.system("x-terminal-emulator -e top\n")

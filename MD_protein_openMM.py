@@ -53,12 +53,15 @@ for x in range(len(infile_lines)):
         print("my protein force field is",FFid5)    
     if(header == "heat_len"):
         TIMEheat = value
+        TIMEheat = int(TIMEheat)
         print("my length of heating run is",TIMEheat)
     if(header == "eq_len"):
         TIMEeq = value
+        TIMEeq = int(TIMEeq)
         print("my length of equilibration run is",TIMEeq)
     if(header == "prod_len"):
         TIMEprod = value
+        TIMEprod = int(TIMEprod)
         print("my length of MD production run is",TIMEprod)
     
     #if(header == "ADD_Field"):
@@ -85,18 +88,23 @@ for x in range(RUNSid):
     if(RUNSid == 1):
         prmtop = app.AmberPrmtopFile('wat_'+PDBid1+'.prmtop')
         inpcrd = app.AmberInpcrdFile('wat_'+PDBid1+'.inpcrd')
+        PDBid = PDBid1
     if(RUNSid == 2):
         prmtop = app.AmberPrmtopFile('wat_'+PDBid2+'.prmtop')
         inpcrd = app.AmberInpcrdFile('wat_'+PDBid2+'.inpcrd')
+        PDBid = PDBid2
     if(RUNSid == 3):
         prmtop = app.AmberPrmtopFile('wat_'+PDBid3+'.prmtop')
         inpcrd = app.AmberInpcrdFile('wat_'+PDBid3+'.inpcrd')
+        PDBid = PDB1d3
     if(RUNSid == 4):
         prmtop = app.AmberPrmtopFile('wat_'+PDBid4+'.prmtop')
         inpcrd = app.AmberInpcrdFile('wat_'+PDBid4+'.inpcrd')
+        PDBid = PDBid4
     if(RUNSid == 5):
         prmtop = app.AmberPrmtopFile('wat_'+PDBid5+'.prmtop')
-        inpcrd = app.AmberInpcrdFile('wat_'+PDBid5+'.inpcrd')    
+        inpcrd = app.AmberInpcrdFile('wat_'+PDBid5+'.inpcrd')
+        PDBid= PDBid5
     # prepare system and integrator
     system = prmtop.createSystem(nonbondedMethod=app.PME, nonbondedCutoff=1.0*unit.nanometers, constraints=app.HBonds, rigidWater=True, ewaldErrorTolerance=0.0005)
     integrator = mm.LangevinIntegrator(TEMPid*unit.kelvin, 1.0/unit.picoseconds, 2.0*unit.femtoseconds)
@@ -120,8 +128,8 @@ for x in range(RUNSid):
     simulation.context.setVelocitiesToTemperature(TEMPid*unit.kelvin)
     myrun = str(x)
     print ('MD equilibration run for', 'eq_'+PDBid+'_'+myrun+'.nc')
-    simulation.reporters.append(pmd.openmm.NetCDFReporter('eq_'+PDBid+'_'+myrun+'.nc', 200))
-    simulation.reporters.append(app.StateDataReporter(stdout, 1000, step=True, potentialEnergy=True, temperature=True, progress=True, remainingTime=True, speed=True, totalSteps=TIMEid, separator='\t'))
+    #simulation.reporters.append(pmd.openmm.NetCDFReporter('eq_'+PDBid+'_'+myrun+'.nc', 200))
+    simulation.reporters.append(app.StateDataReporter(stdout, 1000, step=True, potentialEnergy=True, temperature=True, progress=True, remainingTime=True, speed=True, totalSteps=TIMEeq, separator='\t'))
     print('Equilibrating...')
     simulation.step(TIMEeq) # no separate heating step and fixed equilibration time of 0.1ns
     #simulation.step(1000) # for testing
@@ -130,8 +138,8 @@ for x in range(RUNSid):
     # append reporters
     myrun = str(x)
     print ('MD production run for', 'prod_'+PDBid+'_'+myrun+'.nc')
-    simulation.reporters.append(pmd.openmm.NetCDFReporter('prod_'+PDBid+'_'+myrun+'.nc', 200))
-    simulation.reporters.append(app.StateDataReporter(stdout, 1000, step=True, potentialEnergy=True, temperature=True, progress=True, remainingTime=True, speed=True, totalSteps=TIMEid, separator='\t'))
+    #simulation.reporters.append(pmd.openmm.NetCDFReporter('prod_'+PDBid+'_'+myrun+'.nc', 200))
+    simulation.reporters.append(app.StateDataReporter(stdout, 1000, step=True, potentialEnergy=True, temperature=True, progress=True, remainingTime=True, speed=True, totalSteps=TIMEprod, separator='\t'))
 
     # run production simulation
     print('Running Production...')
