@@ -18,23 +18,23 @@ for x in range(len(infile_lines)):
     #print(value)
     if(header == "firstID"):
         PDBid1 = value
-        RUNSid = 1
+        RUNSid = 0
         print("my PDB scan is",PDBid1)
     if(header == "secondID"):
         PDBid2 = value
-        RUNSid = 2
+        RUNSid = 1
         print("my PDB scan is",PDBid2)
     if(header == "thirdID"):
         PDBid3 = value
-        RUNSid = 3
+        RUNSid = 2
         print("my PDB scan is",PDBid3)
     if(header == "fourthID"):
         PDBid4 = value
-        RUNSid = 4
+        RUNSid = 3
         print("my PDB scan is",PDBid4)
     if(header == "fifthID"):
         PDBid5 = value
-        RUNSid = 5
+        RUNSid = 4
         print("my PDB scan is",PDBid5)
     if(header == "firstFF"):
         FFid1 = value
