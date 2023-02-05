@@ -129,7 +129,7 @@ for x in range(RUNSid):
     myrun = str(x)
     print ('MD equilibration run for', 'eq_'+PDBid+'_'+myrun+'.nc')
     #simulation.reporters.append(pmd.openmm.NetCDFReporter('eq_'+PDBid+'_'+myrun+'.nc', 200))
-    simulation.reporters.append(app.StateDataReporter(stdout, 1000, step=True, potentialEnergy=True, temperature=True, progress=True, remainingTime=True, speed=True, totalSteps=TIMEeq, separator='\t'))
+    simulation.reporters.append(app.StateDataReporter(stdout, 10000, step=True, potentialEnergy=True, temperature=True, progress=True, remainingTime=False, speed=False, totalSteps=TIMEeq, separator='\t'))
     print('Equilibrating...')
     simulation.step(TIMEeq) # no separate heating step and fixed equilibration time of 0.1ns
     #simulation.step(1000) # for testing
@@ -139,7 +139,7 @@ for x in range(RUNSid):
     myrun = str(x)
     print ('MD production run for', 'prod_'+PDBid+'_'+myrun+'.nc')
     #simulation.reporters.append(pmd.openmm.NetCDFReporter('prod_'+PDBid+'_'+myrun+'.nc', 200))
-    simulation.reporters.append(app.StateDataReporter(stdout, 1000, step=True, potentialEnergy=True, temperature=True, progress=True, remainingTime=True, speed=True, totalSteps=TIMEprod, separator='\t'))
+    simulation.reporters.append(app.StateDataReporter(stdout, 10000, step=True, potentialEnergy=True, temperature=True, progress=True, remainingTime=False, speed=False, totalSteps=TIMEprod, separator='\t'))
 
     # run production simulation
     print('Running Production...')
