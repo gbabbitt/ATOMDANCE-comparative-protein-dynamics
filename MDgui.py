@@ -375,7 +375,7 @@ class Ui_Dialog(object):
             print("conda activate OR conda activate AmberTools22 (as set on your system)")
             print("python3 MD_protein_pdb4amber.py")
             print("python3 MD_protein_antechamber.py (if needed)")
-            print("python3 MD_protein_tleap_explicit.py")
+            print("python3 MD_protein_tleap.py")
             print("conda deactivate")
             print("\n\n")
             #os.system("conda deactivate\n")
