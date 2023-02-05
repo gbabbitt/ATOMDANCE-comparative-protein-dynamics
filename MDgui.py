@@ -369,17 +369,17 @@ class Ui_Dialog(object):
         user_input = input("\nIs AmberToolsXX installed in the AmberToolsXX conda environment? (yes/no)\n\n")
         
         if(user_input == "yes" or user_input == "y"):
-            what_version = input("\n Enter AmberTools version number (e.g. 22)")
-            os.system("conda activate AmberTools%s\n" % what_version)
+            #what_version = input("\n Enter AmberTools version number (e.g. 22)")
+            #os.system("conda activate AmberTools%s\n" % what_version)
             os.system("x-terminal-emulator\n")
-            print("\nRUN THE FOLLOWING SCRIPTS IN THE NEW TERMINAL\n")
-            #print("python MD_proteinQuery_openMM.py\n")
+            print("\nRUN THE FOLLOWING CMD'S/SCRIPTS IN THE NEW TERMINAL\n")
+            print("conda activate OR conda activate AmberTools22 (as set on your system)")
             print("python3 MD_protein_pdb4amber.py")
             print("python3 MD_protein_antechamber.py (if needed)")
             print("python3 MD_protein_tleap_explicit.py")
-            print("python3 MD_protein_tleap_implicit.py (if needed)")
+            print("conda deactivate")
             print("\n\n")
-            os.system("conda deactivate\n")
+            #os.system("conda deactivate\n")
             print("CLOSE TERMINAL WHEN MD SIMULATION PREPARATIONS ARE COMPLETED\n\n")
                            
         if(user_input == "no" or user_input == "n"):
@@ -397,22 +397,25 @@ class Ui_Dialog(object):
         print("\nMD simulation prep stages are completed\n")
                 
     def run_openmm(self):
-        os.system("x-terminal-emulator -e top\n")
-        os.system("x-terminal-emulator -e nvidia-smi -l 10\n")
+        
         print("running molecular dynamics simulation")
         user_input = input("\nIs openMM installed in the base conda environment? (yes/no)\n\n")
         
         if(user_input == "yes" or user_input == "y"):
-            os.system("conda config --set auto_activate_base true\n")
+            #os.system("conda config --set auto_activate_base true\n")
             os.system("x-terminal-emulator\n")
-            print("\nRUN THE FOLLOWING SCRIPT IN THE NEW TERMINAL\n")
-            #print("python MD_proteinQuery_openMM.py\n")
+            print("\nRUN THE FOLLOWING CMD's/SCRIPTS IN THE NEW TERMINAL\n")
+            print("conda activate OR conda activate openmm (as set on your system)")
             print("python3 MD_protein_openMM.py")
+            print("conda deactivate\n")
+            print("optional- to monitor system during simulation, open additional terminals and run 'top' or 'htop' and 'nvidia-smi -l 10'")
             print("\n\n")
-            os.system("conda config --set auto_activate_base false\n")
+            #os.system("conda config --set auto_activate_base false\n")
             print("CLOSE TERMINAL WHEN MD SIMULATION IS COMPLETED\n\n")
         
         if(user_input == "no" or user_input == "n"):
+            os.system("x-terminal-emulator -e top\n")
+            os.system("x-terminal-emulator -e nvidia-smi -l 10\n")
             cmd = "python3 MD_protein_openMM.py"
             os.system(cmd)
         

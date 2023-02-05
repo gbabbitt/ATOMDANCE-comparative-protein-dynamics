@@ -1,5 +1,5 @@
 from __future__ import print_function
-import parmed as pmd
+#import parmed as pmd
 from simtk.openmm import app
 import simtk.openmm as mm
 from simtk import unit
@@ -79,11 +79,24 @@ for x in range(len(infile_lines)):
 TEMPid = 300
 print("my Production Run Temperature is",TEMPid)
 
-# load in Amber input files
-prmtop = app.AmberPrmtopFile('wat_'+PDBid1+'.prmtop')
-inpcrd = app.AmberInpcrdFile('wat_'+PDBid1+'.inpcrd')
 
 for x in range(RUNSid):
+    # load in Amber input files
+    if(RUNSid == 1):
+        prmtop = app.AmberPrmtopFile('wat_'+PDBid1+'.prmtop')
+        inpcrd = app.AmberInpcrdFile('wat_'+PDBid1+'.inpcrd')
+    if(RUNSid == 2):
+        prmtop = app.AmberPrmtopFile('wat_'+PDBid2+'.prmtop')
+        inpcrd = app.AmberInpcrdFile('wat_'+PDBid2+'.inpcrd')
+    if(RUNSid == 3):
+        prmtop = app.AmberPrmtopFile('wat_'+PDBid3+'.prmtop')
+        inpcrd = app.AmberInpcrdFile('wat_'+PDBid3+'.inpcrd')
+    if(RUNSid == 4):
+        prmtop = app.AmberPrmtopFile('wat_'+PDBid4+'.prmtop')
+        inpcrd = app.AmberInpcrdFile('wat_'+PDBid4+'.inpcrd')
+    if(RUNSid == 5):
+        prmtop = app.AmberPrmtopFile('wat_'+PDBid5+'.prmtop')
+        inpcrd = app.AmberInpcrdFile('wat_'+PDBid5+'.inpcrd')    
     # prepare system and integrator
     system = prmtop.createSystem(nonbondedMethod=app.PME, nonbondedCutoff=1.0*unit.nanometers, constraints=app.HBonds, rigidWater=True, ewaldErrorTolerance=0.0005)
     integrator = mm.LangevinIntegrator(TEMPid*unit.kelvin, 1.0/unit.picoseconds, 2.0*unit.femtoseconds)
