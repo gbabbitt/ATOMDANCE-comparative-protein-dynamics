@@ -15,22 +15,27 @@ for x in range(len(infile_lines)):
     #print(value)
     if(header == "firstID"):
         PDBid1 = value
+        PDBid1_lab = PDBid1[:-4]
         RUNSid = 1
         print("my PDB scan is",PDBid1)
     if(header == "secondID"):
         PDBid2 = value
+        PDBid2_lab = PDBid2[:-4]
         RUNSid = 2
         print("my PDB scan is",PDBid2)
     if(header == "thirdID"):
         PDBid3 = value
+        PDBid3_lab = PDBid3[:-4]
         RUNSid = 3
         print("my PDB scan is",PDBid3)
     if(header == "fourthID"):
         PDBid4 = value
+        PDBid4_lab = PDBid4[:-4]
         RUNSid = 4
         print("my PDB scan is",PDBid4)
     if(header == "fifthID"):
         PDBid5 = value
+        PDBid5_lab = PDBid5[:-4]
         RUNSid = 5
         print("my PDB scan is",PDBid5)
     if(header == "firstFF"):
@@ -76,7 +81,8 @@ def tleap():
     print("\nsetting up topology and input coordinate files\n")
     if(RUNSid >= 1):
         print("\nbuilding .bat file for tleap\n")
-        PDBlabel = PDBid1
+        PDBfile = PDBid1
+        PDBlabel = PDBid1_lab
         out = open("./%s.bat" % PDBlabel, "w") 
         if(n_FF >= 1):
             out.write("source %s%s\n" %(tleap_path, FFid1))
@@ -89,7 +95,7 @@ def tleap():
         if(n_FF >= 5):
             out.write("source %s%s\n" %(tleap_path, FFid5))
         out.write("source %sleaprc.water.tip3p\n" % tleap_path)
-        out.write("myprotein = loadpdb %s\n"% PDBlabel)
+        out.write("myprotein = loadpdb %s\n"% PDBfile)
         out.write("saveamberparm myprotein vac_%s.prmtop vac_%s.inpcrd\n" % (PDBlabel, PDBlabel))
         out.write("addions myprotein Na+ 0\n")
         out.write("addions myprotein Cl- 0\n")
@@ -100,7 +106,8 @@ def tleap():
         out.close()
     if(RUNSid >= 2):
         print("\nbuilding .bat file for tleap\n")
-        PDBlabel = PDBid2
+        PDBfile = PDBid2
+        PDBlabel = PDBid2_lab
         out = open("./%s.bat" % PDBlabel, "w") 
         if(n_FF >= 1):
             out.write("source %s%s\n" %(tleap_path, FFid1))
@@ -113,7 +120,7 @@ def tleap():
         if(n_FF >= 5):
             out.write("source %s%s\n" %(tleap_path, FFid5))
         out.write("source %sleaprc.water.tip3p\n" % tleap_path)
-        out.write("myprotein = loadpdb %s\n"% PDBlabel)
+        out.write("myprotein = loadpdb %s\n"% PDBfile)
         out.write("saveamberparm myprotein vac_%s.prmtop vac_%s.inpcrd\n" % (PDBlabel, PDBlabel))
         out.write("addions myprotein Na+ 0\n")
         out.write("addions myprotein Cl- 0\n")
@@ -124,7 +131,8 @@ def tleap():
         out.close()
     if(RUNSid >= 3):
         print("\nbuilding .bat file for tleap\n")
-        PDBlabel = PDBid3
+        PDBfile = PDBid3
+        PDBlabel = PDBid3_lab
         out = open("./%s.bat" % PDBlabel, "w") 
         if(n_FF >= 1):
             out.write("source %s%s\n" %(tleap_path, FFid1))
@@ -137,7 +145,7 @@ def tleap():
         if(n_FF >= 5):
             out.write("source %s%s\n" %(tleap_path, FFid5))
         out.write("source %sleaprc.water.tip3p\n" % tleap_path)
-        out.write("myprotein = loadpdb %s\n"% PDBlabel)
+        out.write("myprotein = loadpdb %s\n"% PDBfile)
         out.write("saveamberparm myprotein vac_%s.prmtop vac_%s.inpcrd\n" % (PDBlabel, PDBlabel))
         out.write("addions myprotein Na+ 0\n")
         out.write("addions myprotein Cl- 0\n")
@@ -148,7 +156,8 @@ def tleap():
         out.close()
     if(RUNSid >= 4):
         print("\nbuilding .bat file for tleap\n")
-        PDBlabel = PDBid4
+        PDBfile = PDBid4
+        PDBlabel = PDBid4_lab
         out = open("./%s.bat" % PDBlabel, "w") 
         if(n_FF >= 1):
             out.write("source %s%s\n" %(tleap_path, FFid1))
@@ -161,7 +170,7 @@ def tleap():
         if(n_FF >= 5):
             out.write("source %s%s\n" %(tleap_path, FFid5))
         out.write("source %sleaprc.water.tip3p\n" % tleap_path)
-        out.write("myprotein = loadpdb %s\n"% PDBlabel)
+        out.write("myprotein = loadpdb %s\n"% PDBfile)
         out.write("saveamberparm myprotein vac_%s.prmtop vac_%s.inpcrd\n" % (PDBlabel, PDBlabel))
         out.write("addions myprotein Na+ 0\n")
         out.write("addions myprotein Cl- 0\n")
@@ -172,7 +181,8 @@ def tleap():
         out.close()
     if(RUNSid == 5):
         print("\nbuilding .bat file for tleap\n")
-        PDBlabel = PDBid5
+        PDBfile = PDBid5
+        PDBlabel = PDBid5_lab
         out = open("./%s.bat" % PDBlabel, "w") 
         if(n_FF >= 1):
             out.write("source %s%s\n" %(tleap_path, FFid1))
@@ -185,7 +195,7 @@ def tleap():
         if(n_FF >= 5):
             out.write("source %s%s\n" %(tleap_path, FFid5))
         out.write("source %sleaprc.water.tip3p\n" % tleap_path)
-        out.write("myprotein = loadpdb %s\n"% PDBlabel)
+        out.write("myprotein = loadpdb %s\n"% PDBfile)
         out.write("saveamberparm myprotein vac_%s.prmtop vac_%s.inpcrd\n" % (PDBlabel, PDBlabel))
         out.write("addions myprotein Na+ 0\n")
         out.write("addions myprotein Cl- 0\n")
@@ -197,19 +207,19 @@ def tleap():
     
     print("\nrunning tleap to build .prmtop and .inpcrd files for openMM\n")
     if(RUNSid >= 1):
-        cmd = "tleap -f %s.bat" % PDBid1
+        cmd = "tleap -f %s.bat" % PDBid1_lab
         os.system(cmd)
     if(RUNSid >= 2):
-        cmd = "tleap -f %s.bat" % PDBid2
+        cmd = "tleap -f %s.bat" % PDBid2_lab
         os.system(cmd)
     if(RUNSid >= 3):
-        cmd = "tleap -f %s.bat" % PDBid3
+        cmd = "tleap -f %s.bat" % PDBid3_lab
         os.system(cmd)
     if(RUNSid >= 4):
-        cmd = "tleap -f %s.bat" % PDBid4
+        cmd = "tleap -f %s.bat" % PDBid4_lab
         os.system(cmd)  
     if(RUNSid == 5):
-        cmd = "tleap -f %s.bat" % PDBid5
+        cmd = "tleap -f %s.bat" % PDBid5_lab
         os.system(cmd)    
  
 def tleap_antechamber():
@@ -250,8 +260,9 @@ def tleap_antechamber():
     print("\nsetting up topology and input coordinate files for protein-ligand complexes\n")
     if(RUNSid >= 1):
         print("\nbuilding .bat file for tleap\n")
-        PDBlabel = PDBid1
-        pdbID = PDBlabel[:-4]
+        PDBfile = PDBid1
+        PDBlabel = PDBid1_lab
+        pdbID = PDBlabel
         out = open("./%s.bat" % PDBlabel, "w") 
         if(n_FF >= 1):
             out.write("source %s%s\n" %(tleap_path, FFid1))
@@ -265,7 +276,7 @@ def tleap_antechamber():
             out.write("source %s%s\n" %(tleap_path, FFid5))
         out.write("source %sleaprc.water.tip3p\n" % tleap_path)
         #out.write("loadoff ligand.lib\n")
-        out.write("myprotein = loadpdb %s\n" % PDBlabel)
+        out.write("myprotein = loadpdb %s\n" % PDBfile)
         out.write("loadamberparams %s.frcmod\n" % inp_label)
         out.write("myligand = loadmol2 %s.mol2\n" % inp_label)
         out.write("complex%s = combine{myprotein myligand}\n" % pdbID)
@@ -280,8 +291,9 @@ def tleap_antechamber():
         out.close()
     if(RUNSid >= 2):
         print("\nbuilding .bat file for tleap\n")
-        PDBlabel = PDBid2
-        pdbID = PDBlabel[:-4]
+        PDBfile = PDBid2
+        PDBlabel = PDBid2_lab
+        pdbID = PDBlabel
         out = open("./%s.bat" % PDBlabel, "w") 
         if(n_FF >= 1):
             out.write("source %s%s\n" %(tleap_path, FFid1))
@@ -295,7 +307,7 @@ def tleap_antechamber():
             out.write("source %s%s\n" %(tleap_path, FFid5))
         out.write("source %sleaprc.water.tip3p\n" % tleap_path)
         #out.write("loadoff ligand.lib\n")
-        out.write("myprotein = loadpdb %s\n" % PDBlabel)
+        out.write("myprotein = loadpdb %s\n" % PDBfile)
         out.write("loadamberparams %s.frcmod\n" % inp_label)
         out.write("myligand = loadmol2 %s.mol2\n" % inp_label)
         out.write("complex%s = combine{myprotein myligand}\n" % pdbID)
@@ -310,8 +322,9 @@ def tleap_antechamber():
         out.close()
     if(RUNSid >= 3):
         print("\nbuilding .bat file for tleap\n")
-        PDBlabel = PDBid3
-        pdbID = PDBlabel[:-4]
+        PDBfile = PDBid3
+        PDBlabel = PDBid3_lab
+        pdbID = PDBlabel
         out = open("./%s.bat" % PDBlabel, "w") 
         if(n_FF >= 1):
             out.write("source %s%s\n" %(tleap_path, FFid1))
@@ -325,7 +338,7 @@ def tleap_antechamber():
             out.write("source %s%s\n" %(tleap_path, FFid5))
         out.write("source %sleaprc.water.tip3p\n" % tleap_path)
         #out.write("loadoff ligand.lib\n")
-        out.write("myprotein = loadpdb %s\n" % PDBlabel)
+        out.write("myprotein = loadpdb %s\n" % PDBfile)
         out.write("loadamberparams %s.frcmod\n" % inp_label)
         out.write("myligand = loadmol2 %s.mol2\n" % inp_label)
         out.write("complex%s = combine{myprotein myligand}\n" % pdbID)
@@ -340,8 +353,9 @@ def tleap_antechamber():
         out.close()
     if(RUNSid >= 4):
         print("\nbuilding .bat file for tleap\n")
-        PDBlabel = PDBid4
-        pdbID = PDBlabel[:-4]
+        PDBfile = PDBid4
+        PDBlabel = PDBid4_lab
+        pdbID = PDBlabel
         out = open("./%s.bat" % PDBlabel, "w") 
         if(n_FF >= 1):
             out.write("source %s%s\n" %(tleap_path, FFid1))
@@ -355,7 +369,7 @@ def tleap_antechamber():
             out.write("source %s%s\n" %(tleap_path, FFid5))
         out.write("source %sleaprc.water.tip3p\n" % tleap_path)
         #out.write("loadoff ligand.lib\n")
-        out.write("myprotein = loadpdb %s\n" % PDBlabel)
+        out.write("myprotein = loadpdb %s\n" % PDBfile)
         out.write("loadamberparams %s.frcmod\n" % inp_label)
         out.write("myligand = loadmol2 %s.mol2\n" % inp_label)
         out.write("complex%s = combine{myprotein myligand}\n" % pdbID)
@@ -370,8 +384,9 @@ def tleap_antechamber():
         out.close()
     if(RUNSid == 5):
         print("\nbuilding .bat file for tleap\n")
-        PDBlabel = PDBid5
-        pdbID = PDBlabel[:-4]
+        PDBfile = PDBid5
+        PDBlabel = PDBid5_lab
+        pdbID = PDBlabel
         out = open("./%s.bat" % PDBlabel, "w") 
         if(n_FF >= 1):
             out.write("source %s%s\n" %(tleap_path, FFid1))
@@ -385,7 +400,7 @@ def tleap_antechamber():
             out.write("source %s%s\n" %(tleap_path, FFid5))
         out.write("source %sleaprc.water.tip3p\n" % tleap_path)
         #out.write("loadoff ligand.lib\n")
-        out.write("myprotein = loadpdb %s\n" % PDBlabel)
+        out.write("myprotein = loadpdb %s\n" % PDBfile)
         out.write("loadamberparams %s.frcmod\n" % inp_label)
         out.write("myligand = loadmol2 %s.mol2\n" % inp_label)
         out.write("complex%s = combine{myprotein myligand}\n" % pdbID)
@@ -405,19 +420,19 @@ def tleap_antechamber():
     #os.system(cmd)
     
     if(RUNSid >= 1):
-        cmd = "tleap -f %s.bat" % PDBid1
+        cmd = "tleap -f %s.bat" % PDBid1_lab
         os.system(cmd)
     if(RUNSid >= 2):
-        cmd = "tleap -f %s.bat" % PDBid2
+        cmd = "tleap -f %s.bat" % PDBid2_lab
         os.system(cmd)
     if(RUNSid >= 3):
-        cmd = "tleap -f %s.bat" % PDBid3
+        cmd = "tleap -f %s.bat" % PDBid3_lab
         os.system(cmd)
     if(RUNSid >= 4):
-        cmd = "tleap -f %s.bat" % PDBid4
+        cmd = "tleap -f %s.bat" % PDBid4_lab
         os.system(cmd)  
     if(RUNSid == 5):
-        cmd = "tleap -f %s.bat" % PDBid5
+        cmd = "tleap -f %s.bat" % PDBid5_lab
         os.system(cmd)
  
  #########################################################################

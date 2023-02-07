@@ -9,6 +9,7 @@
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
+amber_setpath = "/home/gabsbi/anaconda3/envs/AmberTools22/dat/leap/cmd/"
 
 class Ui_Dialog(object):
     def setupUi(self, Dialog):
@@ -80,7 +81,7 @@ class Ui_Dialog(object):
         self.lineEdit_7 = QtWidgets.QLineEdit(self.frame_3)
         self.lineEdit_7.setGeometry(QtCore.QRect(20, 320, 261, 28))
         self.lineEdit_7.setObjectName("lineEdit_7")
-        self.lineEdit_7.setText("/home/gabsbi/Desktop/amber18/dat/leap/cmd/")
+        self.lineEdit_7.setText(amber_setpath)
         self.label_12 = QtWidgets.QLabel(self.frame_3)
         self.label_12.setGeometry(QtCore.QRect(20, 290, 281, 21))
         self.label_12.setObjectName("label_12")
