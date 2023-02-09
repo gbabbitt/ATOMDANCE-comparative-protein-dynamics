@@ -130,11 +130,11 @@ class Ui_Dialog(object):
         self.radioButton = QtWidgets.QRadioButton(self.frame_7)
         self.radioButton.setGeometry(QtCore.QRect(10, 60, 104, 21))
         self.radioButton.setObjectName("radioButton")
-        self.radioButton.setChecked(False)
+        self.radioButton.setChecked(True)
         self.radioButton_2 = QtWidgets.QRadioButton(self.frame_7)
         self.radioButton_2.setGeometry(QtCore.QRect(10, 100, 104, 21))
         self.radioButton_2.setObjectName("radioButton_2")
-        self.radioButton_2.setChecked(True)
+        self.radioButton_2.setChecked(False)
         self.frame_8 = QtWidgets.QFrame(Dialog)
         self.frame_8.setGeometry(QtCore.QRect(360, 500, 711, 181))
         self.frame_8.setFrameShape(QtWidgets.QFrame.StyledPanel)
@@ -231,9 +231,9 @@ class Ui_Dialog(object):
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">https://www.anaconda.com/products/distribution</p>\n"
 "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br /></p>\n"
 "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br /></p></body></html>"))
-        self.label_16.setText(_translate("Dialog", "<html><head/><body><p><span style=\" font-size:12pt; font-weight:600; color:#121212;\">solvation</span></p></body></html>"))
-        self.radioButton.setText(_translate("Dialog", "implicit"))
-        self.radioButton_2.setText(_translate("Dialog", "explicit"))
+        self.label_16.setText(_translate("Dialog", "<html><head/><body><p><span style=\" font-size:12pt; font-weight:600; color:#121212;\">system</span></p></body></html>"))
+        self.radioButton.setText(_translate("Dialog", "1 GPU"))
+        self.radioButton_2.setText(_translate("Dialog", "2 GPU"))
         self.checkBox.setText(_translate("Dialog", "reduce PDB structure (add H) and remove waters (pdb4amber)"))
         self.checkBox_2.setText(_translate("Dialog", "run force field modifications for small molecule via sqm (antechamber)"))
         self.checkBox_3.setText(_translate("Dialog", "create topology and input coordinates for explicit solvent system (tleap)"))
@@ -308,11 +308,7 @@ class Ui_Dialog(object):
             fourth_ff = ff_list[3]
         if(n_ff == 5):
             fifth_ff = ff_list[4]
-        if self.radioButton_2.isChecked() == True:
-            solvation = "explicit"
-        else:
-            solvation = "implicit"
-        
+           
         # analyses to run
         if self.checkBox.isChecked() == True:
             pdb4amber = "yes"
@@ -400,28 +396,53 @@ class Ui_Dialog(object):
     def run_openmm(self):
         
         print("running molecular dynamics simulation")
+        if self.radioButton.isChecked() == True:
+            gpu = "single"
+        else:
+            gpu = "dual"
         user_input = input("\nIs openMM installed in the base conda environment? (yes/no)\n\n")
+        if(gpu == "single"):
+            if(user_input == "yes" or user_input == "y"):
+                #os.system("conda config --set auto_activate_base true\n")
+                print("\nRUN THE FOLLOWING CMD's/SCRIPTS IN THE NEW TERMINAL\n")
+                print("conda activate OR conda activate openmm (as set on your system)")
+                print("python3 MD_protein_openMM.py")
+                print("conda deactivate\n")
+                print("optional- to monitor system during simulation, open additional terminals and run 'top' or 'htop' and 'nvidia-smi -l 10'")
+                print("\n\n")
+                #os.system("conda config --set auto_activate_base false\n")
+                print("CLOSE TERMINAL WHEN MD SIMULATION IS COMPLETED\n\n")
+                os.system("x-terminal-emulator\n")
         
-        if(user_input == "yes" or user_input == "y"):
-            #os.system("conda config --set auto_activate_base true\n")
-            print("\nRUN THE FOLLOWING CMD's/SCRIPTS IN THE NEW TERMINAL\n")
-            print("conda activate OR conda activate openmm (as set on your system)")
-            print("python3 MD_protein_openMM.py")
-            print("conda deactivate\n")
-            print("optional- to monitor system during simulation, open additional terminals and run 'top' or 'htop' and 'nvidia-smi -l 10'")
-            print("\n\n")
-            #os.system("conda config --set auto_activate_base false\n")
-            print("CLOSE TERMINAL WHEN MD SIMULATION IS COMPLETED\n\n")
-            os.system("x-terminal-emulator\n")
+            if(user_input == "no" or user_input == "n"):
+                os.system("x-terminal-emulator -e top\n")
+                os.system("x-terminal-emulator -e nvidia-smi -l 10\n")
+                cmd = "python3 MD_protein_openMM.py"
+                os.system(cmd)
         
-        if(user_input == "no" or user_input == "n"):
-            os.system("x-terminal-emulator -e top\n")
-            os.system("x-terminal-emulator -e nvidia-smi -l 10\n")
-            cmd = "python3 MD_protein_openMM.py"
-            os.system(cmd)
+            print("\nPLEASE CHECK TERMINAL OUTPUT FOR WARNINGS\n")
+            print("\nMD simulation run stages are completed\n")         
         
-        print("\nPLEASE CHECK TERMINAL OUTPUT FOR WARNINGS\n")
-        print("\nMD simulation run stages are completed\n")         
+        if(gpu == "dual"):
+            if(user_input == "yes" or user_input == "y"):
+                #os.system("conda config --set auto_activate_base true\n")
+                print("\nRUN THE FOLLOWING CMD's/SCRIPTS IN THE NEW TERMINALS\n")
+                print("conda activate OR conda activate openmm (as set on your system)")
+                print("python3 MD_protein_openMM_2gpu.py")
+                print("conda deactivate\n")
+                print("optional- to monitor system during simulation, open additional terminals and run 'top' or 'htop' and 'nvidia-smi -l 10'")
+                print("\n\n")
+                #os.system("conda config --set auto_activate_base false\n")
+                print("CLOSE TERMINAL WHEN MD SIMULATION IS COMPLETED\n\n")
+                os.system("x-terminal-emulator\n")
+        
+            if(user_input == "no" or user_input == "n"):
+                os.system("x-terminal-emulator -e top\n")
+                os.system("x-terminal-emulator -e nvidia-smi -l 10\n")
+                cmd = "python3 MD_protein_openMM_2gpu.py"
+                os.system(cmd)
+            print("\nPLEASE CHECK TERMINAL OUTPUT FOR WARNINGS\n")
+            print("\nMD simulation run stages are completed\n")
             
     def closeIt(self):
         print("MDgui.py program closed")
