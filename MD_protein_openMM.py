@@ -87,232 +87,228 @@ for x in range(len(infile_lines)):
 TEMPid = 300
 print("my Production Run Temperature is",TEMPid)
 
+########## first run ##############
+print("number of structures to execute")
+print(RUNSid)
 
-for x in range(RUNSid-1):
-    # load in Amber input files
-    if(RUNSid >= 1):
-        prmtop = app.AmberPrmtopFile('wat_'+PDBid1_lab+'.prmtop')
-        inpcrd = app.AmberInpcrdFile('wat_'+PDBid1_lab+'.inpcrd')
-        PDBid = PDBid1_lab
-        # prepare system and integrator
-        system = prmtop.createSystem(nonbondedMethod=app.PME, nonbondedCutoff=1.0*unit.nanometers, constraints=app.HBonds, rigidWater=True, ewaldErrorTolerance=0.0005)
-        integrator = mm.LangevinIntegrator(TEMPid*unit.kelvin, 1.0/unit.picoseconds, 2.0*unit.femtoseconds)
-        integrator.setConstraintTolerance(0.00001)
-        thermostat = mm.AndersenThermostat(TEMPid*unit.kelvin, 1/unit.picosecond)
-        system.addForce(thermostat)
-        barostat = mm.MonteCarloBarostat(1.0*unit.bar, TEMPid*unit.kelvin, 25)
-        system.addForce(barostat)
+prmtop = app.AmberPrmtopFile('wat_'+PDBid1_lab+'.prmtop')
+inpcrd = app.AmberInpcrdFile('wat_'+PDBid1_lab+'.inpcrd')
+PDBid = PDBid1_lab
+# prepare system and integrator
+system = prmtop.createSystem(nonbondedMethod=app.PME, nonbondedCutoff=1.0*unit.nanometers, constraints=app.HBonds, rigidWater=True, ewaldErrorTolerance=0.0005)
+integrator = mm.LangevinIntegrator(TEMPid*unit.kelvin, 1.0/unit.picoseconds, 2.0*unit.femtoseconds)
+integrator.setConstraintTolerance(0.00001)
+thermostat = mm.AndersenThermostat(TEMPid*unit.kelvin, 1/unit.picosecond)
+system.addForce(thermostat)
+barostat = mm.MonteCarloBarostat(1.0*unit.bar, TEMPid*unit.kelvin, 25)
+system.addForce(barostat)
+ 
+# prepare simulation
+platform = mm.Platform.getPlatformByName('CUDA')
+properties = {'CudaPrecision': 'mixed', 'DeviceIndex': '0'}
+simulation = app.Simulation(prmtop.topology, system, integrator, platform, properties)
+simulation.context.setPositions(inpcrd.positions)
+# minimize
+print('Minimizing...')
+simulation.minimizeEnergy()
+# equilibrate for 100 steps
+simulation.context.setVelocitiesToTemperature(TEMPid*unit.kelvin)
+      
+print ('MD equilibration run for', 'eq_'+PDBid+'.nc')
+simulation.reporters.append(pmd.openmm.NetCDFReporter('eq_'+PDBid+'.nc', 200))
+simulation.reporters.append(app.StateDataReporter(stdout, 10000, step=True, potentialEnergy=True, temperature=True, progress=True, remainingTime=False, speed=False, totalSteps=TIMEeq, separator='\t'))
+print('Equilibrating...')
+simulation.step(TIMEeq) # no separate heating step and fixed equilibration time of 0.1ns
+#simulation.step(1000) # for testing
+print('eq_'+PDBid+'.nc is done')
+  
+# append reporters
+print ('MD production run for', 'prod_'+PDBid+'.nc')
+simulation.reporters.append(pmd.openmm.NetCDFReporter('prod_'+PDBid+'.nc', 200))
+simulation.reporters.append(app.StateDataReporter(stdout, 10000, step=True, potentialEnergy=True, temperature=True, progress=True, remainingTime=False, speed=False, totalSteps=TIMEprod, separator='\t'))
+# run production simulation
+print('Running Production...')
+simulation.step(TIMEprod)
+print('prod_'+PDBid+'.nc is done')
+##############################################
+
+if(RUNSid >= 2):
+    prmtop = app.AmberPrmtopFile('wat_'+PDBid2_lab+'.prmtop')
+    inpcrd = app.AmberInpcrdFile('wat_'+PDBid2_lab+'.inpcrd')
+    PDBid = PDBid2_lab
+    # prepare system and integrator
+    system = prmtop.createSystem(nonbondedMethod=app.PME, nonbondedCutoff=1.0*unit.nanometers, constraints=app.HBonds, rigidWater=True, ewaldErrorTolerance=0.0005)
+    integrator = mm.LangevinIntegrator(TEMPid*unit.kelvin, 1.0/unit.picoseconds, 2.0*unit.femtoseconds)
+    integrator.setConstraintTolerance(0.00001)
+    thermostat = mm.AndersenThermostat(TEMPid*unit.kelvin, 1/unit.picosecond)
+    system.addForce(thermostat)
+    barostat = mm.MonteCarloBarostat(1.0*unit.bar, TEMPid*unit.kelvin, 25)
+    system.addForce(barostat)
+    # prepare simulation
+    platform = mm.Platform.getPlatformByName('CUDA')
+    properties = {'CudaPrecision': 'mixed', 'DeviceIndex': '0'}
+    simulation = app.Simulation(prmtop.topology, system, integrator, platform, properties)
+    simulation.context.setPositions(inpcrd.positions)
+
+    # minimize
+    print('Minimizing...')
+    simulation.minimizeEnergy()
+
+    # equilibrate for 100 steps
+    simulation.context.setVelocitiesToTemperature(TEMPid*unit.kelvin)
+       
+    print ('MD equilibration run for', 'eq_'+PDBid+'.nc')
+    simulation.reporters.append(pmd.openmm.NetCDFReporter('eq_'+PDBid+'.nc', 200))
+    simulation.reporters.append(app.StateDataReporter(stdout, 10000, step=True, potentialEnergy=True, temperature=True, progress=True, remainingTime=False, speed=False, totalSteps=TIMEeq, separator='\t'))
+    print('Equilibrating...')
+    simulation.step(TIMEeq) # no separate heating step and fixed equilibration time of 0.1ns
+    #simulation.step(1000) # for testing
+    print('eq_'+PDBid+'.nc is done')
     
-        # prepare simulation
-        platform = mm.Platform.getPlatformByName('CUDA')
-        properties = {'CudaPrecision': 'mixed', 'DeviceIndex': '0'}
-        simulation = app.Simulation(prmtop.topology, system, integrator, platform, properties)
-        simulation.context.setPositions(inpcrd.positions)
+    # append reporters
+    print ('MD production run for', 'prod_'+PDBid+'.nc')
+    simulation.reporters.append(pmd.openmm.NetCDFReporter('prod_'+PDBid+'.nc', 200))
+    simulation.reporters.append(app.StateDataReporter(stdout, 10000, step=True, potentialEnergy=True, temperature=True, progress=True, remainingTime=False, speed=False, totalSteps=TIMEprod, separator='\t'))
 
-        # minimize
-        print('Minimizing...')
-        simulation.minimizeEnergy()
-
-        # equilibrate for 100 steps
-        simulation.context.setVelocitiesToTemperature(TEMPid*unit.kelvin)
-        myrun = str(x)
-        print ('MD equilibration run for', 'eq_'+PDBid+'_'+myrun+'.nc')
-        simulation.reporters.append(pmd.openmm.NetCDFReporter('eq_'+PDBid+'_'+myrun+'.nc', 200))
-        simulation.reporters.append(app.StateDataReporter(stdout, 10000, step=True, potentialEnergy=True, temperature=True, progress=True, remainingTime=False, speed=False, totalSteps=TIMEeq, separator='\t'))
-        print('Equilibrating...')
-        simulation.step(TIMEeq) # no separate heating step and fixed equilibration time of 0.1ns
-        #simulation.step(1000) # for testing
-        print('eq_'+PDBid+'_'+myrun+'.nc is done')
-    
-        # append reporters
-        myrun = str(x)
-        print ('MD production run for', 'prod_'+PDBid+'_'+myrun+'.nc')
-        simulation.reporters.append(pmd.openmm.NetCDFReporter('prod_'+PDBid+'_'+myrun+'.nc', 200))
-        simulation.reporters.append(app.StateDataReporter(stdout, 10000, step=True, potentialEnergy=True, temperature=True, progress=True, remainingTime=False, speed=False, totalSteps=TIMEprod, separator='\t'))
-
-        # run production simulation
-        print('Running Production...')
-        simulation.step(TIMEprod)
-        print('prod_'+PDBid+'_'+myrun+'.nc is done')
+    # run production simulation
+    print('Running Production...')
+    simulation.step(TIMEprod)
+    print('prod_'+PDBid+'.nc is done')
         
-    if(RUNSid >= 2):
-        prmtop = app.AmberPrmtopFile('wat_'+PDBid2_lab+'.prmtop')
-        inpcrd = app.AmberInpcrdFile('wat_'+PDBid2_lab+'.inpcrd')
-        PDBid = PDBid2_lab
-        # prepare system and integrator
-        system = prmtop.createSystem(nonbondedMethod=app.PME, nonbondedCutoff=1.0*unit.nanometers, constraints=app.HBonds, rigidWater=True, ewaldErrorTolerance=0.0005)
-        integrator = mm.LangevinIntegrator(TEMPid*unit.kelvin, 1.0/unit.picoseconds, 2.0*unit.femtoseconds)
-        integrator.setConstraintTolerance(0.00001)
-        thermostat = mm.AndersenThermostat(TEMPid*unit.kelvin, 1/unit.picosecond)
-        system.addForce(thermostat)
-        barostat = mm.MonteCarloBarostat(1.0*unit.bar, TEMPid*unit.kelvin, 25)
-        system.addForce(barostat)
+#########################################################        
+if(RUNSid >= 3):
+    prmtop = app.AmberPrmtopFile('wat_'+PDBid3_lab+'.prmtop')
+    inpcrd = app.AmberInpcrdFile('wat_'+PDBid3_lab+'.inpcrd')
+    PDBid = PDB1d3_lab
+    # prepare system and integrator
+    system = prmtop.createSystem(nonbondedMethod=app.PME, nonbondedCutoff=1.0*unit.nanometers, constraints=app.HBonds, rigidWater=True, ewaldErrorTolerance=0.0005)
+    integrator = mm.LangevinIntegrator(TEMPid*unit.kelvin, 1.0/unit.picoseconds, 2.0*unit.femtoseconds)
+    integrator.setConstraintTolerance(0.00001)
+    thermostat = mm.AndersenThermostat(TEMPid*unit.kelvin, 1/unit.picosecond)
+    system.addForce(thermostat)
+    barostat = mm.MonteCarloBarostat(1.0*unit.bar, TEMPid*unit.kelvin, 25)
+    system.addForce(barostat)
     
-        # prepare simulation
-        platform = mm.Platform.getPlatformByName('CUDA')
-        properties = {'CudaPrecision': 'mixed', 'DeviceIndex': '0'}
-        simulation = app.Simulation(prmtop.topology, system, integrator, platform, properties)
-        simulation.context.setPositions(inpcrd.positions)
+    # prepare simulation
+    platform = mm.Platform.getPlatformByName('CUDA')
+    properties = {'CudaPrecision': 'mixed', 'DeviceIndex': '0'}
+    simulation = app.Simulation(prmtop.topology, system, integrator, platform, properties)
+    simulation.context.setPositions(inpcrd.positions)
 
-        # minimize
-        print('Minimizing...')
-        simulation.minimizeEnergy()
+    # minimize
+    print('Minimizing...')
+    simulation.minimizeEnergy()
 
-        # equilibrate for 100 steps
-        simulation.context.setVelocitiesToTemperature(TEMPid*unit.kelvin)
-        myrun = str(x)
-        print ('MD equilibration run for', 'eq_'+PDBid+'_'+myrun+'.nc')
-        simulation.reporters.append(pmd.openmm.NetCDFReporter('eq_'+PDBid+'_'+myrun+'.nc', 200))
-        simulation.reporters.append(app.StateDataReporter(stdout, 10000, step=True, potentialEnergy=True, temperature=True, progress=True, remainingTime=False, speed=False, totalSteps=TIMEeq, separator='\t'))
-        print('Equilibrating...')
-        simulation.step(TIMEeq) # no separate heating step and fixed equilibration time of 0.1ns
-        #simulation.step(1000) # for testing
-        print('eq_'+PDBid+'_'+myrun+'.nc is done')
-    
-        # append reporters
-        myrun = str(x)
-        print ('MD production run for', 'prod_'+PDBid+'_'+myrun+'.nc')
-        simulation.reporters.append(pmd.openmm.NetCDFReporter('prod_'+PDBid+'_'+myrun+'.nc', 200))
-        simulation.reporters.append(app.StateDataReporter(stdout, 10000, step=True, potentialEnergy=True, temperature=True, progress=True, remainingTime=False, speed=False, totalSteps=TIMEprod, separator='\t'))
-
-        # run production simulation
-        print('Running Production...')
-        simulation.step(TIMEprod)
-        print('prod_'+PDBid+'_'+myrun+'.nc is done')
+    # equilibrate for 100 steps
+    simulation.context.setVelocitiesToTemperature(TEMPid*unit.kelvin)
         
-    if(RUNSid >= 3):
-        prmtop = app.AmberPrmtopFile('wat_'+PDBid3_lab+'.prmtop')
-        inpcrd = app.AmberInpcrdFile('wat_'+PDBid3_lab+'.inpcrd')
-        PDBid = PDB1d3_lab
-        # prepare system and integrator
-        system = prmtop.createSystem(nonbondedMethod=app.PME, nonbondedCutoff=1.0*unit.nanometers, constraints=app.HBonds, rigidWater=True, ewaldErrorTolerance=0.0005)
-        integrator = mm.LangevinIntegrator(TEMPid*unit.kelvin, 1.0/unit.picoseconds, 2.0*unit.femtoseconds)
-        integrator.setConstraintTolerance(0.00001)
-        thermostat = mm.AndersenThermostat(TEMPid*unit.kelvin, 1/unit.picosecond)
-        system.addForce(thermostat)
-        barostat = mm.MonteCarloBarostat(1.0*unit.bar, TEMPid*unit.kelvin, 25)
-        system.addForce(barostat)
+    print ('MD equilibration run for', 'eq_'+PDBid+'.nc')
+    simulation.reporters.append(pmd.openmm.NetCDFReporter('eq_'+PDBid+'.nc', 200))
+    simulation.reporters.append(app.StateDataReporter(stdout, 10000, step=True, potentialEnergy=True, temperature=True, progress=True, remainingTime=False, speed=False, totalSteps=TIMEeq, separator='\t'))
+    print('Equilibrating...')
+    simulation.step(TIMEeq) # no separate heating step and fixed equilibration time of 0.1ns
+    #simulation.step(1000) # for testing
+    print('eq_'+PDBid+'.nc is done')
     
-        # prepare simulation
-        platform = mm.Platform.getPlatformByName('CUDA')
-        properties = {'CudaPrecision': 'mixed', 'DeviceIndex': '0'}
-        simulation = app.Simulation(prmtop.topology, system, integrator, platform, properties)
-        simulation.context.setPositions(inpcrd.positions)
+    # append reporters
+    print ('MD production run for', 'prod_'+PDBid+'_'+myrun+'.nc')
+    simulation.reporters.append(pmd.openmm.NetCDFReporter('prod_'+PDBid+'.nc', 200))
+    simulation.reporters.append(app.StateDataReporter(stdout, 10000, step=True, potentialEnergy=True, temperature=True, progress=True, remainingTime=False, speed=False, totalSteps=TIMEprod, separator='\t'))
 
-        # minimize
-        print('Minimizing...')
-        simulation.minimizeEnergy()
-
-        # equilibrate for 100 steps
-        simulation.context.setVelocitiesToTemperature(TEMPid*unit.kelvin)
-        myrun = str(x)
-        print ('MD equilibration run for', 'eq_'+PDBid+'_'+myrun+'.nc')
-        simulation.reporters.append(pmd.openmm.NetCDFReporter('eq_'+PDBid+'_'+myrun+'.nc', 200))
-        simulation.reporters.append(app.StateDataReporter(stdout, 10000, step=True, potentialEnergy=True, temperature=True, progress=True, remainingTime=False, speed=False, totalSteps=TIMEeq, separator='\t'))
-        print('Equilibrating...')
-        simulation.step(TIMEeq) # no separate heating step and fixed equilibration time of 0.1ns
-        #simulation.step(1000) # for testing
-        print('eq_'+PDBid+'_'+myrun+'.nc is done')
-    
-        # append reporters
-        myrun = str(x)
-        print ('MD production run for', 'prod_'+PDBid+'_'+myrun+'.nc')
-        simulation.reporters.append(pmd.openmm.NetCDFReporter('prod_'+PDBid+'_'+myrun+'.nc', 200))
-        simulation.reporters.append(app.StateDataReporter(stdout, 10000, step=True, potentialEnergy=True, temperature=True, progress=True, remainingTime=False, speed=False, totalSteps=TIMEprod, separator='\t'))
-
-        # run production simulation
-        print('Running Production...')
-        simulation.step(TIMEprod)
-        print('prod_'+PDBid+'_'+myrun+'.nc is done')
+    # run production simulation
+    print('Running Production...')
+    simulation.step(TIMEprod)
+    print('prod_'+PDBid+'.nc is done')
         
-    if(RUNSid >= 4):
-        prmtop = app.AmberPrmtopFile('wat_'+PDBid4_lab+'.prmtop')
-        inpcrd = app.AmberInpcrdFile('wat_'+PDBid4_lab+'.inpcrd')
-        PDBid = PDBid4_lab
-        # prepare system and integrator
-        system = prmtop.createSystem(nonbondedMethod=app.PME, nonbondedCutoff=1.0*unit.nanometers, constraints=app.HBonds, rigidWater=True, ewaldErrorTolerance=0.0005)
-        integrator = mm.LangevinIntegrator(TEMPid*unit.kelvin, 1.0/unit.picoseconds, 2.0*unit.femtoseconds)
-        integrator.setConstraintTolerance(0.00001)
-        thermostat = mm.AndersenThermostat(TEMPid*unit.kelvin, 1/unit.picosecond)
-        system.addForce(thermostat)
-        barostat = mm.MonteCarloBarostat(1.0*unit.bar, TEMPid*unit.kelvin, 25)
-        system.addForce(barostat)
+#########################################################         
+if(RUNSid >= 4):
+    prmtop = app.AmberPrmtopFile('wat_'+PDBid4_lab+'.prmtop')
+    inpcrd = app.AmberInpcrdFile('wat_'+PDBid4_lab+'.inpcrd')
+    PDBid = PDBid4_lab
+    # prepare system and integrator
+    system = prmtop.createSystem(nonbondedMethod=app.PME, nonbondedCutoff=1.0*unit.nanometers, constraints=app.HBonds, rigidWater=True, ewaldErrorTolerance=0.0005)
+    integrator = mm.LangevinIntegrator(TEMPid*unit.kelvin, 1.0/unit.picoseconds, 2.0*unit.femtoseconds)
+    integrator.setConstraintTolerance(0.00001)
+    thermostat = mm.AndersenThermostat(TEMPid*unit.kelvin, 1/unit.picosecond)
+    system.addForce(thermostat)
+    barostat = mm.MonteCarloBarostat(1.0*unit.bar, TEMPid*unit.kelvin, 25)
+    system.addForce(barostat)
     
-        # prepare simulation
-        platform = mm.Platform.getPlatformByName('CUDA')
-        properties = {'CudaPrecision': 'mixed', 'DeviceIndex': '0'}
-        simulation = app.Simulation(prmtop.topology, system, integrator, platform, properties)
-        simulation.context.setPositions(inpcrd.positions)
+    # prepare simulation
+    platform = mm.Platform.getPlatformByName('CUDA')
+    properties = {'CudaPrecision': 'mixed', 'DeviceIndex': '0'}
+    simulation = app.Simulation(prmtop.topology, system, integrator, platform, properties)
+    simulation.context.setPositions(inpcrd.positions)
 
-        # minimize
-        print('Minimizing...')
-        simulation.minimizeEnergy()
+    # minimize
+    print('Minimizing...')
+    simulation.minimizeEnergy()
 
-        # equilibrate for 100 steps
-        simulation.context.setVelocitiesToTemperature(TEMPid*unit.kelvin)
-        myrun = str(x)
-        print ('MD equilibration run for', 'eq_'+PDBid+'_'+myrun+'.nc')
-        simulation.reporters.append(pmd.openmm.NetCDFReporter('eq_'+PDBid+'_'+myrun+'.nc', 200))
-        simulation.reporters.append(app.StateDataReporter(stdout, 10000, step=True, potentialEnergy=True, temperature=True, progress=True, remainingTime=False, speed=False, totalSteps=TIMEeq, separator='\t'))
-        print('Equilibrating...')
-        simulation.step(TIMEeq) # no separate heating step and fixed equilibration time of 0.1ns
-        #simulation.step(1000) # for testing
-        print('eq_'+PDBid+'_'+myrun+'.nc is done')
+    # equilibrate for 100 steps
+    simulation.context.setVelocitiesToTemperature(TEMPid*unit.kelvin)
+     
+    print ('MD equilibration run for', 'eq_'+PDBid+'.nc')
+    simulation.reporters.append(pmd.openmm.NetCDFReporter('eq_'+PDBid+'.nc', 200))
+    simulation.reporters.append(app.StateDataReporter(stdout, 10000, step=True, potentialEnergy=True, temperature=True, progress=True, remainingTime=False, speed=False, totalSteps=TIMEeq, separator='\t'))
+    print('Equilibrating...')
+    simulation.step(TIMEeq) # no separate heating step and fixed equilibration time of 0.1ns
+    #simulation.step(1000) # for testing
+    print('eq_'+PDBid+'.nc is done')
     
-        # append reporters
-        myrun = str(x)
-        print ('MD production run for', 'prod_'+PDBid+'_'+myrun+'.nc')
-        simulation.reporters.append(pmd.openmm.NetCDFReporter('prod_'+PDBid+'_'+myrun+'.nc', 200))
-        simulation.reporters.append(app.StateDataReporter(stdout, 10000, step=True, potentialEnergy=True, temperature=True, progress=True, remainingTime=False, speed=False, totalSteps=TIMEprod, separator='\t'))
+    # append reporters
+    print ('MD production run for', 'prod_'+PDBid+'.nc')
+    simulation.reporters.append(pmd.openmm.NetCDFReporter('prod_'+PDBid+'.nc', 200))
+    simulation.reporters.append(app.StateDataReporter(stdout, 10000, step=True, potentialEnergy=True, temperature=True, progress=True, remainingTime=False, speed=False, totalSteps=TIMEprod, separator='\t'))
 
-        # run production simulation
-        print('Running Production...')
-        simulation.step(TIMEprod)
-        print('prod_'+PDBid+'_'+myrun+'.nc is done')
+    # run production simulation
+    print('Running Production...')
+    simulation.step(TIMEprod)
+    print('prod_'+PDBid+'.nc is done')
         
-    if(RUNSid >= 5):
-        prmtop = app.AmberPrmtopFile('wat_'+PDBid5+'.prmtop')
-        inpcrd = app.AmberInpcrdFile('wat_'+PDBid5+'.inpcrd')
-        PDBid= PDBid5
-        # prepare system and integrator
-        system = prmtop.createSystem(nonbondedMethod=app.PME, nonbondedCutoff=1.0*unit.nanometers, constraints=app.HBonds, rigidWater=True, ewaldErrorTolerance=0.0005)
-        integrator = mm.LangevinIntegrator(TEMPid*unit.kelvin, 1.0/unit.picoseconds, 2.0*unit.femtoseconds)
-        integrator.setConstraintTolerance(0.00001)
-        thermostat = mm.AndersenThermostat(TEMPid*unit.kelvin, 1/unit.picosecond)
-        system.addForce(thermostat)
-        barostat = mm.MonteCarloBarostat(1.0*unit.bar, TEMPid*unit.kelvin, 25)
-        system.addForce(barostat)
+#########################################################         
+if(RUNSid >= 5):
+    prmtop = app.AmberPrmtopFile('wat_'+PDBid5+'.prmtop')
+    inpcrd = app.AmberInpcrdFile('wat_'+PDBid5+'.inpcrd')
+    PDBid= PDBid5
+    # prepare system and integrator
+    system = prmtop.createSystem(nonbondedMethod=app.PME, nonbondedCutoff=1.0*unit.nanometers, constraints=app.HBonds, rigidWater=True, ewaldErrorTolerance=0.0005)
+    integrator = mm.LangevinIntegrator(TEMPid*unit.kelvin, 1.0/unit.picoseconds, 2.0*unit.femtoseconds)
+    integrator.setConstraintTolerance(0.00001)
+    thermostat = mm.AndersenThermostat(TEMPid*unit.kelvin, 1/unit.picosecond)
+    system.addForce(thermostat)
+    barostat = mm.MonteCarloBarostat(1.0*unit.bar, TEMPid*unit.kelvin, 25)
+    system.addForce(barostat)
     
-        # prepare simulation
-        platform = mm.Platform.getPlatformByName('CUDA')
-        properties = {'CudaPrecision': 'mixed', 'DeviceIndex': '0'}
-        simulation = app.Simulation(prmtop.topology, system, integrator, platform, properties)
-        simulation.context.setPositions(inpcrd.positions)
+    # prepare simulation
+    platform = mm.Platform.getPlatformByName('CUDA')
+    properties = {'CudaPrecision': 'mixed', 'DeviceIndex': '0'}
+    simulation = app.Simulation(prmtop.topology, system, integrator, platform, properties)
+    simulation.context.setPositions(inpcrd.positions)
 
-        # minimize
-        print('Minimizing...')
-        simulation.minimizeEnergy()
+    # minimize
+    print('Minimizing...')
+    simulation.minimizeEnergy()
 
-        # equilibrate for 100 steps
-        simulation.context.setVelocitiesToTemperature(TEMPid*unit.kelvin)
-        myrun = str(x)
-        print ('MD equilibration run for', 'eq_'+PDBid+'_'+myrun+'.nc')
-        simulation.reporters.append(pmd.openmm.NetCDFReporter('eq_'+PDBid+'_'+myrun+'.nc', 200))
-        simulation.reporters.append(app.StateDataReporter(stdout, 10000, step=True, potentialEnergy=True, temperature=True, progress=True, remainingTime=False, speed=False, totalSteps=TIMEeq, separator='\t'))
-        print('Equilibrating...')
-        simulation.step(TIMEeq) # no separate heating step and fixed equilibration time of 0.1ns
-        #simulation.step(1000) # for testing
-        print('eq_'+PDBid+'_'+myrun+'.nc is done')
+    # equilibrate for 100 steps
+    simulation.context.setVelocitiesToTemperature(TEMPid*unit.kelvin)
+        
+    print ('MD equilibration run for', 'eq_'+PDBid+'.nc')
+    simulation.reporters.append(pmd.openmm.NetCDFReporter('eq_'+PDBid+'.nc', 200))
+    simulation.reporters.append(app.StateDataReporter(stdout, 10000, step=True, potentialEnergy=True, temperature=True, progress=True, remainingTime=False, speed=False, totalSteps=TIMEeq, separator='\t'))
+    print('Equilibrating...')
+    simulation.step(TIMEeq) # no separate heating step and fixed equilibration time of 0.1ns
+    #simulation.step(1000) # for testing
+    print('eq_'+PDBid+'.nc is done')
     
-        # append reporters
-        myrun = str(x)
-        print ('MD production run for', 'prod_'+PDBid+'_'+myrun+'.nc')
-        simulation.reporters.append(pmd.openmm.NetCDFReporter('prod_'+PDBid+'_'+myrun+'.nc', 200))
-        simulation.reporters.append(app.StateDataReporter(stdout, 10000, step=True, potentialEnergy=True, temperature=True, progress=True, remainingTime=False, speed=False, totalSteps=TIMEprod, separator='\t'))
+    # append reporters
+    print ('MD production run for', 'prod_'+PDBid+'.nc')
+    simulation.reporters.append(pmd.openmm.NetCDFReporter('prod_'+PDBid+'.nc', 200))
+    simulation.reporters.append(app.StateDataReporter(stdout, 10000, step=True, potentialEnergy=True, temperature=True, progress=True, remainingTime=False, speed=False, totalSteps=TIMEprod, separator='\t'))
 
-        # run production simulation
-        print('Running Production...')
-        simulation.step(TIMEprod)
-        print('prod_'+PDBid+'_'+myrun+'.nc is done')
+    # run production simulation
+    print('Running Production...')
+    simulation.step(TIMEprod)
+    print('prod_'+PDBid+'.nc is done')
     
-    
+         
+#########################################################    
