@@ -125,7 +125,7 @@ print('eq_'+PDBid+'.nc is done')
 # append reporters
 print ('MD production run for', 'prod_'+PDBid+'.nc')
 simulation.reporters.append(pmd.openmm.NetCDFReporter('prod_'+PDBid+'.nc', 200))
-simulation.reporters.append(app.StateDataReporter(stdout, 10000, step=True, potentialEnergy=True, temperature=True, progress=True, remainingTime=False, speed=False, totalSteps=TIMEprod, separator='\t'))
+#simulation.reporters.append(app.StateDataReporter(stdout, 10000, step=True, potentialEnergy=True, temperature=True, progress=True, remainingTime=False, speed=False, totalSteps=TIMEprod, separator='\t'))
 # run production simulation
 print('Running Production...')
 simulation.step(TIMEprod)
@@ -168,7 +168,7 @@ if(RUNSid >= 2):
     # append reporters
     print ('MD production run for', 'prod_'+PDBid+'.nc')
     simulation.reporters.append(pmd.openmm.NetCDFReporter('prod_'+PDBid+'.nc', 200))
-    simulation.reporters.append(app.StateDataReporter(stdout, 10000, step=True, potentialEnergy=True, temperature=True, progress=True, remainingTime=False, speed=False, totalSteps=TIMEprod, separator='\t'))
+    #simulation.reporters.append(app.StateDataReporter(stdout, 10000, step=True, potentialEnergy=True, temperature=True, progress=True, remainingTime=False, speed=False, totalSteps=TIMEprod, separator='\t'))
 
     # run production simulation
     print('Running Production...')
@@ -179,7 +179,7 @@ if(RUNSid >= 2):
 if(RUNSid >= 3):
     prmtop = app.AmberPrmtopFile('wat_'+PDBid3_lab+'.prmtop')
     inpcrd = app.AmberInpcrdFile('wat_'+PDBid3_lab+'.inpcrd')
-    PDBid = PDB1d3_lab
+    PDBid = PDBid3_lab
     # prepare system and integrator
     system = prmtop.createSystem(nonbondedMethod=app.PME, nonbondedCutoff=1.0*unit.nanometers, constraints=app.HBonds, rigidWater=True, ewaldErrorTolerance=0.0005)
     integrator = mm.LangevinIntegrator(TEMPid*unit.kelvin, 1.0/unit.picoseconds, 2.0*unit.femtoseconds)
@@ -211,9 +211,9 @@ if(RUNSid >= 3):
     print('eq_'+PDBid+'.nc is done')
     
     # append reporters
-    print ('MD production run for', 'prod_'+PDBid+'_'+myrun+'.nc')
+    print ('MD production run for', 'prod_'+PDBid+'.nc')
     simulation.reporters.append(pmd.openmm.NetCDFReporter('prod_'+PDBid+'.nc', 200))
-    simulation.reporters.append(app.StateDataReporter(stdout, 10000, step=True, potentialEnergy=True, temperature=True, progress=True, remainingTime=False, speed=False, totalSteps=TIMEprod, separator='\t'))
+    #simulation.reporters.append(app.StateDataReporter(stdout, 10000, step=True, potentialEnergy=True, temperature=True, progress=True, remainingTime=False, speed=False, totalSteps=TIMEprod, separator='\t'))
 
     # run production simulation
     print('Running Production...')
@@ -258,7 +258,7 @@ if(RUNSid >= 4):
     # append reporters
     print ('MD production run for', 'prod_'+PDBid+'.nc')
     simulation.reporters.append(pmd.openmm.NetCDFReporter('prod_'+PDBid+'.nc', 200))
-    simulation.reporters.append(app.StateDataReporter(stdout, 10000, step=True, potentialEnergy=True, temperature=True, progress=True, remainingTime=False, speed=False, totalSteps=TIMEprod, separator='\t'))
+    #simulation.reporters.append(app.StateDataReporter(stdout, 10000, step=True, potentialEnergy=True, temperature=True, progress=True, remainingTime=False, speed=False, totalSteps=TIMEprod, separator='\t'))
 
     # run production simulation
     print('Running Production...')
@@ -266,7 +266,7 @@ if(RUNSid >= 4):
     print('prod_'+PDBid+'.nc is done')
         
 #########################################################         
-if(RUNSid >= 5):
+if(RUNSid == 5):
     prmtop = app.AmberPrmtopFile('wat_'+PDBid5+'.prmtop')
     inpcrd = app.AmberInpcrdFile('wat_'+PDBid5+'.inpcrd')
     PDBid= PDBid5
@@ -303,7 +303,7 @@ if(RUNSid >= 5):
     # append reporters
     print ('MD production run for', 'prod_'+PDBid+'.nc')
     simulation.reporters.append(pmd.openmm.NetCDFReporter('prod_'+PDBid+'.nc', 200))
-    simulation.reporters.append(app.StateDataReporter(stdout, 10000, step=True, potentialEnergy=True, temperature=True, progress=True, remainingTime=False, speed=False, totalSteps=TIMEprod, separator='\t'))
+    #simulation.reporters.append(app.StateDataReporter(stdout, 10000, step=True, potentialEnergy=True, temperature=True, progress=True, remainingTime=False, speed=False, totalSteps=TIMEprod, separator='\t'))
 
     # run production simulation
     print('Running Production...')
