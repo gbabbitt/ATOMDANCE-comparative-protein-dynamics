@@ -68,7 +68,9 @@ for x in range(len(infile_lines)):
         TIMEprod = value
         TIMEprod = int(TIMEprod)
         print("my length of MD production run is",TIMEprod)
-    
+    if(header == "antechamber"):
+        antechamber = value
+        print("was antechamber run? ",antechamber)
     #if(header == "ADD_Field"):
     #    aFFid = value
     #    print("my additional force field is",aFFid)    
@@ -90,9 +92,12 @@ print("my Production Run Temperature is",TEMPid)
 ########## first run ##############
 print("number of structures to execute")
 print(RUNSid)
-
-prmtop = app.AmberPrmtopFile('wat_'+PDBid1_lab+'.prmtop')
-inpcrd = app.AmberInpcrdFile('wat_'+PDBid1_lab+'.inpcrd')
+if(antechamber == "no"):
+    prmtop = app.AmberPrmtopFile('wat_'+PDBid1_lab+'.prmtop')
+    inpcrd = app.AmberInpcrdFile('wat_'+PDBid1_lab+'.inpcrd')
+if(antechamber == "yes"):
+    prmtop = app.AmberPrmtopFile('wat_'+PDBid1_lab+'_complex.prmtop')
+    inpcrd = app.AmberInpcrdFile('wat_'+PDBid1_lab+'_complex.inpcrd')
 PDBid = PDBid1_lab
 # prepare system and integrator
 system = prmtop.createSystem(nonbondedMethod=app.PME, nonbondedCutoff=1.0*unit.nanometers, constraints=app.HBonds, rigidWater=True, ewaldErrorTolerance=0.0005)
@@ -113,28 +118,50 @@ print('Minimizing...')
 simulation.minimizeEnergy()
 # equilibrate for 100 steps
 simulation.context.setVelocitiesToTemperature(TEMPid*unit.kelvin)
-      
-print ('MD equilibration run for', 'eq_'+PDBid+'.nc')
-simulation.reporters.append(pmd.openmm.NetCDFReporter('eq_'+PDBid+'.nc', 200))
-simulation.reporters.append(app.StateDataReporter(stdout, 10000, step=True, potentialEnergy=True, temperature=True, progress=True, remainingTime=False, speed=False, totalSteps=TIMEeq, separator='\t'))
-print('Equilibrating...')
-simulation.step(TIMEeq) # no separate heating step and fixed equilibration time of 0.1ns
-#simulation.step(1000) # for testing
-print('eq_'+PDBid+'.nc is done')
+
+if(antechamber == "no"):      
+    print ('MD equilibration run for', 'eq_'+PDBid+'.nc')
+    simulation.reporters.append(pmd.openmm.NetCDFReporter('eq_'+PDBid+'.nc', 200))
+    simulation.reporters.append(app.StateDataReporter(stdout, 10000, step=True, potentialEnergy=True, temperature=True, progress=True, remainingTime=False, speed=False, totalSteps=TIMEeq, separator='\t'))
+    print('Equilibrating...')
+    simulation.step(TIMEeq) # no separate heating step and fixed equilibration time of 0.1ns
+    #simulation.step(1000) # for testing
+    print('eq_'+PDBid+'.nc is done')
   
-# append reporters
-print ('MD production run for', 'prod_'+PDBid+'.nc')
-simulation.reporters.append(pmd.openmm.NetCDFReporter('prod_'+PDBid+'.nc', 200))
-#simulation.reporters.append(app.StateDataReporter(stdout, 10000, step=True, potentialEnergy=True, temperature=True, progress=True, remainingTime=False, speed=False, totalSteps=TIMEprod, separator='\t'))
-# run production simulation
-print('Running Production...')
-simulation.step(TIMEprod)
-print('prod_'+PDBid+'.nc is done')
+    # append reporters
+    print ('MD production run for', 'prod_'+PDBid+'.nc')
+    simulation.reporters.append(pmd.openmm.NetCDFReporter('prod_'+PDBid+'.nc', 200))
+    #simulation.reporters.append(app.StateDataReporter(stdout, 10000, step=True, potentialEnergy=True, temperature=True, progress=True, remainingTime=False, speed=False, totalSteps=TIMEprod, separator='\t'))
+    # run production simulation
+    print('Running Production...')
+    simulation.step(TIMEprod)
+    print('prod_'+PDBid+'.nc is done')
+if(antechamber == "yes"): 
+    print ('MD equilibration run for', 'eq_'+PDBid+'_complex.nc')
+    simulation.reporters.append(pmd.openmm.NetCDFReporter('eq_'+PDBid+'_complex.nc', 200))
+    simulation.reporters.append(app.StateDataReporter(stdout, 10000, step=True, potentialEnergy=True, temperature=True, progress=True, remainingTime=False, speed=False, totalSteps=TIMEeq, separator='\t'))
+    print('Equilibrating...')
+    simulation.step(TIMEeq) # no separate heating step and fixed equilibration time of 0.1ns
+    #simulation.step(1000) # for testing
+    print('eq_'+PDBid+'_complex.nc is done')
+  
+    # append reporters
+    print ('MD production run for', 'prod_'+PDBid+'_complex.nc')
+    simulation.reporters.append(pmd.openmm.NetCDFReporter('prod_'+PDBid+'_complex.nc', 200))
+    #simulation.reporters.append(app.StateDataReporter(stdout, 10000, step=True, potentialEnergy=True, temperature=True, progress=True, remainingTime=False, speed=False, totalSteps=TIMEprod, separator='\t'))
+    # run production simulation
+    print('Running Production...')
+    simulation.step(TIMEprod)
+    print('prod_'+PDBid+'_complex.nc is done')
 ##############################################
 
 if(RUNSid >= 2):
-    prmtop = app.AmberPrmtopFile('wat_'+PDBid2_lab+'.prmtop')
-    inpcrd = app.AmberInpcrdFile('wat_'+PDBid2_lab+'.inpcrd')
+    if(antechamber == "no"):
+        prmtop = app.AmberPrmtopFile('wat_'+PDBid2_lab+'.prmtop')
+        inpcrd = app.AmberInpcrdFile('wat_'+PDBid2_lab+'.inpcrd')
+    if(antechamber == "yes"):
+        prmtop = app.AmberPrmtopFile('wat_'+PDBid2_lab+'_complex.prmtop')
+        inpcrd = app.AmberInpcrdFile('wat_'+PDBid2_lab+'_complex.inpcrd') 
     PDBid = PDBid2_lab
     # prepare system and integrator
     system = prmtop.createSystem(nonbondedMethod=app.PME, nonbondedCutoff=1.0*unit.nanometers, constraints=app.HBonds, rigidWater=True, ewaldErrorTolerance=0.0005)
@@ -157,28 +184,49 @@ if(RUNSid >= 2):
     # equilibrate for 100 steps
     simulation.context.setVelocitiesToTemperature(TEMPid*unit.kelvin)
        
-    print ('MD equilibration run for', 'eq_'+PDBid+'.nc')
-    simulation.reporters.append(pmd.openmm.NetCDFReporter('eq_'+PDBid+'.nc', 200))
-    simulation.reporters.append(app.StateDataReporter(stdout, 10000, step=True, potentialEnergy=True, temperature=True, progress=True, remainingTime=False, speed=False, totalSteps=TIMEeq, separator='\t'))
-    print('Equilibrating...')
-    simulation.step(TIMEeq) # no separate heating step and fixed equilibration time of 0.1ns
-    #simulation.step(1000) # for testing
-    print('eq_'+PDBid+'.nc is done')
-    
-    # append reporters
-    print ('MD production run for', 'prod_'+PDBid+'.nc')
-    simulation.reporters.append(pmd.openmm.NetCDFReporter('prod_'+PDBid+'.nc', 200))
-    #simulation.reporters.append(app.StateDataReporter(stdout, 10000, step=True, potentialEnergy=True, temperature=True, progress=True, remainingTime=False, speed=False, totalSteps=TIMEprod, separator='\t'))
-
-    # run production simulation
-    print('Running Production...')
-    simulation.step(TIMEprod)
-    print('prod_'+PDBid+'.nc is done')
+    if(antechamber == "no"):      
+        print ('MD equilibration run for', 'eq_'+PDBid+'.nc')
+        simulation.reporters.append(pmd.openmm.NetCDFReporter('eq_'+PDBid+'.nc', 200))
+        simulation.reporters.append(app.StateDataReporter(stdout, 10000, step=True, potentialEnergy=True, temperature=True, progress=True, remainingTime=False, speed=False, totalSteps=TIMEeq, separator='\t'))
+        print('Equilibrating...')
+        simulation.step(TIMEeq) # no separate heating step and fixed equilibration time of 0.1ns
+        #simulation.step(1000) # for testing
+        print('eq_'+PDBid+'.nc is done')
+  
+        # append reporters
+        print ('MD production run for', 'prod_'+PDBid+'.nc')
+        simulation.reporters.append(pmd.openmm.NetCDFReporter('prod_'+PDBid+'.nc', 200))
+        #simulation.reporters.append(app.StateDataReporter(stdout, 10000, step=True, potentialEnergy=True, temperature=True, progress=True, remainingTime=False, speed=False, totalSteps=TIMEprod, separator='\t'))
+        # run production simulation
+        print('Running Production...')
+        simulation.step(TIMEprod)
+        print('prod_'+PDBid+'.nc is done')
+    if(antechamber == "yes"): 
+        print ('MD equilibration run for', 'eq_'+PDBid+'_complex.nc')
+        simulation.reporters.append(pmd.openmm.NetCDFReporter('eq_'+PDBid+'_complex.nc', 200))
+        simulation.reporters.append(app.StateDataReporter(stdout, 10000, step=True, potentialEnergy=True, temperature=True, progress=True, remainingTime=False, speed=False, totalSteps=TIMEeq, separator='\t'))
+        print('Equilibrating...')
+        simulation.step(TIMEeq) # no separate heating step and fixed equilibration time of 0.1ns
+        #simulation.step(1000) # for testing
+        print('eq_'+PDBid+'_complex.nc is done')
+  
+        # append reporters
+        print ('MD production run for', 'prod_'+PDBid+'_complex.nc')
+        simulation.reporters.append(pmd.openmm.NetCDFReporter('prod_'+PDBid+'_complex.nc', 200))
+        #simulation.reporters.append(app.StateDataReporter(stdout, 10000, step=True, potentialEnergy=True, temperature=True, progress=True, remainingTime=False, speed=False, totalSteps=TIMEprod, separator='\t'))
+        # run production simulation
+        print('Running Production...')
+        simulation.step(TIMEprod)
+        print('prod_'+PDBid+'_complex.nc is done')
         
 #########################################################        
 if(RUNSid >= 3):
-    prmtop = app.AmberPrmtopFile('wat_'+PDBid3_lab+'.prmtop')
-    inpcrd = app.AmberInpcrdFile('wat_'+PDBid3_lab+'.inpcrd')
+    if(antechamber == "no"):
+        prmtop = app.AmberPrmtopFile('wat_'+PDBid3_lab+'.prmtop')
+        inpcrd = app.AmberInpcrdFile('wat_'+PDBid3_lab+'.inpcrd')
+    if(antechamber == "yes"):
+        prmtop = app.AmberPrmtopFile('wat_'+PDBid3_lab+'_complex.prmtop')
+        inpcrd = app.AmberInpcrdFile('wat_'+PDBid3_lab+'_complex.inpcrd')
     PDBid = PDBid3_lab
     # prepare system and integrator
     system = prmtop.createSystem(nonbondedMethod=app.PME, nonbondedCutoff=1.0*unit.nanometers, constraints=app.HBonds, rigidWater=True, ewaldErrorTolerance=0.0005)
@@ -202,28 +250,49 @@ if(RUNSid >= 3):
     # equilibrate for 100 steps
     simulation.context.setVelocitiesToTemperature(TEMPid*unit.kelvin)
         
-    print ('MD equilibration run for', 'eq_'+PDBid+'.nc')
-    simulation.reporters.append(pmd.openmm.NetCDFReporter('eq_'+PDBid+'.nc', 200))
-    simulation.reporters.append(app.StateDataReporter(stdout, 10000, step=True, potentialEnergy=True, temperature=True, progress=True, remainingTime=False, speed=False, totalSteps=TIMEeq, separator='\t'))
-    print('Equilibrating...')
-    simulation.step(TIMEeq) # no separate heating step and fixed equilibration time of 0.1ns
-    #simulation.step(1000) # for testing
-    print('eq_'+PDBid+'.nc is done')
-    
-    # append reporters
-    print ('MD production run for', 'prod_'+PDBid+'.nc')
-    simulation.reporters.append(pmd.openmm.NetCDFReporter('prod_'+PDBid+'.nc', 200))
-    #simulation.reporters.append(app.StateDataReporter(stdout, 10000, step=True, potentialEnergy=True, temperature=True, progress=True, remainingTime=False, speed=False, totalSteps=TIMEprod, separator='\t'))
-
-    # run production simulation
-    print('Running Production...')
-    simulation.step(TIMEprod)
-    print('prod_'+PDBid+'.nc is done')
+    if(antechamber == "no"):      
+        print ('MD equilibration run for', 'eq_'+PDBid+'.nc')
+        simulation.reporters.append(pmd.openmm.NetCDFReporter('eq_'+PDBid+'.nc', 200))
+        simulation.reporters.append(app.StateDataReporter(stdout, 10000, step=True, potentialEnergy=True, temperature=True, progress=True, remainingTime=False, speed=False, totalSteps=TIMEeq, separator='\t'))
+        print('Equilibrating...')
+        simulation.step(TIMEeq) # no separate heating step and fixed equilibration time of 0.1ns
+        #simulation.step(1000) # for testing
+        print('eq_'+PDBid+'.nc is done')
+  
+        # append reporters
+        print ('MD production run for', 'prod_'+PDBid+'.nc')
+        simulation.reporters.append(pmd.openmm.NetCDFReporter('prod_'+PDBid+'.nc', 200))
+        #simulation.reporters.append(app.StateDataReporter(stdout, 10000, step=True, potentialEnergy=True, temperature=True, progress=True, remainingTime=False, speed=False, totalSteps=TIMEprod, separator='\t'))
+        # run production simulation
+        print('Running Production...')
+        simulation.step(TIMEprod)
+        print('prod_'+PDBid+'.nc is done')
+    if(antechamber == "yes"): 
+        print ('MD equilibration run for', 'eq_'+PDBid+'_complex.nc')
+        simulation.reporters.append(pmd.openmm.NetCDFReporter('eq_'+PDBid+'_complex.nc', 200))
+        simulation.reporters.append(app.StateDataReporter(stdout, 10000, step=True, potentialEnergy=True, temperature=True, progress=True, remainingTime=False, speed=False, totalSteps=TIMEeq, separator='\t'))
+        print('Equilibrating...')
+        simulation.step(TIMEeq) # no separate heating step and fixed equilibration time of 0.1ns
+        #simulation.step(1000) # for testing
+        print('eq_'+PDBid+'_complex.nc is done')
+  
+        # append reporters
+        print ('MD production run for', 'prod_'+PDBid+'_complex.nc')
+        simulation.reporters.append(pmd.openmm.NetCDFReporter('prod_'+PDBid+'_complex.nc', 200))
+        #simulation.reporters.append(app.StateDataReporter(stdout, 10000, step=True, potentialEnergy=True, temperature=True, progress=True, remainingTime=False, speed=False, totalSteps=TIMEprod, separator='\t'))
+        # run production simulation
+        print('Running Production...')
+        simulation.step(TIMEprod)
+        print('prod_'+PDBid+'_complex.nc is done')
         
 #########################################################         
 if(RUNSid >= 4):
-    prmtop = app.AmberPrmtopFile('wat_'+PDBid4_lab+'.prmtop')
-    inpcrd = app.AmberInpcrdFile('wat_'+PDBid4_lab+'.inpcrd')
+    if(antechamber == "no"):
+        prmtop = app.AmberPrmtopFile('wat_'+PDBid4_lab+'.prmtop')
+        inpcrd = app.AmberInpcrdFile('wat_'+PDBid4_lab+'.inpcrd')
+    if(antechamber == "yes"):
+        prmtop = app.AmberPrmtopFile('wat_'+PDBid4_lab+'_complex.prmtop')
+        inpcrd = app.AmberInpcrdFile('wat_'+PDBid4_lab+'_complex.inpcrd')
     PDBid = PDBid4_lab
     # prepare system and integrator
     system = prmtop.createSystem(nonbondedMethod=app.PME, nonbondedCutoff=1.0*unit.nanometers, constraints=app.HBonds, rigidWater=True, ewaldErrorTolerance=0.0005)
@@ -247,28 +316,49 @@ if(RUNSid >= 4):
     # equilibrate for 100 steps
     simulation.context.setVelocitiesToTemperature(TEMPid*unit.kelvin)
      
-    print ('MD equilibration run for', 'eq_'+PDBid+'.nc')
-    simulation.reporters.append(pmd.openmm.NetCDFReporter('eq_'+PDBid+'.nc', 200))
-    simulation.reporters.append(app.StateDataReporter(stdout, 10000, step=True, potentialEnergy=True, temperature=True, progress=True, remainingTime=False, speed=False, totalSteps=TIMEeq, separator='\t'))
-    print('Equilibrating...')
-    simulation.step(TIMEeq) # no separate heating step and fixed equilibration time of 0.1ns
-    #simulation.step(1000) # for testing
-    print('eq_'+PDBid+'.nc is done')
-    
-    # append reporters
-    print ('MD production run for', 'prod_'+PDBid+'.nc')
-    simulation.reporters.append(pmd.openmm.NetCDFReporter('prod_'+PDBid+'.nc', 200))
-    #simulation.reporters.append(app.StateDataReporter(stdout, 10000, step=True, potentialEnergy=True, temperature=True, progress=True, remainingTime=False, speed=False, totalSteps=TIMEprod, separator='\t'))
-
-    # run production simulation
-    print('Running Production...')
-    simulation.step(TIMEprod)
-    print('prod_'+PDBid+'.nc is done')
+    if(antechamber == "no"):      
+        print ('MD equilibration run for', 'eq_'+PDBid+'.nc')
+        simulation.reporters.append(pmd.openmm.NetCDFReporter('eq_'+PDBid+'.nc', 200))
+        simulation.reporters.append(app.StateDataReporter(stdout, 10000, step=True, potentialEnergy=True, temperature=True, progress=True, remainingTime=False, speed=False, totalSteps=TIMEeq, separator='\t'))
+        print('Equilibrating...')
+        simulation.step(TIMEeq) # no separate heating step and fixed equilibration time of 0.1ns
+        #simulation.step(1000) # for testing
+        print('eq_'+PDBid+'.nc is done')
+  
+        # append reporters
+        print ('MD production run for', 'prod_'+PDBid+'.nc')
+        simulation.reporters.append(pmd.openmm.NetCDFReporter('prod_'+PDBid+'.nc', 200))
+        #simulation.reporters.append(app.StateDataReporter(stdout, 10000, step=True, potentialEnergy=True, temperature=True, progress=True, remainingTime=False, speed=False, totalSteps=TIMEprod, separator='\t'))
+        # run production simulation
+        print('Running Production...')
+        simulation.step(TIMEprod)
+        print('prod_'+PDBid+'.nc is done')
+    if(antechamber == "yes"): 
+        print ('MD equilibration run for', 'eq_'+PDBid+'_complex.nc')
+        simulation.reporters.append(pmd.openmm.NetCDFReporter('eq_'+PDBid+'_complex.nc', 200))
+        simulation.reporters.append(app.StateDataReporter(stdout, 10000, step=True, potentialEnergy=True, temperature=True, progress=True, remainingTime=False, speed=False, totalSteps=TIMEeq, separator='\t'))
+        print('Equilibrating...')
+        simulation.step(TIMEeq) # no separate heating step and fixed equilibration time of 0.1ns
+        #simulation.step(1000) # for testing
+        print('eq_'+PDBid+'_complex.nc is done')
+  
+        # append reporters
+        print ('MD production run for', 'prod_'+PDBid+'_complex.nc')
+        simulation.reporters.append(pmd.openmm.NetCDFReporter('prod_'+PDBid+'_complex.nc', 200))
+        #simulation.reporters.append(app.StateDataReporter(stdout, 10000, step=True, potentialEnergy=True, temperature=True, progress=True, remainingTime=False, speed=False, totalSteps=TIMEprod, separator='\t'))
+        # run production simulation
+        print('Running Production...')
+        simulation.step(TIMEprod)
+        print('prod_'+PDBid+'_complex.nc is done')
         
 #########################################################         
 if(RUNSid == 5):
-    prmtop = app.AmberPrmtopFile('wat_'+PDBid5+'.prmtop')
-    inpcrd = app.AmberInpcrdFile('wat_'+PDBid5+'.inpcrd')
+    if(antechamber == "no"):
+        prmtop = app.AmberPrmtopFile('wat_'+PDBid5_lab+'.prmtop')
+        inpcrd = app.AmberInpcrdFile('wat_'+PDBid5_lab+'.inpcrd')
+    if(antechamber == "yes"):
+        prmtop = app.AmberPrmtopFile('wat_'+PDBid5_lab+'_complex.prmtop')
+        inpcrd = app.AmberInpcrdFile('wat_'+PDBid5_lab+'_complex.inpcrd')
     PDBid= PDBid5
     # prepare system and integrator
     system = prmtop.createSystem(nonbondedMethod=app.PME, nonbondedCutoff=1.0*unit.nanometers, constraints=app.HBonds, rigidWater=True, ewaldErrorTolerance=0.0005)
@@ -292,23 +382,40 @@ if(RUNSid == 5):
     # equilibrate for 100 steps
     simulation.context.setVelocitiesToTemperature(TEMPid*unit.kelvin)
         
-    print ('MD equilibration run for', 'eq_'+PDBid+'.nc')
-    simulation.reporters.append(pmd.openmm.NetCDFReporter('eq_'+PDBid+'.nc', 200))
-    simulation.reporters.append(app.StateDataReporter(stdout, 10000, step=True, potentialEnergy=True, temperature=True, progress=True, remainingTime=False, speed=False, totalSteps=TIMEeq, separator='\t'))
-    print('Equilibrating...')
-    simulation.step(TIMEeq) # no separate heating step and fixed equilibration time of 0.1ns
-    #simulation.step(1000) # for testing
-    print('eq_'+PDBid+'.nc is done')
-    
-    # append reporters
-    print ('MD production run for', 'prod_'+PDBid+'.nc')
-    simulation.reporters.append(pmd.openmm.NetCDFReporter('prod_'+PDBid+'.nc', 200))
-    #simulation.reporters.append(app.StateDataReporter(stdout, 10000, step=True, potentialEnergy=True, temperature=True, progress=True, remainingTime=False, speed=False, totalSteps=TIMEprod, separator='\t'))
-
-    # run production simulation
-    print('Running Production...')
-    simulation.step(TIMEprod)
-    print('prod_'+PDBid+'.nc is done')
+    if(antechamber == "no"):      
+        print ('MD equilibration run for', 'eq_'+PDBid+'.nc')
+        simulation.reporters.append(pmd.openmm.NetCDFReporter('eq_'+PDBid+'.nc', 200))
+        simulation.reporters.append(app.StateDataReporter(stdout, 10000, step=True, potentialEnergy=True, temperature=True, progress=True, remainingTime=False, speed=False, totalSteps=TIMEeq, separator='\t'))
+        print('Equilibrating...')
+        simulation.step(TIMEeq) # no separate heating step and fixed equilibration time of 0.1ns
+        #simulation.step(1000) # for testing
+        print('eq_'+PDBid+'.nc is done')
+  
+        # append reporters
+        print ('MD production run for', 'prod_'+PDBid+'.nc')
+        simulation.reporters.append(pmd.openmm.NetCDFReporter('prod_'+PDBid+'.nc', 200))
+        #simulation.reporters.append(app.StateDataReporter(stdout, 10000, step=True, potentialEnergy=True, temperature=True, progress=True, remainingTime=False, speed=False, totalSteps=TIMEprod, separator='\t'))
+        # run production simulation
+        print('Running Production...')
+        simulation.step(TIMEprod)
+        print('prod_'+PDBid+'.nc is done')
+    if(antechamber == "yes"): 
+        print ('MD equilibration run for', 'eq_'+PDBid+'_complex.nc')
+        simulation.reporters.append(pmd.openmm.NetCDFReporter('eq_'+PDBid+'_complex.nc', 200))
+        simulation.reporters.append(app.StateDataReporter(stdout, 10000, step=True, potentialEnergy=True, temperature=True, progress=True, remainingTime=False, speed=False, totalSteps=TIMEeq, separator='\t'))
+        print('Equilibrating...')
+        simulation.step(TIMEeq) # no separate heating step and fixed equilibration time of 0.1ns
+        #simulation.step(1000) # for testing
+        print('eq_'+PDBid+'_complex.nc is done')
+  
+        # append reporters
+        print ('MD production run for', 'prod_'+PDBid+'_complex.nc')
+        simulation.reporters.append(pmd.openmm.NetCDFReporter('prod_'+PDBid+'_complex.nc', 200))
+        #simulation.reporters.append(app.StateDataReporter(stdout, 10000, step=True, potentialEnergy=True, temperature=True, progress=True, remainingTime=False, speed=False, totalSteps=TIMEprod, separator='\t'))
+        # run production simulation
+        print('Running Production...')
+        simulation.step(TIMEprod)
+        print('prod_'+PDBid+'_complex.nc is done')
     
          
 #########################################################    

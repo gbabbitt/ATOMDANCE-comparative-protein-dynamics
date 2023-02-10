@@ -69,13 +69,14 @@ def antechamber():
     print("NOTE: Ligand structure must be single multi atom unit for antechamber If ligand consists of multiple parts or if multiple ligands are used, create a separate PDB file for each part, rerun pdb4amber, make new ctl files, and rerun antechamber for each part. Finally, edit .bat files when running teLeAP to load each ligand or part.  If single atom ions are included in protein structure file then add a line to .bat file that says loadoff atomic_ions.lib and check charges in your mol2 files. \n\n")
     #pdbIDl = "reduced_1yet_ligand.pdb"
     inp = input("PLEASE ENTER NAME OF LIGAND FILE (e.g. 1pdb_ligand.pdb)")
+    cmd = "pdb4amber -i %s -o reduced_%s --dry --reduce \n" % (inp, inp)
+    os.system(cmd)
     pdbIDl = "reduced_%s" % inp
     print(pdbIDl)
     inp_label = pdbIDl[:-4]
     print(inp_label)
-    molIDl = "reduced_%s.mol2" % inp_label
-    frcmodIDl = "reduced_%s.frcmod" % inp_label
-        
+    molIDl = "%s.mol2" % inp_label
+    frcmodIDl = "%s.frcmod" % inp_label
     cmd1=("antechamber -i %s -fi pdb -o %s -fo mol2 -c bcc -s 2" % (pdbIDl, molIDl))
     os.system(cmd1)
     print("check scaled quantum mechanical optimizations (close file when done)\n")

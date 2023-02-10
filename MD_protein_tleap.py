@@ -281,12 +281,12 @@ def tleap_antechamber():
         out.write("myligand = loadmol2 %s.mol2\n" % inp_label)
         out.write("complex%s = combine{myprotein myligand}\n" % pdbID)
         out.write("savepdb complex%s complex%s.pdb\n" % (pdbID, pdbID))
-        out.write("saveamberparm complex%s vac_%s.prmtop vac_%s.inpcrd\n" % (pdbID, pdbID, pdbID))
+        out.write("saveamberparm complex%s vac_%s_complex.prmtop vac_%s_complex.inpcrd\n" % (pdbID, pdbID, pdbID))
         out.write("addions complex%s Na+ 0\n" % pdbID) # to charge or neutralize explicit solvent
         out.write("addions complex%s Cl- 0\n" % pdbID) # to charge or neutralize explicit solvent
-        out.write("saveamberparm complex%s ion_%s.prmtop ion_%s.inpcrd\n" % (pdbID, pdbID, pdbID))
+        out.write("saveamberparm complex%s ion_%s_complex.prmtop ion_%s_complex.inpcrd\n" % (pdbID, pdbID, pdbID))
         out.write("solvateoct complex%s TIP3PBOX 10.0\n" % pdbID)
-        out.write("saveamberparm complex%s wat_%s.prmtop wat_%s.inpcrd\n" % (pdbID, pdbID, pdbID))
+        out.write("saveamberparm complex%s wat_%s_complex.prmtop wat_%s_complex.inpcrd\n" % (pdbID, pdbID, pdbID))
         out.write("quit\n")
         out.close()
     if(RUNSid >= 2):
@@ -312,12 +312,12 @@ def tleap_antechamber():
         out.write("myligand = loadmol2 %s.mol2\n" % inp_label)
         out.write("complex%s = combine{myprotein myligand}\n" % pdbID)
         out.write("savepdb complex%s complex%s.pdb\n" % (pdbID, pdbID))
-        out.write("saveamberparm complex%s vac_%s.prmtop vac_%s.inpcrd\n" % (pdbID, pdbID, pdbID))
+        out.write("saveamberparm complex%s vac_%s_complex.prmtop vac_%s_complex.inpcrd\n" % (pdbID, pdbID, pdbID))
         out.write("addions complex%s Na+ 0\n" % pdbID) # to charge or neutralize explicit solvent
         out.write("addions complex%s Cl- 0\n" % pdbID) # to charge or neutralize explicit solvent
-        out.write("saveamberparm complex%s ion_%s.prmtop ion_%s.inpcrd\n" % (pdbID, pdbID, pdbID))
+        out.write("saveamberparm complex%s ion_%s_complex.prmtop ion_%s_complex.inpcrd\n" % (pdbID, pdbID, pdbID))
         out.write("solvateoct complex%s TIP3PBOX 10.0\n" % pdbID)
-        out.write("saveamberparm complex%s wat_%s.prmtop wat_%s.inpcrd\n" % (pdbID, pdbID, pdbID))
+        out.write("saveamberparm complex%s wat_%s_complex.prmtop wat_%s_complex.inpcrd\n" % (pdbID, pdbID, pdbID))
         out.write("quit\n")
         out.close()
     if(RUNSid >= 3):
@@ -343,12 +343,12 @@ def tleap_antechamber():
         out.write("myligand = loadmol2 %s.mol2\n" % inp_label)
         out.write("complex%s = combine{myprotein myligand}\n" % pdbID)
         out.write("savepdb complex%s complex%s.pdb\n" % (pdbID, pdbID))
-        out.write("saveamberparm complex%s vac_%s.prmtop vac_%s.inpcrd\n" % (pdbID, pdbID, pdbID))
+        out.write("saveamberparm complex%s vac_%s_complex.prmtop vac_%s_complex.inpcrd\n" % (pdbID, pdbID, pdbID))
         out.write("addions complex%s Na+ 0\n" % pdbID) # to charge or neutralize explicit solvent
         out.write("addions complex%s Cl- 0\n" % pdbID) # to charge or neutralize explicit solvent
-        out.write("saveamberparm complex%s ion_%s.prmtop ion_%s.inpcrd\n" % (pdbID, pdbID, pdbID))
+        out.write("saveamberparm complex%s ion_%s_complex.prmtop ion_%s_complex.inpcrd\n" % (pdbID, pdbID, pdbID))
         out.write("solvateoct complex%s TIP3PBOX 10.0\n" % pdbID)
-        out.write("saveamberparm complex%s wat_%s.prmtop wat_%s.inpcrd\n" % (pdbID, pdbID, pdbID))
+        out.write("saveamberparm complex%s wat_%s_complex.prmtop wat_%s_complex.inpcrd\n" % (pdbID, pdbID, pdbID))
         out.write("quit\n")
         out.close()
     if(RUNSid >= 4):
@@ -374,12 +374,12 @@ def tleap_antechamber():
         out.write("myligand = loadmol2 %s.mol2\n" % inp_label)
         out.write("complex%s = combine{myprotein myligand}\n" % pdbID)
         out.write("savepdb complex%s complex%s.pdb\n" % (pdbID, pdbID))
-        out.write("saveamberparm complex%s vac_%s.prmtop vac_%s.inpcrd\n" % (pdbID, pdbID, pdbID))
+        out.write("saveamberparm complex%s vac_%s_complex.prmtop vac_%s_complex.inpcrd\n" % (pdbID, pdbID, pdbID))
         out.write("addions complex%s Na+ 0\n" % pdbID) # to charge or neutralize explicit solvent
         out.write("addions complex%s Cl- 0\n" % pdbID) # to charge or neutralize explicit solvent
-        out.write("saveamberparm complex%s ion_%s.prmtop ion_%s.inpcrd\n" % (pdbID, pdbID, pdbID))
+        out.write("saveamberparm complex%s ion_%s_complex.prmtop ion_%s_complex.inpcrd\n" % (pdbID, pdbID, pdbID))
         out.write("solvateoct complex%s TIP3PBOX 10.0\n" % pdbID)
-        out.write("saveamberparm complex%s wat_%s.prmtop wat_%s.inpcrd\n" % (pdbID, pdbID, pdbID))
+        out.write("saveamberparm complex%s wat_%s_complex.prmtop wat_%s_complex.inpcrd\n" % (pdbID, pdbID, pdbID))
         out.write("quit\n")
         out.close()
     if(RUNSid == 5):
@@ -405,12 +405,12 @@ def tleap_antechamber():
         out.write("myligand = loadmol2 %s.mol2\n" % inp_label)
         out.write("complex%s = combine{myprotein myligand}\n" % pdbID)
         out.write("savepdb complex%s complex%s.pdb\n" % (pdbID, pdbID))
-        out.write("saveamberparm complex%s vac_%s.prmtop vac_%s.inpcrd\n" % (pdbID, pdbID, pdbID))
+        out.write("saveamberparm complex%s vac_%s_complex.prmtop vac_%s_complex.inpcrd\n" % (pdbID, pdbID, pdbID))
         out.write("addions complex%s Na+ 0\n" % pdbID) # to charge or neutralize explicit solvent
         out.write("addions complex%s Cl- 0\n" % pdbID) # to charge or neutralize explicit solvent
-        out.write("saveamberparm complex%s ion_%s.prmtop ion_%s.inpcrd\n" % (pdbID, pdbID, pdbID))
+        out.write("saveamberparm complex%s ion_%s_complex.prmtop ion_%s_complex.inpcrd\n" % (pdbID, pdbID, pdbID))
         out.write("solvateoct complex%s TIP3PBOX 10.0\n" % pdbID)
-        out.write("saveamberparm complex%s wat_%s.prmtop wat_%s.inpcrd\n" % (pdbID, pdbID, pdbID))
+        out.write("saveamberparm complex%s wat_%s_complex.prmtop wat_%s_complex.inpcrd\n" % (pdbID, pdbID, pdbID))
         out.write("quit\n")
         out.close()
     

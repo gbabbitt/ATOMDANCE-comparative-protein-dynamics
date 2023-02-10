@@ -26,7 +26,7 @@ class Ui_Dialog(object):
         self.textEdit = QtWidgets.QTextEdit(self.frame)
         self.textEdit.setGeometry(QtCore.QRect(10, 40, 191, 75))
         self.textEdit.setObjectName("textEdit")
-        self.textEdit.setText("1ubq.pdb")
+        self.textEdit.setText("1xxx.pdb\n2xxx.pdb\n3xxx.pdb")
         self.label_14 = QtWidgets.QLabel(self.frame)
         self.label_14.setGeometry(QtCore.QRect(10, 120, 191, 21))
         self.label_14.setObjectName("label_14")
