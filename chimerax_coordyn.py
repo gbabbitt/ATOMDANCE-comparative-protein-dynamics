@@ -1,12 +1,10 @@
 #!/usr/bin/env python
 
 #############################################################################
-######   This script is a python script to conduct machine-learning
-######   comparative analyses of two molecular dynamics trajectories
-######   It is part of the DROIDS v6.0 ChimeraX plug-in suite for
-######   machine-learning assisted comparative protein dynamics
-######   produced by Dr. Gregory A. Babbitt and students at the 
-######   Rochester Instituteof Technology in 2022.   License under GPL v3.0
+######   ATOMDANCE software suite for machine-learning assisted
+######   comparative protein dynamics produced by Dr. Gregory A. Babbitt
+######   and students at the Rochester Instituteof Technology in 2022.
+######   Offered freely without guarantee.  License under GPL v3.0
 #############################################################################
 #### use 'old'  for cpptraj version 18 or earlier
 cpptraj_version = "old"

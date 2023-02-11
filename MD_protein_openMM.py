@@ -1,3 +1,10 @@
+#############################################################################
+######   ATOMDANCE software suite for machine-learning assisted
+######   comparative protein dynamics produced by Dr. Gregory A. Babbitt
+######   and students at the Rochester Instituteof Technology in 2022.
+######   Offered freely without guarantee.  License under GPL v3.0
+#############################################################################
+
 from __future__ import print_function
 import parmed as pmd
 from openmm import app
