@@ -260,20 +260,20 @@ def compare_dynamics_KL():
     myplot11.save("divergenceMetrics_%s/KL_value_dark.png" % PDB_id_reference, width=10, height=5, dpi=300)
     myplot12.save("divergenceMetrics_%s/KL_value_light.png" % PDB_id_reference, width=10, height=5, dpi=300)
     
-    if(graph_scheme == "light"):
-        print(myplot3)
-        print(myplot4)
-        print(myplot6)
-        print(myplot8)
-        print(myplot10)
-        print(myplot12)
-    if(graph_scheme == "dark"):
-        print(myplot1)
-        print(myplot2)
-        print(myplot5)
-        print(myplot7)
-        print(myplot9)
-        print(myplot11)
+    #if(graph_scheme == "light"):
+    #    print(myplot3)
+    #    print(myplot4)
+    #    print(myplot6)
+    #    print(myplot8)
+    #    print(myplot10)
+    #    print(myplot12)
+    #if(graph_scheme == "dark"):
+    #    print(myplot1)
+    #    print(myplot2)
+    #    print(myplot5)
+    #    print(myplot7)
+    #    print(myplot9)
+    #    print(myplot11)
         
     # candlestickploy
     
@@ -354,8 +354,8 @@ def map_KLsig():
 
 def main():
     compare_dynamics_KL()
-    map_KL()
-    map_KLsig()
+    #map_KL()
+    #map_KLsig()
     print("comparative analyses of molecular dynamics is completed")
     
     

@@ -992,7 +992,15 @@ def plot_rmsd():
     if not os.path.exists('rmsd_%s'% PDB_id_reference):
         os.mkdir('rmsd_%s'% PDB_id_reference)
     myRMSFplot.save("rmsd_%s/RMSF_plot.png" % PDB_id_reference, width=10, height=5, dpi=300)
-    print(myRMSFplot)
+    #print(myRMSFplot)
+    
+    # open RMSD image
+    import matplotlib.pyplot as plt
+    import matplotlib.image as mpimg
+    image_path = "rmsd_%s/RMSF_plot.png" % PDB_id_reference
+    image = mpimg.imread(image_path)
+    plt.imshow(image)
+    plt.show()
     
         
 #################################################################################    
@@ -1027,21 +1035,21 @@ def conserved_dynamics():
     else:
         cmd3 = "python3 maxDemon3.py"
     os.system(cmd3)
+    
 ##################################################################################    
 def coordinated_dynamics():
     print("running DROIDS/maxDemon 5.0 coordinated dynamics analyses")
     cmd4 = "python3 chimerax_coordyn.py"
     os.system(cmd4)
 ##################################################################################
-#def variant_dynamics():
-#    print("running DROIDS/maxDemon 5.0 variant dynamics analyses")
-#    cmd5 = "python3 chimerax_vardyn.py"
-#    os.system(cmd5)
+def view_results():
+    print("viewing results of ATOMDANCE analyses")
+    cmd5 = "python3 chimerax_view.py"
+    os.system(cmd5)
 ###############################################################
 ###############################################################
 
 def main():
-    plot_rmsd()
     feature_vector_corr()
     feature_vector_flux()
     #view_query()
@@ -1059,6 +1067,14 @@ def main():
         coordinated_dynamics()
     #if(var_anal == "yes"):
     #    variant_dynamics()
+    #plot_rmsd()
+    inp = input("/nDo you want to view results and create colormaps in UCSF ChimeraX? (y or n)\n" )
+    if(inp == "y"):
+        view_results()
+    inp = input("/nDo you want to create MMD adjusted movie in UCSF ChimeraX? (y or n)\n" )
+    if(inp == "y"):
+        cmd = "python3 makeMovie.py"
+        os.system(cmd)
     print("comparative analyses of molecular dynamics is completed")
     
     

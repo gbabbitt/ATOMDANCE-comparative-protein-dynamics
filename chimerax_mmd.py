@@ -370,18 +370,19 @@ def compare_dynamics_MMD_flux():
     myplot14.save("maxMeanDiscrepancy_%s/MMD_light_sig_flux.png" % PDB_id_reference, width=10, height=5, dpi=300)
     myplot15.save("maxMeanDiscrepancy_%s/MMD_dark_MMD_flux.png" % PDB_id_reference, width=10, height=5, dpi=300)
     myplot16.save("maxMeanDiscrepancy_%s/MMD_light_MMD_flux.png" % PDB_id_reference, width=10, height=5, dpi=300)
-    if(graph_scheme == "light"):
-        print(myplot8)
-        print(myplot10)
-        print(myplot12)
-        print(myplot14)
-        print(myplot16)
-    if(graph_scheme == "dark"):
-        print(myplot7)
-        print(myplot9)
-        print(myplot11)
-        print(myplot13)
-        print(myplot15)
+    
+    #if(graph_scheme == "light"):
+    #    print(myplot8)
+    #    print(myplot10)
+    #    print(myplot12)
+    #    print(myplot14)
+    #    print(myplot16)
+    #if(graph_scheme == "dark"):
+    #    print(myplot7)
+    #    print(myplot9)
+    #    print(myplot11)
+    #    print(myplot13)
+    #    print(myplot15)
     
     # create control, reference PDB and attribute file for chimerax
     os.popen('cp %s.pdb ./ChimeraXvis/query.pdb' % PDB_id_query) # linix
@@ -675,20 +676,21 @@ def compare_dynamics_MMD_corr():
     myplot12.save("maxMeanDiscrepancy_%s/MMD_light_res_corr.png" % PDB_id_reference, width=10, height=5, dpi=300)
     myplot13.save("maxMeanDiscrepancy_%s/MMD_dark_sig_corr.png" % PDB_id_reference, width=10, height=5, dpi=300)
     myplot14.save("maxMeanDiscrepancy_%s/MMD_light_sig_corr.png" % PDB_id_reference, width=10, height=5, dpi=300)
-    myplot15.save("maxMeanDiscrepancy_%s/MMD_dark_p_corr.png" % PDB_id_reference, width=10, height=5, dpi=300)
-    myplot16.save("maxMeanDiscrepancy_%s/MMD_light_p_corr.png" % PDB_id_reference, width=10, height=5, dpi=300)
-    if(graph_scheme == "light"):
-        print(myplot8)
-        print(myplot10)
-        print(myplot12)
-        print(myplot14)
-        print(myplot16)
-    if(graph_scheme == "dark"):
-        print(myplot7)
-        print(myplot9)
-        print(myplot11)
-        print(myplot13)
-        print(myplot15)
+    myplot15.save("maxMeanDiscrepancy_%s/MMD_dark_MMD_corr.png" % PDB_id_reference, width=10, height=5, dpi=300)
+    myplot16.save("maxMeanDiscrepancy_%s/MMD_light_MMD_corr.png" % PDB_id_reference, width=10, height=5, dpi=300)
+    
+    #if(graph_scheme == "light"):
+    #    print(myplot8)
+    #    print(myplot10)
+    #    print(myplot12)
+    #    print(myplot14)
+    #    print(myplot16)
+    #if(graph_scheme == "dark"):
+    #    print(myplot7)
+    #    print(myplot9)
+    #    print(myplot11)
+    #    print(myplot13)
+    #    print(myplot15)
     
     # create control, reference PDB and attribute file for chimerax
     os.popen('cp %s.pdb ./ChimeraXvis/query.pdb' % PDB_id_query) # linix
@@ -834,10 +836,10 @@ def map_MMD_corr():
 
 def main():
     compare_dynamics_MMD_flux()
-    map_MMD_flux()
+    #map_MMD_flux()
     #map_MMDsig_flux()
     compare_dynamics_MMD_corr()
-    map_MMD_corr()
+    #map_MMD_corr()
     #map_MMDsig_corr()
 ###############################################################
 if __name__ == '__main__':

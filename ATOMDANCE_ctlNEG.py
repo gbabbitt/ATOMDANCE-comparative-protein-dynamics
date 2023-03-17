@@ -219,8 +219,8 @@ class Ui_Dialog(object):
         _translate = QtCore.QCoreApplication.translate
         Dialog.setWindowTitle(_translate("Dialog", "ATOMDANCE - open-source software for site-wise statistical machine learning comparisons of biomolecular dynamics"))
         self.label.setText(_translate("Dialog", "<html><head/><body><p><span style=\" font-size:11pt; font-weight:600;\">query protein file list</span></p></body></html>"))
-        self.label_14.setText(_translate("Dialog", "<html><head/><body><p>i.e. ligand bound</p></body></html>"))
-        self.label_15.setText(_translate("Dialog", "<html><head/><body><p>i.e.unbound wildtype</p></body></html>"))
+        self.label_14.setText(_translate("Dialog", "<html><head/><body><p>i.e. ligand bound state</p></body></html>"))
+        self.label_15.setText(_translate("Dialog", "<html><head/><body><p>i.e. unbound state</p></body></html>"))
         self.label_2.setText(_translate("Dialog", "<html><head/><body><p><span style=\" font-weight:600;\">reference protein file list</span></p></body></html>"))
         self.label_5.setText(_translate("Dialog", "<html><head/><body><p>number of subsamples</p></body></html>"))
         self.label_6.setText(_translate("Dialog", "<html><head/><body><p>frames iper subsample (e.g. 100)</p></body></html>"))

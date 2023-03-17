@@ -892,7 +892,9 @@ def coordinated_dynamics():
     # plot MI matrix   
     myMATRIX_plot =  (ggplot(myMATRIX, aes('matrixI', 'matrixJ', fill='MI')) + scale_fill_gradient(low="white",high="purple") + geom_tile() + labs(title='mutual information (i.e. coordinated motion) across sites derived from SVM classifications trained upon binding states', x='amino acid position', y='amino acid position'))
     myMATRIX_plot.save("./coordinatedDynamics_%s/coordinatedDynamics.png" % PDB_id_reference, width=10, height=5, dpi=300)
-    print(myMATRIX_plot)
+    
+    # print heatmap
+    #print(myMATRIX_plot)
 
 ###############################################################
 def runProgressBar():

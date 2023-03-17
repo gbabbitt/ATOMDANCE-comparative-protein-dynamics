@@ -755,14 +755,15 @@ def conserved_dynamics_analysis():
     myplot4.save("conservedDynamics_%s/MMD_light_sig.png" % PDB_id_reference, width=10, height=5, dpi=300)
     myplot5.save("conservedDynamics_%s/MMD_dark_histo.png" % PDB_id_reference, width=10, height=5, dpi=300)
     myplot6.save("conservedDynamics_%s/MMD_light_histo.png" % PDB_id_reference, width=10, height=5, dpi=300)
-    if(graph_scheme == "light"):
-        print(myplot6)
-        print(myplot2)
-        print(myplot4)
-    if(graph_scheme == "dark"):
-        print(myplot5)
-        print(myplot1)
-        print(myplot3)
+    
+    #if(graph_scheme == "light"):
+    #    print(myplot6)
+    #    print(myplot2)
+    #    print(myplot4)
+    #if(graph_scheme == "dark"):
+    #    print(myplot5)
+    #    print(myplot1)
+    #    print(myplot3)
     
     PVAL_output = df_PLAB
     CONS_output = df_obsMMDs
@@ -861,7 +862,7 @@ def mmd_rbf_corr(X, Y, gamma=1.0/n_features_corr):
 def main():
     feature_vector_ortho()
     conserved_dynamics_analysis()
-    map_CONSsig()
+    #map_CONSsig()
     print("comparative analyses of molecular dynamics is completed")
     
     
