@@ -26,35 +26,6 @@ import matplotlib.image as mpimg
 
 ################################################################################
 # READ CONTROL FORM
-# read ChimeraX visualization ctl file
-infileALT = open("maxDemon.ctl", "r")
-infileALT_lines = infileALT.readlines()
-for x in range(len(infileALT_lines)):
-    infileALT_line = infileALT_lines[x]
-    #print(infileALT_line)
-    infileALT_line_array = str.split(infileALT_line, ",")
-    header = infileALT_line_array[0]
-    value = infileALT_line_array[1]
-    #print(header)
-    #print(value)
-    if(header == "orthoID"):
-        ortho_id = value
-        print("my ortho ID is",ortho_id)
-    if(header == "orthoPDB"):
-        ortho_pdb = value
-        print("my ortho PDB is",ortho_pdb)
-    if(header == "orthoTOP"):
-        ortho_top = value
-        print("my ortho TOP is",ortho_top)
-    if(header == "orthoTRAJ"):
-        ortho_traj = value
-        print("my ortho TRAJ is",ortho_traj)
-    if(header == "queryFAS"):
-        query_fas = value
-        print("my query FAS is",query_fas)
-    if(header == "orthoFAS"):
-        ortho_fas = value
-        print("my ortho FAS is",ortho_fas)
 
 infile = open("DROIDS.ctl", "r")
 infile_lines = infile.readlines()
@@ -132,16 +103,16 @@ for x in range(len(infile_lines)):
 ###### variable assignments ######
 PDB_id_query = ""+query_id+""
 PDB_id_reference = ""+ref_id+""
-PDB_id_ortho = ""+ortho_id+""
+
 PDB_file_query = ""+query_pdb+""
 PDB_file_reference = ""+ref_pdb+""
-PDB_file_ortho = ""+ortho_pdb+""
+
 top_file_query = ""+query_top+""
 top_file_reference = ""+ref_top+""
-top_file_ortho = ""+ortho_top+""
+
 traj_file_query = ""+query_traj+""
 traj_file_reference = ""+ref_traj+""
-traj_file_ortho = ""+ortho_traj+""
+
 subsamples = int(sub_samples)
 frame_size = int(fr_sz)
 n_frames = int(n_fr)
@@ -157,6 +128,41 @@ cons_anal = ""+cons_anal+""
 coord_anal = ""+coord_anal+""
 #var_anal = ""+var_anal+""
 
+if(cons_anal == "yes"):
+    # read ChimeraX visualization ctl file
+    infileALT = open("maxDemon.ctl", "r")
+    infileALT_lines = infileALT.readlines()
+    for x in range(len(infileALT_lines)):
+        infileALT_line = infileALT_lines[x]
+        #print(infileALT_line)
+        infileALT_line_array = str.split(infileALT_line, ",")
+        header = infileALT_line_array[0]
+        value = infileALT_line_array[1]
+        #print(header)
+        #print(value)
+        if(header == "orthoID"):
+            ortho_id = value
+            print("my ortho ID is",ortho_id)
+        if(header == "orthoPDB"):
+            ortho_pdb = value
+            print("my ortho PDB is",ortho_pdb)
+        if(header == "orthoTOP"):
+            ortho_top = value
+            print("my ortho TOP is",ortho_top)
+        if(header == "orthoTRAJ"):
+            ortho_traj = value
+            print("my ortho TRAJ is",ortho_traj)
+        if(header == "queryFAS"):
+            query_fas = value
+            print("my query FAS is",query_fas)
+        if(header == "orthoFAS"):
+            ortho_fas = value
+            print("my ortho FAS is",ortho_fas)
+        PDB_id_ortho = ""+ortho_id+""
+        PDB_file_ortho = ""+ortho_pdb+""
+        top_file_ortho = ""+ortho_top+""
+        traj_file_ortho = ""+ortho_traj+""
+          
 # set number of features for tuning gamma in RBF kernel
 infeature_ref = "./features/featureFLUX_sub_ref/feature_%s_sub_ref_0.txt" % PDB_id_reference
 df_feature_ref = pd.read_csv(infeature_ref, sep="\s+")
