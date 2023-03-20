@@ -7,8 +7,8 @@
 ######   Offered freely without guarantee.  License under GPL v3.0
 #############################################################################
 #### use 'old'  for cpptraj version 18 or earlier
-cpptraj_version = "old"
-#cpptraj_version = "new"
+#cpptraj_version = "old"
+cpptraj_version = "new"
 #############################################################################
 
 import getopt, sys # Allows for command line arguments
