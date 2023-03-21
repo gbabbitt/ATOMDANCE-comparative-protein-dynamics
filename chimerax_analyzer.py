@@ -1068,11 +1068,11 @@ def main():
     #if(var_anal == "yes"):
     #    variant_dynamics()
     #plot_rmsd()
-    inp = input("/nDo you want to view results and create colormaps in UCSF ChimeraX? (y or n)\n" )
-    if(inp == "y"):
+    inp = input("\nDo you want to view results and create colormaps in UCSF ChimeraX? (y or n)\n" )
+    if(inp == "y" or inp == "yes" or inp == "Y" or inp == "YES"):
         view_results()
-    inp = input("/nDo you want to create MMD adjusted movie in UCSF ChimeraX? (y or n)\n" )
-    if(inp == "y"):
+    inp = input("\nDo you want to create MMD adjusted movie in UCSF ChimeraX? (y or n)\n" )
+    if(inp == "y"or inp == "yes" or inp == "Y" or inp == "YES"):
         cmd = "python3 makeMovie.py"
         os.system(cmd)
     print("comparative analyses of molecular dynamics is completed")

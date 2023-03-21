@@ -6,8 +6,8 @@
 #############################################################################
 
 from __future__ import print_function
-import parmed as pmd
 from sys import stdout
+#import parmed as pmd
 
 # read MD ctl file
 infile = open("MDr.ctl", "r")

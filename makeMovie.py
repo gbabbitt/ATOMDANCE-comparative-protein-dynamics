@@ -6,11 +6,10 @@
 #
 # WARNING! All changes made in this file will be lost!
 
-
-from PyQt5 import QtCore, QtGui, QtWidgets
 import numpy as np
 import random as rd
 from sklearn.preprocessing import MinMaxScaler
+from PyQt5 import QtCore, QtGui, QtWidgets
 
 class Ui_Dialog(object):
     def setupUi(self, Dialog):

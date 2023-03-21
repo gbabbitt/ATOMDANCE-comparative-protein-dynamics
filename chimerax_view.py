@@ -230,7 +230,7 @@ def rmsd_plot():
     image_path = "rmsd_%s/RMSF_plot.png" % PDB_id_reference
     image = mpimg.imread(image_path)
     plt.imshow(image)
-    plt.show()
+    plt.show(block=True)
 
 
 def map_KL():    
@@ -240,52 +240,52 @@ def map_KL():
         image_path = "divergenceMetrics_%s/KLdivergence_light.png" % PDB_id_reference
         image = mpimg.imread(image_path)
         plt.imshow(image)
-        plt.show()
+        plt.show(block=True)
         image_path = "divergenceMetrics_%s/deltaFLUX_light.png" % PDB_id_reference
         image = mpimg.imread(image_path)
         plt.imshow(image)
-        plt.show()
+        plt.show(block=True)
         image_path = "divergenceMetrics_%s/KStest_light.png" % PDB_id_reference
         image = mpimg.imread(image_path)
         plt.imshow(image)
-        plt.show()
+        plt.show(block=True)
         image_path = "divergenceMetrics_%s/fluxlines_light.png" % PDB_id_reference
         image = mpimg.imread(image_path)
         plt.imshow(image)
-        plt.show()
+        plt.show(block=True)
         image_path = "divergenceMetrics_%s/KS_pvalue_light.png" % PDB_id_reference
         image = mpimg.imread(image_path)
         plt.imshow(image)
-        plt.show()
+        plt.show(block=True)
         image_path = "divergenceMetrics_%s/KL_value_light.png" % PDB_id_reference
         image = mpimg.imread(image_path)
         plt.imshow(image)
-        plt.show()
+        plt.show(block=True)
     if(graph_scheme == "dark"):
         image_path = "divergenceMetrics_%s/KLdivergence_dark.png" % PDB_id_reference
         image = mpimg.imread(image_path)
         plt.imshow(image)
-        plt.show()
+        plt.show(block=True)
         image_path = "divergenceMetrics_%s/deltaFLUX_dark.png" % PDB_id_reference
         image = mpimg.imread(image_path)
         plt.imshow(image)
-        plt.show()
+        plt.show(block=True)
         image_path = "divergenceMetrics_%s/KStest_dark.png" % PDB_id_reference
         image = mpimg.imread(image_path)
         plt.imshow(image)
-        plt.show()
+        plt.show(block=True)
         image_path = "divergenceMetrics_%s/fluxlines_dark.png" % PDB_id_reference
         image = mpimg.imread(image_path)
         plt.imshow(image)
-        plt.show()
+        plt.show(block=True)
         image_path = "divergenceMetrics_%s/KS_pvalue_dark.png" % PDB_id_reference
         image = mpimg.imread(image_path)
         plt.imshow(image)
-        plt.show()
+        plt.show(block=True)
         image_path = "divergenceMetrics_%s/KL_value_dark.png" % PDB_id_reference
         image = mpimg.imread(image_path)
         plt.imshow(image)
-        plt.show()  
+        plt.show(block=True) 
     # map KL divergence in chimerax
     print("mapping KLdivergence to reference protein %s" % PDB_id_reference)
     cmd = "%sChimeraX color_by_attr_chimerax_KL.py" % chimerax_path
@@ -304,44 +304,44 @@ def map_MMD_flux():
         image_path = "maxMeanDiscrepancy_%s/MMD_light_histo_flux.png" % PDB_id_reference
         image = mpimg.imread(image_path)
         plt.imshow(image)
-        plt.show()
+        plt.show(block=True)
         image_path = "maxMeanDiscrepancy_%s/MMD_light_p_flux.png" % PDB_id_reference
         image = mpimg.imread(image_path)
         plt.imshow(image)
-        plt.show()
+        plt.show(block=True)
         image_path = "maxMeanDiscrepancy_%s/MMD_light_res_flux.png" % PDB_id_reference
         image = mpimg.imread(image_path)
         plt.imshow(image)
-        plt.show()
+        plt.show(block=True)
         image_path = "maxMeanDiscrepancy_%s/MMD_light_sig_flux.png" % PDB_id_reference
         image = mpimg.imread(image_path)
         plt.imshow(image)
-        plt.show()
+        plt.show(block=True)
         image_path = "maxMeanDiscrepancy_%s/MMD_light_MMD_flux.png" % PDB_id_reference
         image = mpimg.imread(image_path)
         plt.imshow(image)
-        plt.show()
+        plt.show(block=True)
     if(graph_scheme == "dark"):
         image_path = "maxMeanDiscrepancy_%s/MMD_dark_histo_flux.png" % PDB_id_reference
         image = mpimg.imread(image_path)
         plt.imshow(image)
-        plt.show()
+        plt.show(block=True)
         image_path = "maxMeanDiscrepancy_%s/MMD_dark_p_flux.png" % PDB_id_reference
         image = mpimg.imread(image_path)
         plt.imshow(image)
-        plt.show()
+        plt.show(block=True)
         image_path = "maxMeanDiscrepancy_%s/MMD_dark_res_flux.png" % PDB_id_reference
         image = mpimg.imread(image_path)
         plt.imshow(image)
-        plt.show()
+        plt.show(block=True)
         image_path = "maxMeanDiscrepancy_%s/MMD_dark_sig_flux.png" % PDB_id_reference
         image = mpimg.imread(image_path)
         plt.imshow(image)
-        plt.show()
+        plt.show(block=True)
         image_path = "maxMeanDiscrepancy_%s/MMD_dark_MMD_flux.png" % PDB_id_reference
         image = mpimg.imread(image_path)
         plt.imshow(image)
-        plt.show()
+        plt.show(block=True)
            
     # map MMD in chimerax
     print("mapping MMD to reference protein %s" % PDB_id_reference)
@@ -355,44 +355,44 @@ def map_MMD_corr():
         image_path = "maxMeanDiscrepancy_%s/MMD_light_histo_corr.png" % PDB_id_reference
         image = mpimg.imread(image_path)
         plt.imshow(image)
-        plt.show()
+        plt.show(block=True)
         image_path = "maxMeanDiscrepancy_%s/MMD_light_p_corr.png" % PDB_id_reference
         image = mpimg.imread(image_path)
         plt.imshow(image)
-        plt.show()
+        plt.show(block=True)
         image_path = "maxMeanDiscrepancy_%s/MMD_light_res_corr.png" % PDB_id_reference
         image = mpimg.imread(image_path)
         plt.imshow(image)
-        plt.show()
+        plt.show(block=True)
         image_path = "maxMeanDiscrepancy_%s/MMD_light_sig_corr.png" % PDB_id_reference
         image = mpimg.imread(image_path)
         plt.imshow(image)
-        plt.show()
+        plt.show(block=True)
         image_path = "maxMeanDiscrepancy_%s/MMD_light_MMD_corr.png" % PDB_id_reference
         image = mpimg.imread(image_path)
         plt.imshow(image)
-        plt.show()
+        plt.show(block=True)
     if(graph_scheme == "dark"):
         image_path = "maxMeanDiscrepancy_%s/MMD_dark_histo_corr.png" % PDB_id_reference
         image = mpimg.imread(image_path)
         plt.imshow(image)
-        plt.show()
+        plt.show(block=True)
         image_path = "maxMeanDiscrepancy_%s/MMD_dark_p_corr.png" % PDB_id_reference
         image = mpimg.imread(image_path)
         plt.imshow(image)
-        plt.show()
+        plt.show(block=True)
         image_path = "maxMeanDiscrepancy_%s/MMD_dark_res_corr.png" % PDB_id_reference
         image = mpimg.imread(image_path)
         plt.imshow(image)
-        plt.show()
+        plt.show(block=True)
         image_path = "maxMeanDiscrepancy_%s/MMD_dark_sig_corr.png" % PDB_id_reference
         image = mpimg.imread(image_path)
         plt.imshow(image)
-        plt.show()
+        plt.show(block=True)
         image_path = "maxMeanDiscrepancy_%s/MMD_dark_MMD_corr.png" % PDB_id_reference
         image = mpimg.imread(image_path)
         plt.imshow(image)
-        plt.show()
+        plt.show(block=True)
     
     # map MMD in chimerax
     print("mapping MMD to reference protein %s" % PDB_id_reference)
@@ -418,28 +418,28 @@ def map_CONSsig():
         image_path = "conservedDynamics_%s/MMD_light_p.png" % PDB_id_reference
         image = mpimg.imread(image_path)
         plt.imshow(image)
-        plt.show()
+        plt.show(block=True)
         image_path = "conservedDynamics_%s/MMD_light_sig.png" % PDB_id_reference
         image = mpimg.imread(image_path)
         plt.imshow(image)
-        plt.show()
+        plt.show(block=True)
         image_path = "conservedDynamics_%s/MMD_light_histo.png" % PDB_id_reference
         image = mpimg.imread(image_path)
         plt.imshow(image)
-        plt.show()
+        plt.show(block=True)
     if(graph_scheme == "dark"):
         image_path = "conservedDynamics_%s/MMD_dark_p.png" % PDB_id_reference
         image = mpimg.imread(image_path)
         plt.imshow(image)
-        plt.show()
+        plt.show(block=True)
         image_path = "conservedDynamics_%s/MMD_dark_sig.png" % PDB_id_reference
         image = mpimg.imread(image_path)
         plt.imshow(image)
-        plt.show()
+        plt.show(block=True)
         image_path = "conservedDynamics_%s/MMD_dark_histo.png" % PDB_id_reference
         image = mpimg.imread(image_path)
         plt.imshow(image)
-        plt.show()   
+        plt.show(block=True)  
         
     # map conserved dynamics in chimerax
     print("mapping significant ADAPTIVE/CONSERVED dynamics to reference protein %s" % PDB_id_reference)
@@ -452,7 +452,7 @@ def coor_heatmap():
     image_path = "./coordinatedDynamics_%s/coordinatedDynamics.png" % PDB_id_reference
     image = mpimg.imread(image_path)
     plt.imshow(image)
-    plt.show()
+    plt.show(block=True)
     
 ###############################################################
 ###############################################################
