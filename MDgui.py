@@ -236,9 +236,9 @@ class Ui_Dialog(object):
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">https://www.anaconda.com/products/distribution</p>\n"
 "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br /></p>\n"
 "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br /></p></body></html>"))
-        self.label_16.setText(_translate("Dialog", "<html><head/><body><p><span style=\" font-size:12pt; font-weight:600; color:#121212;\">system</span></p></body></html>"))
-        self.radioButton.setText(_translate("Dialog", "1 GPU"))
-        self.radioButton_2.setText(_translate("Dialog", "2 GPU"))
+        self.label_16.setText(_translate("Dialog", "<html><head/><body><p><span style=\" font-size:12pt; font-weight:600; color:#121212;\">send job</span></p></body></html>"))
+        self.radioButton.setText(_translate("Dialog", "main GPU"))
+        self.radioButton_2.setText(_translate("Dialog", "2nd GPU"))
         self.checkBox.setText(_translate("Dialog", "reduce PDB structure (add H) and remove waters (pdb4amber)"))
         self.checkBox_2.setText(_translate("Dialog", "run force field modifications for small molecule via sqm (antechamber)"))
         self.checkBox_3.setText(_translate("Dialog", "create topology and input coordinates for explicit solvent system (tleap)"))

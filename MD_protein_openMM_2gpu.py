@@ -117,7 +117,7 @@ system.addForce(barostat)
  
 # prepare simulation
 platform = mm.Platform.getPlatformByName('CUDA')
-properties = {'CudaPrecision': 'mixed', 'DeviceIndex': '0,1'}
+properties = {'CudaPrecision': 'mixed', 'DeviceIndex': '1'}
 simulation = app.Simulation(prmtop.topology, system, integrator, platform, properties)
 simulation.context.setPositions(inpcrd.positions)
 # minimize
@@ -180,7 +180,7 @@ if(RUNSid >= 2):
     system.addForce(barostat)
     # prepare simulation
     platform = mm.Platform.getPlatformByName('CUDA')
-    properties = {'CudaPrecision': 'mixed', 'DeviceIndex': '0,1'}
+    properties = {'CudaPrecision': 'mixed', 'DeviceIndex': '1'}
     simulation = app.Simulation(prmtop.topology, system, integrator, platform, properties)
     simulation.context.setPositions(inpcrd.positions)
 
@@ -246,7 +246,7 @@ if(RUNSid >= 3):
     
     # prepare simulation
     platform = mm.Platform.getPlatformByName('CUDA')
-    properties = {'CudaPrecision': 'mixed', 'DeviceIndex': '0,1'}
+    properties = {'CudaPrecision': 'mixed', 'DeviceIndex': '1'}
     simulation = app.Simulation(prmtop.topology, system, integrator, platform, properties)
     simulation.context.setPositions(inpcrd.positions)
 
@@ -312,7 +312,7 @@ if(RUNSid >= 4):
     
     # prepare simulation
     platform = mm.Platform.getPlatformByName('CUDA')
-    properties = {'CudaPrecision': 'mixed', 'DeviceIndex': '0,1'}
+    properties = {'CudaPrecision': 'mixed', 'DeviceIndex': '1'}
     simulation = app.Simulation(prmtop.topology, system, integrator, platform, properties)
     simulation.context.setPositions(inpcrd.positions)
 
@@ -378,7 +378,7 @@ if(RUNSid == 5):
     
     # prepare simulation
     platform = mm.Platform.getPlatformByName('CUDA')
-    properties = {'CudaPrecision': 'mixed', 'DeviceIndex': '0,1'}
+    properties = {'CudaPrecision': 'mixed', 'DeviceIndex': '1'}
     simulation = app.Simulation(prmtop.topology, system, integrator, platform, properties)
     simulation.context.setPositions(inpcrd.positions)
 
