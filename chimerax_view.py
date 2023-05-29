@@ -187,7 +187,7 @@ print(n_bootstrap)
 n_features_comb = n_features_flux*2
 
 def rmsd_plot():
-    print("plotting rmsd to examine stability of the MD simulations")
+    print("plotting rmsd over production runs to examine stability of the MD simulations")
     # include stat test for stability over time    
     f1 = open("RMSF_%s.ctl" % PDB_id_query, "w")
     f2 = open("RMSF_%s.ctl" % PDB_id_reference, "w")
@@ -226,6 +226,8 @@ def rmsd_plot():
     #print(myRMSFplot)
     
     # open RMSD image
+    print("plotting rmsd over production runs to examine stability of the MD simulations")
+    print("NOTE: to examine rmsd over equilibration runs replace the prod.nc traj file with the eq.nc in the GUI and rerun analyses")
     print("opening RMSD plot for query and reference proteins %s %s" % (PDB_id_query, PDB_id_reference))
     image_path = "rmsd_%s/RMSF_plot.png" % PDB_id_reference
     image = mpimg.imread(image_path)
