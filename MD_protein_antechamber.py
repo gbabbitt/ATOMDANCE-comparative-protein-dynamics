@@ -92,7 +92,9 @@ def antechamber():
     print("running parmchk to test if all parameters required are available")
     cmd3=("parmchk2 -i %s -f mol2 -o %s\n" % (molIDl, frcmodIDl))
     os.system(cmd3)
-    print("open/check mol2 file and then close\n")
+    #print("open/check mol2 file and then close\n")
+    #from chimerax.core.commands import run
+    #run(session, "open "+molIDl+"")
     print("check force field modifications file and then close\n")
     cmd4=("gedit %s\n" %(frcmodIDl))
     os.system(cmd4)
