@@ -838,7 +838,7 @@ def main():
     compare_dynamics_MMD_flux()
     #map_MMD_flux()
     #map_MMDsig_flux()
-    compare_dynamics_MMD_corr()
+    #compare_dynamics_MMD_corr()
     #map_MMD_corr()
     #map_MMDsig_corr()
 ###############################################################

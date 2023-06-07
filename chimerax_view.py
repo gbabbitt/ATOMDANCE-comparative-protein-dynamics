@@ -467,7 +467,7 @@ def main():
     if(disc_anal == "yes"):
         map_MMD_flux()
         #map_MMDsig_flux()
-        map_MMD_corr()
+        #map_MMD_corr()
         #map_MMDsig_corr()
     if(cons_anal == "yes"):
         map_CONSsig()
