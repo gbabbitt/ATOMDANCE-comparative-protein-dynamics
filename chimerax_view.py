@@ -450,12 +450,26 @@ def map_CONSsig():
 
 def coor_heatmap():
     # open heatmap image
-    print("plotting coordinated dynamics for query protein %s" % PDB_id_query)
-    image_path = "./coordinatedDynamics_%s/coordinatedDynamics.png" % PDB_id_reference
+    print("plotting coordinated dynamics (resonance analysis) for query protein %s" % PDB_id_query)
+    image_path = "./coordinatedDynamics_%s/coordinatedDynamics_query.png" % PDB_id_reference
     image = mpimg.imread(image_path)
     plt.imshow(image)
     plt.show(block=True)
-    
+    print("plotting coordinated dynamics (resonance analysis) for reference protein %s" % PDB_id_reference)
+    image_path = "./coordinatedDynamics_%s/coordinatedDynamics_reference.png" % PDB_id_reference
+    image = mpimg.imread(image_path)
+    plt.imshow(image)
+    plt.show(block=True)
+    print("plotting contact map for query protein %s" % PDB_id_query)
+    image_path = "./coordinatedDynamics_%s/siteDiffDynamics_query.png" % PDB_id_reference
+    image = mpimg.imread(image_path)
+    plt.imshow(image)
+    plt.show(block=True)
+    print("plotting contact map for reference protein %s" % PDB_id_reference)
+    image_path = "./coordinatedDynamics_%s/siteDiffDynamics_reference.png" % PDB_id_reference
+    image = mpimg.imread(image_path)
+    plt.imshow(image)
+    plt.show(block=True)
 ###############################################################
 ###############################################################
 

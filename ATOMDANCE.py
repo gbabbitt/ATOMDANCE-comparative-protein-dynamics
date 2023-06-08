@@ -256,7 +256,7 @@ class Ui_Dialog(object):
         self.radioButton.setText(_translate("Dialog", "light"))
         self.radioButton_2.setText(_translate("Dialog", "dark"))
         self.checkBox.setText(_translate("Dialog", "site-wise comparison + hypothesis test for amino acid atom fluctuations (signed KL divergence)"))
-        self.checkBox_2.setText(_translate("Dialog", "site-wise comparison of biomolecular dynamics across the protein (MMD on learned features)"))
+        self.checkBox_2.setText(_translate("Dialog", "de-noised comparison of biomolecular dynamics across the protein (MMD on learned features)"))
         self.checkBox_3.setText(_translate("Dialog", "site-wise identification of non-neutral evolutionary changes in molecular dynamics (via MMD)"))
         self.checkBox_4.setText(_translate("Dialog", "CHOREOGRAPH 2.0 - resonance analysis to identify sites with coordinated shifts in dynamics"))
         #self.checkBox_5.setText(_translate("Dialog", "site-wise comparison of genetic/drug class variants (divergence metrics on conserved dynamics)"))
