@@ -13,6 +13,8 @@ import os
 import random as rnd
 import threading
 import pingouin as pg
+import networkx as nx
+import matplotlib.pyplot as plt
 import re
 # for ggplot
 import pandas as pd
@@ -20,6 +22,7 @@ import numpy as np
 import scipy as sp
 from pandas.api.types import CategoricalDtype
 from plotnine import *
+#from pyvis.network import Network
 #from plotnine.data import mpg
 
 
@@ -373,7 +376,7 @@ def coordinated_dynamics():
     with open(writePath1, 'w') as f_out1:
             f_out1.write('%s\t%s\t%s\n' % ("i", "j", "p-val"))
             f_out1.close
-    writePath2= "./coordinatedDynamics_%s/siteDiffDynamics_query.txt" % PDB_id_reference
+    writePath2= "./coordinatedDynamics_%s/siteNSdynamics_query.txt" % PDB_id_reference
     with open(writePath2, 'w') as f_out2:
             f_out2.write('%s\t%s\t%s\n' % ("i", "j", "p-val"))
             f_out2.close
@@ -381,7 +384,7 @@ def coordinated_dynamics():
     with open(writePath3, 'w') as f_out3:
             f_out3.write('%s\t%s\t%s\n' % ("i", "j", "p-val"))
             f_out3.close
-    writePath4= "./coordinatedDynamics_%s/siteDiffDynamics_reference.txt" % PDB_id_reference
+    writePath4= "./coordinatedDynamics_%s/siteNSdynamics_reference.txt" % PDB_id_reference
     with open(writePath4, 'w') as f_out4:
             f_out4.write('%s\t%s\t%s\n' % ("i", "j", "p-val"))
             f_out4.close
@@ -551,22 +554,80 @@ def matrix_plot_int():
     myMATRIX_plot =  (ggplot(myMATRIX, aes('i', 'j', fill='p-val')) + scale_fill_gradient(low="white",high="purple") + geom_tile() + labs(title='resonance map - mixed model ANOVA (i.e. signif interaction of atom fluctuation at sites i and j over time)', x='amino acid position', y='amino acid position'))
     myMATRIX_plot.save("./coordinatedDynamics_%s/coordinatedDynamics_reference.png" % PDB_id_reference, width=10, height=5, dpi=300)
 
+def network_plot_int():   
+    print("creating networks")
+    myNET=pd.read_csv("./coordinatedDynamics_%s/coordinatedDynamics_query.txt" % PDB_id_reference, sep="\s+")
+    myNET = pd.DataFrame(myNET)
+    print(myNET)
+    links_filtered=myNET.loc[ (myNET['p-val'] < (0.05)) & (myNET['i'] != myNET['j']) ]
+    print(links_filtered)
+    # Build graph
+    G=nx.from_pandas_edgelist(links_filtered, 'i', 'j')
+    print(G)
+    # Plot network:
+    nx.draw_networkx(G, with_labels=True, node_color='orange', node_size=200, edge_color='black', linewidths=1, font_size=10)
+    plt.savefig("./coordinatedDynamics_%s/coordinatedNetwork_query.png" % PDB_id_reference)
+    #nx.draw_kamada_kawai(G, with_labels=True, node_color='orange', node_size=200, edge_color='black', linewidths=1, font_size=10)
+    #plt.savefig("./coordinatedDynamics_%s/coordinatedNetwork_kk_query.png" % PDB_id_reference)
+    #nx.draw_circular(G, with_labels=True, node_color='orange', node_size=200, edge_color='black', linewidths=1, font_size=10)
+    #plt.savefig("./coordinatedDynamics_%s/coordinatedNetwork_circ_query.png" % PDB_id_reference)
+    myNET=pd.read_csv("./coordinatedDynamics_%s/coordinatedDynamics_reference.txt" % PDB_id_reference, sep="\s+")
+    myNET = pd.DataFrame(myNET)
+    print(myNET)
+    links_filtered=myNET.loc[ (myNET['p-val'] < (0.05)) & (myNET['i'] != myNET['j']) ]
+    print(links_filtered)
+    # Build graph
+    G=nx.from_pandas_edgelist(links_filtered, 'i', 'j')
+    print(G)
+    # Plot network:
+    nx.draw_networkx(G, with_labels=True, node_color='orange', node_size=200, edge_color='black', linewidths=1, font_size=10)
+    plt.savefig("./coordinatedDynamics_%s/coordinatedNetwork_reference.png" % PDB_id_reference)
+    #nx.draw_kamada_kawai(G, with_labels=True, node_color='orange', node_size=200, edge_color='black', linewidths=1, font_size=10)
+    #plt.savefig("./coordinatedDynamics_%s/coordinatedNetwork_kk_reference.png" % PDB_id_reference)
+    #nx.draw_circular(G, with_labels=True, node_color='orange', node_size=200, edge_color='black', linewidths=1, font_size=10)
+    #plt.savefig("./coordinatedDynamics_%s/coordinatedNetwork_circ_reference.png" % PDB_id_reference)
+    
+    
 def matrix_plot_site():   
     print("creating heatmaps")
-    myMATRIX=pd.read_csv("./coordinatedDynamics_%s/siteDiffDynamics_query.txt" % PDB_id_reference, sep="\s+")
+    myMATRIX=pd.read_csv("./coordinatedDynamics_%s/siteNSdynamics_query.txt" % PDB_id_reference, sep="\s+")
     myMATRIX = pd.DataFrame(myMATRIX)
     print(myMATRIX)
     myMATRIX_plot =  (ggplot(myMATRIX, aes('i', 'j', fill='p-val')) + scale_fill_gradient(low="white",high="purple") + geom_tile() + labs(title='contact map - mixed model ANOVA (i.e. signif atom fluctuation between sites i and j)', x='amino acid position', y='amino acid position'))
-    myMATRIX_plot.save("./coordinatedDynamics_%s/siteDiffDynamics_query.png" % PDB_id_reference, width=10, height=5, dpi=300)
+    myMATRIX_plot.save("./coordinatedDynamics_%s/siteNSdynamics_query.png" % PDB_id_reference, width=10, height=5, dpi=300)
     
-    myMATRIX=pd.read_csv("./coordinatedDynamics_%s/siteDiffDynamics_reference.txt" % PDB_id_reference, sep="\s+")
+    myMATRIX=pd.read_csv("./coordinatedDynamics_%s/siteNSdynamics_reference.txt" % PDB_id_reference, sep="\s+")
     myMATRIX = pd.DataFrame(myMATRIX)
     print(myMATRIX)
     myMATRIX_plot =  (ggplot(myMATRIX, aes('i', 'j', fill='p-val')) + scale_fill_gradient(low="white",high="purple") + geom_tile() + labs(title='contact map - mixed model ANOVA (i.e. signif atom fluctuation between sites i and j)', x='amino acid position', y='amino acid position'))
-    myMATRIX_plot.save("./coordinatedDynamics_%s/siteDiffDynamics_reference.png" % PDB_id_reference, width=10, height=5, dpi=300)
+    myMATRIX_plot.save("./coordinatedDynamics_%s/siteNSdynamics_reference.png" % PDB_id_reference, width=10, height=5, dpi=300)
     
-       
-       
+def network_plot_site():   
+    print("creating networks")
+    myNET=pd.read_csv("./coordinatedDynamics_%s/siteNSdynamics_query.txt" % PDB_id_reference, sep="\s+")
+    myNET = pd.DataFrame(myNET)
+    print(myNET)
+    links_filtered=myNET.loc[ (myNET['p-val'] > (0.95)) & (myNET['i'] != myNET['j']) ]
+    print(links_filtered)
+    # Build graph
+    G=nx.from_pandas_edgelist(links_filtered, 'i', 'j')
+    print(G)
+    # Plot network:
+    nx.draw_networkx(G, with_labels=True, node_color='orange', node_size=200, edge_color='black', linewidths=1, font_size=10)
+    plt.savefig("./coordinatedDynamics_%s/siteNSnetwork_query.png" % PDB_id_reference)
+    myNET=pd.read_csv("./coordinatedDynamics_%s/siteNSdynamics_reference.txt" % PDB_id_reference, sep="\s+")
+    myNET = pd.DataFrame(myNET)
+    print(myNET)
+    links_filtered=myNET.loc[ (myNET['p-val'] > (0.95)) & (myNET['i'] != myNET['j']) ]
+    print(links_filtered)
+    # Build graph
+    G=nx.from_pandas_edgelist(links_filtered, 'i', 'j')
+    print(G)
+    # Plot network:
+    nx.draw_networkx(G, with_labels=True, node_color='orange', node_size=200, edge_color='black', linewidths=1, font_size=10)
+    plt.savefig("./coordinatedDynamics_%s/siteNSnetwork_reference.png" % PDB_id_reference)
+     
+
     
 ###############################################################
 ###############################################################
@@ -575,9 +636,11 @@ def main():
     feature_anova()
     coordinated_dynamics()
     coordinated_dynamics_fdr()
-    matrix_plot_int()
-    #matrix_plot_sub()
     matrix_plot_site()
+    network_plot_site()
+    matrix_plot_int()
+    network_plot_int()
+    
     
     print("comparative analyses of molecular dynamics is completed")
     
