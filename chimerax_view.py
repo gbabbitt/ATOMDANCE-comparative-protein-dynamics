@@ -461,15 +461,39 @@ def coor_heatmap():
     plt.imshow(image)
     plt.show(block=True)
     print("plotting contact map for query protein %s" % PDB_id_query)
-    image_path = "./coordinatedDynamics_%s/siteDiffDynamics_query.png" % PDB_id_reference
+    image_path = "./coordinatedDynamics_%s/siteNSdynamics_query.png" % PDB_id_reference
     image = mpimg.imread(image_path)
     plt.imshow(image)
     plt.show(block=True)
     print("plotting contact map for reference protein %s" % PDB_id_reference)
-    image_path = "./coordinatedDynamics_%s/siteDiffDynamics_reference.png" % PDB_id_reference
+    image_path = "./coordinatedDynamics_%s/siteNSdynamics_reference.png" % PDB_id_reference
     image = mpimg.imread(image_path)
     plt.imshow(image)
     plt.show(block=True)
+    
+    
+def coor_network():
+    # open heatmap image
+    print("plotting coordinated dynamics (network analysis) for query protein %s" % PDB_id_query)
+    image_path = "./coordinatedDynamics_%s/coordinatedNetwork_query.png" % PDB_id_reference
+    image = mpimg.imread(image_path)
+    plt.imshow(image)
+    plt.show(block=True)
+    print("plotting coordinated dynamics (resonance analysis) for reference protein %s" % PDB_id_reference)
+    image_path = "./coordinatedDynamics_%s/coordinatedNetwork_reference.png" % PDB_id_reference
+    image = mpimg.imread(image_path)
+    plt.imshow(image)
+    plt.show(block=True)
+    print("plotting contact map for query protein %s" % PDB_id_query)
+    image_path = "./coordinatedDynamics_%s/siteNSnetwork_query.png" % PDB_id_reference
+    image = mpimg.imread(image_path)
+    plt.imshow(image)
+    plt.show(block=True)
+    print("plotting contact map for reference protein %s" % PDB_id_reference)
+    image_path = "./coordinatedDynamics_%s/siteNSnetwork_reference.png" % PDB_id_reference
+    image = mpimg.imread(image_path)
+    plt.imshow(image)
+    plt.show(block=True)    
 ###############################################################
 ###############################################################
 
@@ -487,6 +511,7 @@ def main():
         map_CONSsig()
     if(coord_anal == "yes"):
         coor_heatmap()
+        coor_network()
     print("comparative analyses of molecular dynamics is completed")
     
     
