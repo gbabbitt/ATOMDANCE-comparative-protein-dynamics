@@ -507,8 +507,8 @@ def conserved_dynamics_analysis():
             #print("collecting subsample %s" % samp)
             ######### query protein #########
             #infeature_query = "./features/feature_sub_query_reduced/feature_%s_sub_query_%s.txt" % (PDB_id_query, j)
-            #infeature_query = "./features/featureFLUX_sub_query/feature_%s_sub_query_%s.txt" % (PDB_id_query, j)
-            infeature_query = "./features/featureCOMBINE_sub_query/feature_%s_sub_query_%s.txt" % (PDB_id_query, j)
+            infeature_query = "./features/featureFLUX_sub_query/feature_%s_sub_query_%s.txt" % (PDB_id_query, j)
+            #infeature_query = "./features/featureCOMBINE_sub_query/feature_%s_sub_query_%s.txt" % (PDB_id_query, j)
             df_feature_query = pd.read_csv(infeature_query, sep="\s+")
             #print(df_feature_query)
             del df_feature_query[df_feature_query.columns[0]] # remove first column
@@ -520,8 +520,8 @@ def conserved_dynamics_analysis():
             
             ######## ortholog protein ###########
             #infeature_ortho = "./features/feature_sub_ortho_reduced/feature_%s_sub_ortho_%s.txt" % (PDB_id_ortho, j)
-            #infeature_ortho = "./features/featureFLUX_sub_ortho/feature_%s_sub_ortho_%s.txt" % (PDB_id_ortho, j)
-            infeature_ortho = "./features/featureCOMBINE_sub_ortho/feature_%s_sub_ortho_%s.txt" % (PDB_id_ortho, j)
+            infeature_ortho = "./features/featureFLUX_sub_ortho/feature_%s_sub_ortho_%s.txt" % (PDB_id_ortho, j)
+            #infeature_ortho = "./features/featureCOMBINE_sub_ortho/feature_%s_sub_ortho_%s.txt" % (PDB_id_ortho, j)
             df_feature_ortho = pd.read_csv(infeature_ortho, sep="\s+")
             #print(df_feature_ortho)
             del df_feature_ortho[df_feature_ortho.columns[0]] # remove first column
@@ -600,8 +600,8 @@ def conserved_dynamics_analysis():
             #print("collecting subsample %s" % samp)
             ######### query protein #########
             #infeature_query = "./features/feature_sub_query_reduced/feature_%s_sub_query_%s.txt" % (PDB_id_query, j)
-            #infeature_query = "./features/featureFLUX_sub_query/feature_%s_sub_query_%s.txt" % (PDB_id_query, j)
-            infeature_query = "./features/featureCOMBINE_sub_query/feature_%s_sub_query_%s.txt" % (PDB_id_query, j)
+            infeature_query = "./features/featureFLUX_sub_query/feature_%s_sub_query_%s.txt" % (PDB_id_query, j)
+            #infeature_query = "./features/featureCOMBINE_sub_query/feature_%s_sub_query_%s.txt" % (PDB_id_query, j)
             df_feature_query = pd.read_csv(infeature_query, sep="\s+")
             #print(df_feature_query)
             del df_feature_query[df_feature_query.columns[0]] # remove first column
@@ -613,8 +613,8 @@ def conserved_dynamics_analysis():
             
             ######## ortholog protein ###########
             #infeature_ortho = "./features/feature_sub_ortho_reduced/feature_%s_sub_ortho_%s.txt" % (PDB_id_ortho, j)
-            #infeature_ortho = "./features/featureFLUX_sub_ortho/feature_%s_sub_ortho_%s.txt" % (PDB_id_ortho, j)
-            infeature_ortho = "./features/featureCOMBINE_sub_ortho/feature_%s_sub_ortho_%s.txt" % (PDB_id_ortho, j)
+            infeature_ortho = "./features/featureFLUX_sub_ortho/feature_%s_sub_ortho_%s.txt" % (PDB_id_ortho, j)
+            #infeature_ortho = "./features/featureCOMBINE_sub_ortho/feature_%s_sub_ortho_%s.txt" % (PDB_id_ortho, j)
             df_feature_ortho = pd.read_csv(infeature_ortho, sep="\s+")
             #print(df_feature_ortho)
             del df_feature_ortho[df_feature_ortho.columns[0]] # remove first column
