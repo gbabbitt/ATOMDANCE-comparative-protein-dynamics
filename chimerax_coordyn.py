@@ -564,6 +564,9 @@ def network_plot_int_query():
     # Build graph
     G=nx.from_pandas_edgelist(links_filtered, 'i', 'j')
     print(G)
+    myNodes = G.nodes
+    myNodes = list(myNodes)
+    #print(myNodes)
     coms = nx.community.louvain_communities(G)
     #print(coms)
     colors = []
@@ -582,6 +585,52 @@ def network_plot_int_query():
     G.clear()
     plt.close()
     
+    # collect NET mapping data
+    NET_output = []
+    for i in range(length_prot):
+        #print(i)
+        color_grp_match = 0
+        for j in range(len(colors)):
+            #print(j)
+            color_grp = colors[j]
+            #print(color_grp)
+            node_id = myNodes[j]
+            #print(node_id)
+            #print(i)
+            if(i==node_id):
+                #print("match")
+                color_grp_match = color_grp
+        NET_output.append(color_grp_match)
+    #print(NET_output)
+    NET_output = pd.DataFrame(NET_output)
+    #print(NET_output)
+    # create control, reference PDB and attribute file for chimerax
+    os.popen('cp %s.pdb ./ChimeraXvis/query.pdb' % PDB_id_query) # linix
+    #os.popen('copy %sREDUCED.pdb ./ChimeraXvis/reference.pdb' % PDB_id_reference) # Windows
+    f5 = open("ChimeraXvis_NET_intQ.ctl", "w")
+    f6= open("./ChimeraXvis/attributeNET_intQ.dat", "w")
+    # ctl for sig KL map
+    f5.write("model\t#1\n")
+    f5.write("structure\tChimeraXvis/query.pdb\n")
+    f5.write("structureADD	ChimeraXvis/reference.pdb\n")
+    f5.write("attr_file\tChimeraXvis/attributeNET_intQ.dat\n")
+    f5.write("length\t%s\n" % length_prot)
+    f5.write("attr\tMMD\n")
+    #f5.write("palette\tGreens-5\n")
+    f5.write("palette\tRdYlGn-7\n")
+    f5.write("lighting\tsimple\n")
+    f5.write("transparency\t50\n")
+    f5.write("background\tgray\n")
+    f6.write("recipient: residues\n")
+    f6.write("attribute: NET\n")
+    f6.write("\n")
+    #print(myKLneg)
+    for x in range(length_prot):
+        sitepos = x+1
+        NETpos = NET_output.iat[x,0]
+        #print(NETpos)
+        f6.write("\t:%s\t%s\n" % (sitepos,NETpos))
+    
 def network_plot_int_reference():   
     print("creating networks")   
     myNET=pd.read_csv("./coordinatedDynamics_%s/coordinatedDynamics_reference.txt" % PDB_id_reference, sep="\s+")
@@ -592,6 +641,9 @@ def network_plot_int_reference():
     # Build graph
     G=nx.from_pandas_edgelist(links_filtered, 'i', 'j')
     print(G)
+    myNodes = G.nodes
+    myNodes = list(myNodes)
+    #print(myNodes)
     coms = nx.community.louvain_communities(G)
     #print(coms)
     colors = []
@@ -609,6 +661,52 @@ def network_plot_int_reference():
     plt.savefig("./coordinatedDynamics_%s/coordinatedNetwork_reference.png" % PDB_id_reference)
     G.clear()
     plt.close()
+    
+    # collect NET mapping data
+    NET_output = []
+    for i in range(length_prot):
+        #print(i)
+        color_grp_match = 0
+        for j in range(len(colors)):
+            #print(j)
+            color_grp = colors[j]
+            #print(color_grp)
+            node_id = myNodes[j]
+            #print(node_id)
+            #print(i)
+            if(i==node_id):
+                #print("match")
+                color_grp_match = color_grp
+        NET_output.append(color_grp_match)
+    #print(NET_output)
+    NET_output = pd.DataFrame(NET_output)
+    #print(NET_output)
+    # create control, reference PDB and attribute file for chimerax
+    os.popen('cp %s.pdb ./ChimeraXvis/reference.pdb' % PDB_id_reference) # linix
+    #os.popen('copy %sREDUCED.pdb ./ChimeraXvis/reference.pdb' % PDB_id_reference) # Windows
+    f5 = open("ChimeraXvis_NET_intR.ctl", "w")
+    f6= open("./ChimeraXvis/attributeNET_intR.dat", "w")
+    # ctl for sig KL map
+    f5.write("model\t#1\n")
+    f5.write("structure\tChimeraXvis/query.pdb\n")
+    f5.write("structureADD	ChimeraXvis/reference.pdb\n")
+    f5.write("attr_file\tChimeraXvis/attributeNET_intR.dat\n")
+    f5.write("length\t%s\n" % length_prot)
+    f5.write("attr\tMMD\n")
+    #f5.write("palette\tGreens-5\n")
+    f5.write("palette\tRdYlGn-7\n")
+    f5.write("lighting\tsimple\n")
+    f5.write("transparency\t50\n")
+    f5.write("background\tgray\n")
+    f6.write("recipient: residues\n")
+    f6.write("attribute: NET\n")
+    f6.write("\n")
+    #print(myKLneg)
+    for x in range(length_prot):
+        sitepos = x+1
+        NETpos = NET_output.iat[x,0]
+        #print(NETpos)
+        f6.write("\t:%s\t%s\n" % (sitepos,NETpos))
     
 def matrix_plot_site():   
     print("creating heatmaps")
@@ -634,6 +732,9 @@ def network_plot_site_query():
     # Build graph
     G=nx.from_pandas_edgelist(links_filtered, 'i', 'j')
     print(G)
+    myNodes = G.nodes
+    myNodes = list(myNodes)
+    #print(myNodes)
     coms = nx.community.louvain_communities(G)
     #print(coms)
     colors = []
@@ -652,6 +753,52 @@ def network_plot_site_query():
     G.clear()
     plt.close()
     
+    # collect NET mapping data
+    NET_output = []
+    for i in range(length_prot):
+        #print(i)
+        color_grp_match = 0
+        for j in range(len(colors)):
+            #print(j)
+            color_grp = colors[j]
+            #print(color_grp)
+            node_id = myNodes[j]
+            #print(node_id)
+            #print(i)
+            if(i==node_id):
+                #print("match")
+                color_grp_match = color_grp
+        NET_output.append(color_grp_match)
+    #print(NET_output)
+    NET_output = pd.DataFrame(NET_output)
+    #print(NET_output)
+    # create control, reference PDB and attribute file for chimerax
+    os.popen('cp %s.pdb ./ChimeraXvis/query.pdb' % PDB_id_query) # linix
+    #os.popen('copy %sREDUCED.pdb ./ChimeraXvis/reference.pdb' % PDB_id_reference) # Windows
+    f5 = open("ChimeraXvis_NET_siteQ.ctl", "w")
+    f6= open("./ChimeraXvis/attributeNET_siteQ.dat", "w")
+    # ctl for sig KL map
+    f5.write("model\t#1\n")
+    f5.write("structure\tChimeraXvis/query.pdb\n")
+    f5.write("structureADD	ChimeraXvis/reference.pdb\n")
+    f5.write("attr_file\tChimeraXvis/attributeNET_siteQ.dat\n")
+    f5.write("length\t%s\n" % length_prot)
+    f5.write("attr\tMMD\n")
+    #f5.write("palette\tGreens-5\n")
+    f5.write("palette\tRdYlGn-7\n")
+    f5.write("lighting\tsimple\n")
+    f5.write("transparency\t50\n")
+    f5.write("background\tgray\n")
+    f6.write("recipient: residues\n")
+    f6.write("attribute: NET\n")
+    f6.write("\n")
+    #print(myKLneg)
+    for x in range(length_prot):
+        sitepos = x+1
+        NETpos = NET_output.iat[x,0]
+        #print(NETpos)
+        f6.write("\t:%s\t%s\n" % (sitepos,NETpos))
+    
 def network_plot_site_reference():   
     print("creating networks")    
     myNET=pd.read_csv("./coordinatedDynamics_%s/siteNSdynamics_reference.txt" % PDB_id_reference, sep="\s+")
@@ -664,6 +811,10 @@ def network_plot_site_reference():
     print(G)
     coms = nx.community.louvain_communities(G)
     #print(coms)
+    myNodes = G.nodes
+    myNodes = list(myNodes)
+    #print(myNodes)
+    
     colors = []
     for node in G:
         #print(node)
@@ -674,19 +825,67 @@ def network_plot_site_reference():
             if(node in com_set) == True:
                 colors.append(com_num)
     #print(colors)
+    
     # Plot network:
     nx.draw_networkx(G, with_labels=True, node_color=colors, node_size=100, edge_color='black', linewidths=0.5, font_size=7, cmap=plt.get_cmap("hsv"))
     plt.savefig("./coordinatedDynamics_%s/siteNSnetwork_reference.png" % PDB_id_reference)
     G.clear()
     plt.close()
     
+    # collect NET mapping data
+    NET_output = []
+    for i in range(length_prot):
+        #print(i)
+        color_grp_match = 0
+        for j in range(len(colors)):
+            #print(j)
+            color_grp = colors[j]
+            #print(color_grp)
+            node_id = myNodes[j]
+            #print(node_id)
+            #print(i)
+            if(i==node_id):
+                #print("match")
+                color_grp_match = color_grp
+        NET_output.append(color_grp_match)
+    #print(NET_output)
+    NET_output = pd.DataFrame(NET_output)
+    #print(NET_output)
+    # create control, reference PDB and attribute file for chimerax
+    os.popen('cp %s.pdb ./ChimeraXvis/reference.pdb' % PDB_id_reference) # linix
+    #os.popen('copy %sREDUCED.pdb ./ChimeraXvis/reference.pdb' % PDB_id_reference) # Windows
+    f5 = open("ChimeraXvis_NET_siteR.ctl", "w")
+    f6= open("./ChimeraXvis/attributeNET_siteR.dat", "w")
+    # ctl for sig KL map
+    f5.write("model\t#1\n")
+    f5.write("structure\tChimeraXvis/query.pdb\n")
+    f5.write("structureADD	ChimeraXvis/reference.pdb\n")
+    f5.write("attr_file\tChimeraXvis/attributeNET_siteR.dat\n")
+    f5.write("length\t%s\n" % length_prot)
+    f5.write("attr\tMMD\n")
+    #f5.write("palette\tGreens-5\n")
+    f5.write("palette\tRdYlGn-7\n")
+    f5.write("lighting\tsimple\n")
+    f5.write("transparency\t50\n")
+    f5.write("background\tgray\n")
+    f6.write("recipient: residues\n")
+    f6.write("attribute: NET\n")
+    f6.write("\n")
+    #print(myKLneg)
+    for x in range(length_prot):
+        sitepos = x+1
+        NETpos = NET_output.iat[x,0]
+        #print(NETpos)
+        f6.write("\t:%s\t%s\n" % (sitepos,NETpos))
+    
+    
     
 ###############################################################
 ###############################################################
 
 def main():
-    feature_anova()
-    coordinated_dynamics()
+    #feature_anova()
+    #coordinated_dynamics()
     coordinated_dynamics_fdr()
     matrix_plot_site()
     network_plot_site_query()
