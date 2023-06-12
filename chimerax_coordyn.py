@@ -580,6 +580,8 @@ def network_plot_int_query():
                 colors.append(com_num)
     #print(colors)
     # Plot network:
+    plt.suptitle('DYNAMIC INTERACTION NETWORK (i.e. site resonance) for %s' % PDB_id_query)
+    plt.title("communities of sites with significant interactions over time (p<0.01)")
     nx.draw_networkx(G, with_labels=True, node_color=colors, node_size=100, edge_color='black', linewidths=0.5, font_size=7, cmap=plt.get_cmap("hsv"))
     plt.savefig("./coordinatedDynamics_%s/coordinatedNetwork_query.png" % PDB_id_reference)
     G.clear()
@@ -615,9 +617,9 @@ def network_plot_int_query():
     f5.write("structureADD	ChimeraXvis/reference.pdb\n")
     f5.write("attr_file\tChimeraXvis/attributeNET_intQ.dat\n")
     f5.write("length\t%s\n" % length_prot)
-    f5.write("attr\tMMD\n")
+    f5.write("attr\tNET\n")
     #f5.write("palette\tGreens-5\n")
-    f5.write("palette\tRdYlGn-7\n")
+    f5.write("palette\tRdYlGn-9\n")
     f5.write("lighting\tsimple\n")
     f5.write("transparency\t50\n")
     f5.write("background\tgray\n")
@@ -631,6 +633,7 @@ def network_plot_int_query():
         #print(NETpos)
         f6.write("\t:%s\t%s\n" % (sitepos,NETpos))
     
+        
 def network_plot_int_reference():   
     print("creating networks")   
     myNET=pd.read_csv("./coordinatedDynamics_%s/coordinatedDynamics_reference.txt" % PDB_id_reference, sep="\s+")
@@ -657,6 +660,8 @@ def network_plot_int_reference():
                 colors.append(com_num)
     #print(colors)
     # Plot network:
+    plt.suptitle('DYNAMIC INTERACTION NETWORK (i.e. site resonance) for %s' % PDB_id_reference)
+    plt.title("communities of sites with significant interactions over time (p<0.01)")
     nx.draw_networkx(G, with_labels=True, node_color=colors, node_size=100, edge_color='black', linewidths=0.5, font_size=7, cmap=plt.get_cmap("hsv"))
     plt.savefig("./coordinatedDynamics_%s/coordinatedNetwork_reference.png" % PDB_id_reference)
     G.clear()
@@ -692,9 +697,9 @@ def network_plot_int_reference():
     f5.write("structureADD	ChimeraXvis/reference.pdb\n")
     f5.write("attr_file\tChimeraXvis/attributeNET_intR.dat\n")
     f5.write("length\t%s\n" % length_prot)
-    f5.write("attr\tMMD\n")
+    f5.write("attr\tNET\n")
     #f5.write("palette\tGreens-5\n")
-    f5.write("palette\tRdYlGn-7\n")
+    f5.write("palette\tRdYlGn-9\n")
     f5.write("lighting\tsimple\n")
     f5.write("transparency\t50\n")
     f5.write("background\tgray\n")
@@ -708,6 +713,7 @@ def network_plot_int_reference():
         #print(NETpos)
         f6.write("\t:%s\t%s\n" % (sitepos,NETpos))
     
+        
 def matrix_plot_site():   
     print("creating heatmaps")
     myMATRIX=pd.read_csv("./coordinatedDynamics_%s/siteNSdynamics_query.txt" % PDB_id_reference, sep="\s+")
@@ -748,6 +754,8 @@ def network_plot_site_query():
                 colors.append(com_num)
     #print(colors)
     # Plot network:
+    plt.suptitle('DYNAMIC SIMILARITY NETWORK (i.e. site contacts) for %s' % PDB_id_query)
+    plt.title("communities of sites with ns differences in atom fluctuation (p>0.99)")
     nx.draw_networkx(G, with_labels=True, node_color=colors, node_size=100, edge_color='black', linewidths=0.5, font_size=7, cmap=plt.get_cmap("hsv"))
     plt.savefig("./coordinatedDynamics_%s/siteNSnetwork_query.png" % PDB_id_reference)
     G.clear()
@@ -783,9 +791,9 @@ def network_plot_site_query():
     f5.write("structureADD	ChimeraXvis/reference.pdb\n")
     f5.write("attr_file\tChimeraXvis/attributeNET_siteQ.dat\n")
     f5.write("length\t%s\n" % length_prot)
-    f5.write("attr\tMMD\n")
+    f5.write("attr\tNET\n")
     #f5.write("palette\tGreens-5\n")
-    f5.write("palette\tRdYlGn-7\n")
+    f5.write("palette\tRdYlGn-9\n")
     f5.write("lighting\tsimple\n")
     f5.write("transparency\t50\n")
     f5.write("background\tgray\n")
@@ -799,6 +807,7 @@ def network_plot_site_query():
         #print(NETpos)
         f6.write("\t:%s\t%s\n" % (sitepos,NETpos))
     
+        
 def network_plot_site_reference():   
     print("creating networks")    
     myNET=pd.read_csv("./coordinatedDynamics_%s/siteNSdynamics_reference.txt" % PDB_id_reference, sep="\s+")
@@ -827,6 +836,8 @@ def network_plot_site_reference():
     #print(colors)
     
     # Plot network:
+    plt.suptitle('DYNAMIC SIMILARITY NETWORK (i.e. site contacts) for %s' % PDB_id_reference)
+    plt.title("communities of sites with ns differences in atom fluctuation (p>0.99)")
     nx.draw_networkx(G, with_labels=True, node_color=colors, node_size=100, edge_color='black', linewidths=0.5, font_size=7, cmap=plt.get_cmap("hsv"))
     plt.savefig("./coordinatedDynamics_%s/siteNSnetwork_reference.png" % PDB_id_reference)
     G.clear()
@@ -862,9 +873,9 @@ def network_plot_site_reference():
     f5.write("structureADD	ChimeraXvis/reference.pdb\n")
     f5.write("attr_file\tChimeraXvis/attributeNET_siteR.dat\n")
     f5.write("length\t%s\n" % length_prot)
-    f5.write("attr\tMMD\n")
+    f5.write("attr\tNET\n")
     #f5.write("palette\tGreens-5\n")
-    f5.write("palette\tRdYlGn-7\n")
+    f5.write("palette\tRdYlGn-9\n")
     f5.write("lighting\tsimple\n")
     f5.write("transparency\t50\n")
     f5.write("background\tgray\n")
@@ -878,14 +889,13 @@ def network_plot_site_reference():
         #print(NETpos)
         f6.write("\t:%s\t%s\n" % (sitepos,NETpos))
     
-    
-    
+        
 ###############################################################
 ###############################################################
 
 def main():
-    #feature_anova()
-    #coordinated_dynamics()
+    feature_anova()
+    coordinated_dynamics()
     coordinated_dynamics_fdr()
     matrix_plot_site()
     network_plot_site_query()
