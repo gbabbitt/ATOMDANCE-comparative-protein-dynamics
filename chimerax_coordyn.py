@@ -558,16 +558,26 @@ def network_plot_int_query():
     print("creating networks")
     myNET=pd.read_csv("./coordinatedDynamics_%s/coordinatedDynamics_query.txt" % PDB_id_reference, sep="\s+")
     myNET = pd.DataFrame(myNET)
-    print(myNET)
+    #print(myNET)
     links_filtered=myNET.loc[ (myNET['p-val'] < (0.01)) & (myNET['i'] != myNET['j']) ]
-    print(links_filtered)
+    #print(links_filtered)
     # Build graph
     G=nx.from_pandas_edgelist(links_filtered, 'i', 'j')
     print(G)
     coms = nx.community.louvain_communities(G)
-    print(coms)
+    #print(coms)
+    colors = []
+    for node in G:
+        #print(node)
+        com_num = 0
+        for com_set in coms:
+            com_num = com_num+1
+            #print(com_set)
+            if(node in com_set) == True:
+                colors.append(com_num)
+    #print(colors)
     # Plot network:
-    nx.draw_networkx(G, with_labels=True, node_color='orange', node_size=50, edge_color='black', linewidths=0.5, font_size=5)
+    nx.draw_networkx(G, with_labels=True, node_color=colors, node_size=100, edge_color='black', linewidths=0.5, font_size=7, cmap=plt.get_cmap("hsv"))
     plt.savefig("./coordinatedDynamics_%s/coordinatedNetwork_query.png" % PDB_id_reference)
     G.clear()
     plt.close()
@@ -576,16 +586,26 @@ def network_plot_int_reference():
     print("creating networks")   
     myNET=pd.read_csv("./coordinatedDynamics_%s/coordinatedDynamics_reference.txt" % PDB_id_reference, sep="\s+")
     myNET = pd.DataFrame(myNET)
-    print(myNET)
+    #print(myNET)
     links_filtered=myNET.loc[ (myNET['p-val'] < (0.01)) & (myNET['i'] != myNET['j']) ]
-    print(links_filtered)
+    #print(links_filtered)
     # Build graph
     G=nx.from_pandas_edgelist(links_filtered, 'i', 'j')
     print(G)
     coms = nx.community.louvain_communities(G)
-    print(coms)
+    #print(coms)
+    colors = []
+    for node in G:
+        #print(node)
+        com_num = 0
+        for com_set in coms:
+            com_num = com_num+1
+            #print(com_set)
+            if(node in com_set) == True:
+                colors.append(com_num)
+    #print(colors)
     # Plot network:
-    nx.draw_networkx(G, with_labels=True, node_color='orange', node_size=50, edge_color='black', linewidths=0.5, font_size=5)
+    nx.draw_networkx(G, with_labels=True, node_color=colors, node_size=100, edge_color='black', linewidths=0.5, font_size=7, cmap=plt.get_cmap("hsv"))
     plt.savefig("./coordinatedDynamics_%s/coordinatedNetwork_reference.png" % PDB_id_reference)
     G.clear()
     plt.close()
@@ -608,16 +628,26 @@ def network_plot_site_query():
     print("creating networks")
     myNET=pd.read_csv("./coordinatedDynamics_%s/siteNSdynamics_query.txt" % PDB_id_reference, sep="\s+")
     myNET = pd.DataFrame(myNET)
-    print(myNET)
+    #print(myNET)
     links_filtered=myNET.loc[ (myNET['p-val'] > (0.99)) & (myNET['i'] != myNET['j']) ]
-    print(links_filtered)
+    #print(links_filtered)
     # Build graph
     G=nx.from_pandas_edgelist(links_filtered, 'i', 'j')
     print(G)
     coms = nx.community.louvain_communities(G)
-    print(coms)
+    #print(coms)
+    colors = []
+    for node in G:
+        #print(node)
+        com_num = 0
+        for com_set in coms:
+            com_num = com_num+1
+            #print(com_set)
+            if(node in com_set) == True:
+                colors.append(com_num)
+    #print(colors)
     # Plot network:
-    nx.draw_networkx(G, with_labels=True, node_color='orange', node_size=50, edge_color='black', linewidths=0.5, font_size=5)
+    nx.draw_networkx(G, with_labels=True, node_color=colors, node_size=100, edge_color='black', linewidths=0.5, font_size=7, cmap=plt.get_cmap("hsv"))
     plt.savefig("./coordinatedDynamics_%s/siteNSnetwork_query.png" % PDB_id_reference)
     G.clear()
     plt.close()
@@ -626,39 +656,30 @@ def network_plot_site_reference():
     print("creating networks")    
     myNET=pd.read_csv("./coordinatedDynamics_%s/siteNSdynamics_reference.txt" % PDB_id_reference, sep="\s+")
     myNET = pd.DataFrame(myNET)
-    print(myNET)
+    #print(myNET)
     links_filtered=myNET.loc[ (myNET['p-val'] > (0.99)) & (myNET['i'] != myNET['j']) ]
-    print(links_filtered)
+    #print(links_filtered)
     # Build graph
     G=nx.from_pandas_edgelist(links_filtered, 'i', 'j')
     print(G)
     coms = nx.community.louvain_communities(G)
-    print(coms)
+    #print(coms)
+    colors = []
+    for node in G:
+        #print(node)
+        com_num = 0
+        for com_set in coms:
+            com_num = com_num+1
+            #print(com_set)
+            if(node in com_set) == True:
+                colors.append(com_num)
+    #print(colors)
     # Plot network:
-    nx.draw_networkx(G, with_labels=True, node_color='orange', node_size=50, edge_color='black', linewidths=0.5, font_size=5)
+    nx.draw_networkx(G, with_labels=True, node_color=colors, node_size=100, edge_color='black', linewidths=0.5, font_size=7, cmap=plt.get_cmap("hsv"))
     plt.savefig("./coordinatedDynamics_%s/siteNSnetwork_reference.png" % PDB_id_reference)
     G.clear()
     plt.close()
     
-def network_colors():      
-    import networkx as nx
-    
-    graph = nx.karate_club_graph()
-
-    colors = []
-    for node in graph:
-        if graph.nodes[node]["club"] == "Mr. Hi":
-            colors.append(0)
-        else:
-            colors.append(1)
-
-    colors[0] = -1
-    colors[-1] = 2
-
-    nx.draw_networkx(graph, node_color=colors, vmin=min(colors), vmax=max(colors), cmap=plt.get_cmap("viridis"))
-    plt.axis("off")
-    plt.savefig("./coordinatedDynamics_%s/colors.png" % PDB_id_reference)
-    plt.close() 
     
 ###############################################################
 ###############################################################
@@ -673,7 +694,6 @@ def main():
     matrix_plot_int()
     network_plot_int_query()
     network_plot_int_reference()
-    network_colors()
     
     
     print("comparative analyses of molecular dynamics is completed")

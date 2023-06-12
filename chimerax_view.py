@@ -158,10 +158,11 @@ if(cons_anal == "yes"):
         if(header == "orthoFAS"):
             ortho_fas = value
             print("my ortho FAS is",ortho_fas)
-        PDB_id_ortho = ""+ortho_id+""
-        PDB_file_ortho = ""+ortho_pdb+""
-        top_file_ortho = ""+ortho_top+""
-        traj_file_ortho = ""+ortho_traj+""
+###### variable assignments ######
+PDB_id_ortho = ""+ortho_id+""
+PDB_file_ortho = ""+ortho_pdb+""
+top_file_ortho = ""+ortho_top+""
+traj_file_ortho = ""+ortho_traj+""
           
 # set number of features for tuning gamma in RBF kernel
 infeature_ref = "./features/featureFLUX_sub_ref/feature_%s_sub_ref_0.txt" % PDB_id_reference
