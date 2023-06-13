@@ -158,11 +158,11 @@ if(cons_anal == "yes"):
         if(header == "orthoFAS"):
             ortho_fas = value
             print("my ortho FAS is",ortho_fas)
-###### variable assignments ######
-PDB_id_ortho = ""+ortho_id+""
-PDB_file_ortho = ""+ortho_pdb+""
-top_file_ortho = ""+ortho_top+""
-traj_file_ortho = ""+ortho_traj+""
+    ###### variable assignments ######
+    PDB_id_ortho = ""+ortho_id+""
+    PDB_file_ortho = ""+ortho_pdb+""
+    top_file_ortho = ""+ortho_top+""
+    traj_file_ortho = ""+ortho_traj+""
           
 # set number of features for tuning gamma in RBF kernel
 infeature_ref = "./features/featureFLUX_sub_ref/feature_%s_sub_ref_0.txt" % PDB_id_reference
@@ -494,7 +494,30 @@ def coor_network():
     image_path = "./coordinatedDynamics_%s/siteNSnetwork_reference.png" % PDB_id_reference
     image = mpimg.imread(image_path)
     plt.imshow(image)
-    plt.show(block=True)    
+    plt.show(block=True)
+    
+def map_NET_coor():   
+    print("mapping adjacent and non adjacent site contacts to query protein %s" % PDB_id_query)
+    print("NOTE - turquoise is the null bacground color")
+    cmd = "%sChimeraX color_by_attr_chimerax_NET_siteQ.py" % chimerax_path
+    os.system(cmd)
+    
+    print("mapping adjacent and non adjacent site contacts to reference protein %s" % PDB_id_reference)
+    print("NOTE - turquoise is the null bacground color")
+    cmd = "%sChimeraX color_by_attr_chimerax_NET_siteR.py" % chimerax_path
+    os.system(cmd)
+    
+    print("mapping site resonance communities to query protein %s" % PDB_id_query)
+    print("NOTE - turquoise is the null bacground color")
+    cmd = "%sChimeraX color_by_attr_chimerax_NET_intQ.py" % chimerax_path
+    os.system(cmd)
+    
+    print("mapping site resonance NETWORK communities to reference protein %s" % PDB_id_reference)
+    print("NOTE - turquoise is the null bacground color")
+    cmd = "%sChimeraX color_by_attr_chimerax_NET_intR.py" % chimerax_path
+    os.system(cmd)
+    
+    
 ###############################################################
 ###############################################################
 
@@ -513,6 +536,7 @@ def main():
     if(coord_anal == "yes"):
         coor_heatmap()
         coor_network()
+        map_NET_coor()
     print("comparative analyses of molecular dynamics is completed")
     
     
