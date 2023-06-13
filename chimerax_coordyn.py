@@ -559,7 +559,7 @@ def network_plot_int_query():
     myNET=pd.read_csv("./coordinatedDynamics_%s/coordinatedDynamics_query.txt" % PDB_id_reference, sep="\s+")
     myNET = pd.DataFrame(myNET)
     #print(myNET)
-    links_filtered=myNET.loc[ (myNET['p-val'] < (0.01)) & (myNET['i'] != myNET['j']) ]
+    links_filtered=myNET.loc[ (myNET['p-val'] < (0.05)) & (myNET['i'] != myNET['j']) ]
     #print(links_filtered)
     # Build graph
     G=nx.from_pandas_edgelist(links_filtered, 'i', 'j')
@@ -581,7 +581,7 @@ def network_plot_int_query():
     #print(colors)
     # Plot network:
     plt.suptitle('DYNAMIC INTERACTION NETWORK (i.e. site resonance) for %s' % PDB_id_query)
-    plt.title("communities of sites with significant interactions over time (p<0.01)")
+    plt.title("communities of sites with significant interactions over time (p<0.05)")
     nx.draw_networkx(G, with_labels=True, node_color=colors, node_size=100, edge_color='black', linewidths=0.5, font_size=7, cmap=plt.get_cmap("hsv"))
     plt.savefig("./coordinatedDynamics_%s/coordinatedNetwork_query.png" % PDB_id_reference)
     G.clear()
@@ -639,7 +639,7 @@ def network_plot_int_reference():
     myNET=pd.read_csv("./coordinatedDynamics_%s/coordinatedDynamics_reference.txt" % PDB_id_reference, sep="\s+")
     myNET = pd.DataFrame(myNET)
     #print(myNET)
-    links_filtered=myNET.loc[ (myNET['p-val'] < (0.01)) & (myNET['i'] != myNET['j']) ]
+    links_filtered=myNET.loc[ (myNET['p-val'] < (0.05)) & (myNET['i'] != myNET['j']) ]
     #print(links_filtered)
     # Build graph
     G=nx.from_pandas_edgelist(links_filtered, 'i', 'j')
@@ -661,7 +661,7 @@ def network_plot_int_reference():
     #print(colors)
     # Plot network:
     plt.suptitle('DYNAMIC INTERACTION NETWORK (i.e. site resonance) for %s' % PDB_id_reference)
-    plt.title("communities of sites with significant interactions over time (p<0.01)")
+    plt.title("communities of sites with significant interactions over time (p<0.05)")
     nx.draw_networkx(G, with_labels=True, node_color=colors, node_size=100, edge_color='black', linewidths=0.5, font_size=7, cmap=plt.get_cmap("hsv"))
     plt.savefig("./coordinatedDynamics_%s/coordinatedNetwork_reference.png" % PDB_id_reference)
     G.clear()
@@ -733,7 +733,7 @@ def network_plot_site_query():
     myNET=pd.read_csv("./coordinatedDynamics_%s/siteNSdynamics_query.txt" % PDB_id_reference, sep="\s+")
     myNET = pd.DataFrame(myNET)
     #print(myNET)
-    links_filtered=myNET.loc[ (myNET['p-val'] > (0.99)) & (myNET['i'] != myNET['j']) ]
+    links_filtered=myNET.loc[ (myNET['p-val'] > (0.95)) & (myNET['i'] != myNET['j']) ]
     #print(links_filtered)
     # Build graph
     G=nx.from_pandas_edgelist(links_filtered, 'i', 'j')
@@ -755,7 +755,7 @@ def network_plot_site_query():
     #print(colors)
     # Plot network:
     plt.suptitle('DYNAMIC SIMILARITY (i.e. adj and non-adj site contacts) for %s' % PDB_id_query)
-    plt.title("communities of sites with ns differences in atom fluctuation (p>0.99)")
+    plt.title("communities of sites with ns differences in atom fluctuation (p>0.95)")
     nx.draw_networkx(G, with_labels=True, node_color=colors, node_size=100, edge_color='black', linewidths=0.5, font_size=7, cmap=plt.get_cmap("hsv"))
     plt.savefig("./coordinatedDynamics_%s/siteNSnetwork_query.png" % PDB_id_reference)
     G.clear()
@@ -813,7 +813,7 @@ def network_plot_site_reference():
     myNET=pd.read_csv("./coordinatedDynamics_%s/siteNSdynamics_reference.txt" % PDB_id_reference, sep="\s+")
     myNET = pd.DataFrame(myNET)
     #print(myNET)
-    links_filtered=myNET.loc[ (myNET['p-val'] > (0.99)) & (myNET['i'] != myNET['j']) ]
+    links_filtered=myNET.loc[ (myNET['p-val'] > (0.95)) & (myNET['i'] != myNET['j']) ]
     #print(links_filtered)
     # Build graph
     G=nx.from_pandas_edgelist(links_filtered, 'i', 'j')
@@ -837,7 +837,7 @@ def network_plot_site_reference():
     
     # Plot network:
     plt.suptitle('DYNAMIC SIMILARITY (i.e. adj and non-adj site contacts) for %s' % PDB_id_reference)
-    plt.title("communities of sites with ns differences in atom fluctuation (p>0.99)")
+    plt.title("communities of sites with ns differences in atom fluctuation (p>0.95)")
     nx.draw_networkx(G, with_labels=True, node_color=colors, node_size=100, edge_color='black', linewidths=0.5, font_size=7, cmap=plt.get_cmap("hsv"))
     plt.savefig("./coordinatedDynamics_%s/siteNSnetwork_reference.png" % PDB_id_reference)
     G.clear()
@@ -894,8 +894,8 @@ def network_plot_site_reference():
 ###############################################################
 
 def main():
-    feature_anova()
-    coordinated_dynamics()
+    #feature_anova()
+    #coordinated_dynamics()
     coordinated_dynamics_fdr()
     matrix_plot_site()
     network_plot_site_query()
