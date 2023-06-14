@@ -569,6 +569,10 @@ def network_plot_int_query():
     #print(myNodes)
     coms = nx.community.louvain_communities(G)
     #print(coms)
+    writePath= "./coordinatedDynamics_%s/coordinatedDynamics_query_communities.txt" % PDB_id_reference
+    with open(writePath, 'w') as f_out:
+            f_out.write(coms)
+            f_out.close
     colors = []
     for node in G:
         #print(node)
@@ -649,6 +653,10 @@ def network_plot_int_reference():
     #print(myNodes)
     coms = nx.community.louvain_communities(G)
     #print(coms)
+    writePath= "./coordinatedDynamics_%s/coordinatedDynamics_reference_communities.txt" % PDB_id_reference
+    with open(writePath, 'w') as f_out:
+            f_out.write(coms)
+            f_out.close
     colors = []
     for node in G:
         #print(node)
@@ -743,6 +751,10 @@ def network_plot_site_query():
     #print(myNodes)
     coms = nx.community.louvain_communities(G)
     #print(coms)
+    writePath= "./coordinatedDynamics_%s/siteNSdynamics_query_communities.txt" % PDB_id_reference
+    with open(writePath, 'w') as f_out:
+            f_out.write(coms)
+            f_out.close
     colors = []
     for node in G:
         #print(node)
@@ -820,10 +832,13 @@ def network_plot_site_reference():
     print(G)
     coms = nx.community.louvain_communities(G)
     #print(coms)
+    writePath= "./coordinatedDynamics_%s/siteNSdynamics_reference_communities.txt" % PDB_id_reference
+    with open(writePath, 'w') as f_out:
+            f_out.write(coms)
+            f_out.close
     myNodes = G.nodes
     myNodes = list(myNodes)
     #print(myNodes)
-    
     colors = []
     for node in G:
         #print(node)
