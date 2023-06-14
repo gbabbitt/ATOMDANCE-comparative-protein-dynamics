@@ -545,13 +545,13 @@ def matrix_plot_int():
     myMATRIX=pd.read_csv("./coordinatedDynamics_%s/coordinatedDynamics_query.txt" % PDB_id_reference, sep="\s+")
     myMATRIX = pd.DataFrame(myMATRIX)
     print(myMATRIX)
-    myMATRIX_plot =  (ggplot(myMATRIX, aes('i', 'j', fill='p-val')) + scale_fill_gradient(low="white",high="purple") + geom_tile() + labs(title='resonance map - mixed model ANOVA (i.e. signif interaction of atom fluctuation at sites i and j over time)', x='amino acid position', y='amino acid position'))
+    myMATRIX_plot =  (ggplot(myMATRIX, aes('i', 'j', fill='p-val')) + scale_fill_gradient(low="white",high="black") + geom_tile() + labs(title='resonance map - mixed model ANOVA (i.e. signif interaction of atom fluctuation at sites i and j over time)', x='amino acid position', y='amino acid position'))
     myMATRIX_plot.save("./coordinatedDynamics_%s/coordinatedDynamics_query.png" % PDB_id_reference, width=10, height=5, dpi=300)
     
     myMATRIX=pd.read_csv("./coordinatedDynamics_%s/coordinatedDynamics_reference.txt" % PDB_id_reference, sep="\s+")
     myMATRIX = pd.DataFrame(myMATRIX)
     print(myMATRIX)
-    myMATRIX_plot =  (ggplot(myMATRIX, aes('i', 'j', fill='p-val')) + scale_fill_gradient(low="white",high="purple") + geom_tile() + labs(title='resonance map - mixed model ANOVA (i.e. signif interaction of atom fluctuation at sites i and j over time)', x='amino acid position', y='amino acid position'))
+    myMATRIX_plot =  (ggplot(myMATRIX, aes('i', 'j', fill='p-val')) + scale_fill_gradient(low="white",high="black") + geom_tile() + labs(title='resonance map - mixed model ANOVA (i.e. signif interaction of atom fluctuation at sites i and j over time)', x='amino acid position', y='amino acid position'))
     myMATRIX_plot.save("./coordinatedDynamics_%s/coordinatedDynamics_reference.png" % PDB_id_reference, width=10, height=5, dpi=300)
 
 def network_plot_int_query():   
@@ -719,13 +719,13 @@ def matrix_plot_site():
     myMATRIX=pd.read_csv("./coordinatedDynamics_%s/siteNSdynamics_query.txt" % PDB_id_reference, sep="\s+")
     myMATRIX = pd.DataFrame(myMATRIX)
     print(myMATRIX)
-    myMATRIX_plot =  (ggplot(myMATRIX, aes('i', 'j', fill='p-val')) + scale_fill_gradient(low="white",high="purple") + geom_tile() + labs(title='contact map - mixed model ANOVA (i.e. signif atom fluctuation between sites i and j)', x='amino acid position', y='amino acid position'))
+    myMATRIX_plot =  (ggplot(myMATRIX, aes('i', 'j', fill='p-val')) + scale_fill_gradient(low="white",high="black") + geom_tile() + labs(title='contact map - mixed model ANOVA (i.e. non-signif differences in atom fluctuation between sites i and j)', x='amino acid position', y='amino acid position'))
     myMATRIX_plot.save("./coordinatedDynamics_%s/siteNSdynamics_query.png" % PDB_id_reference, width=10, height=5, dpi=300)
     
     myMATRIX=pd.read_csv("./coordinatedDynamics_%s/siteNSdynamics_reference.txt" % PDB_id_reference, sep="\s+")
     myMATRIX = pd.DataFrame(myMATRIX)
     print(myMATRIX)
-    myMATRIX_plot =  (ggplot(myMATRIX, aes('i', 'j', fill='p-val')) + scale_fill_gradient(low="white",high="purple") + geom_tile() + labs(title='contact map - mixed model ANOVA (i.e. signif atom fluctuation between sites i and j)', x='amino acid position', y='amino acid position'))
+    myMATRIX_plot =  (ggplot(myMATRIX, aes('i', 'j', fill='p-val')) + scale_fill_gradient(low="white",high="black") + geom_tile() + labs(title='contact map - mixed model ANOVA (i.e. non-signif differences in atom fluctuation between sites i and j)', x='amino acid position', y='amino acid position'))
     myMATRIX_plot.save("./coordinatedDynamics_%s/siteNSdynamics_reference.png" % PDB_id_reference, width=10, height=5, dpi=300)
     
 def network_plot_site_query():   
@@ -793,7 +793,7 @@ def network_plot_site_query():
     f5.write("length\t%s\n" % length_prot)
     f5.write("attr\tNET\n")
     #f5.write("palette\tGreens-5\n")
-    f5.write("palette\tSet2-8\n")
+    f5.write("palette\tSet3-12\n")
     f5.write("lighting\tsimple\n")
     f5.write("transparency\t50\n")
     f5.write("background\tgray\n")
@@ -875,7 +875,7 @@ def network_plot_site_reference():
     f5.write("length\t%s\n" % length_prot)
     f5.write("attr\tNET\n")
     #f5.write("palette\tGreens-5\n")
-    f5.write("palette\tSet2-8\n")
+    f5.write("palette\tSet3-12\n")
     f5.write("lighting\tsimple\n")
     f5.write("transparency\t50\n")
     f5.write("background\tgray\n")
@@ -894,8 +894,8 @@ def network_plot_site_reference():
 ###############################################################
 
 def main():
-    #feature_anova()
-    #coordinated_dynamics()
+    feature_anova()
+    coordinated_dynamics()
     coordinated_dynamics_fdr()
     matrix_plot_site()
     network_plot_site_query()
