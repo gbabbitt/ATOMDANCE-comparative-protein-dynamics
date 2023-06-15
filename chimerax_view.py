@@ -497,23 +497,23 @@ def coor_network():
     plt.show(block=True)
     
 def map_NET_coor():   
-    print("mapping adjacent and non adjacent site contacts to query protein %s" % PDB_id_query)
-    print("NOTE - turquoise is the null bacground color")
-    cmd = "%sChimeraX color_by_attr_chimerax_NET_siteQ.py" % chimerax_path
-    os.system(cmd)
+    #print("mapping adjacent and non adjacent site contacts to query protein %s" % PDB_id_query)
+    #print("NOTE - turquoise is the null background color")
+    #cmd = "%sChimeraX color_by_attr_chimerax_NET_siteQ.py" % chimerax_path
+    #os.system(cmd)
     
-    print("mapping adjacent and non adjacent site contacts to reference protein %s" % PDB_id_reference)
-    print("NOTE - turquoise is the null bacground color")
-    cmd = "%sChimeraX color_by_attr_chimerax_NET_siteR.py" % chimerax_path
-    os.system(cmd)
+    #print("mapping adjacent and non adjacent site contacts to reference protein %s" % PDB_id_reference)
+    #print("NOTE - turquoise is the null background color")
+    #cmd = "%sChimeraX color_by_attr_chimerax_NET_siteR.py" % chimerax_path
+    #os.system(cmd)
     
     print("mapping site resonance communities to query protein %s" % PDB_id_query)
-    print("NOTE - turquoise is the null bacground color")
+    print("NOTE - turquoise is the null background color")
     cmd = "%sChimeraX color_by_attr_chimerax_NET_intQ.py" % chimerax_path
     os.system(cmd)
     
     print("mapping site resonance NETWORK communities to reference protein %s" % PDB_id_reference)
-    print("NOTE - turquoise is the null bacground color")
+    print("NOTE - turquoise is the null background color")
     cmd = "%sChimeraX color_by_attr_chimerax_NET_intR.py" % chimerax_path
     os.system(cmd)
     
