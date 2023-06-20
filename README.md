@@ -7,7 +7,7 @@ DROIDS 5.0 - (Detecting Relative Outlier Impacts in Dynamic Simulation) providin
 
 maxDemon 4.0 - (kernel-based macine learning for comparative protein dynamics) This provides (A) site-wise comparisons of atom fluctuations and atom correlations in molecular dynamics simulations utilizing max mean discrepancy (MMD) on learned features (B) site-wise identification of non-neutral evolutionary changes in molecular dynamics (also via MMD).
 
-Choreograph 1.0 - provides heatmaps of coordinated site dynamics (via mutual information of learned feature classifications obtained by a support vector machine)
+Choreograph 2.0 - multi-model ANOVA designed for pair-wise identification of coordinated site dynamics (i.e. resonance) as well as pair-wise atom fluctuation similarities between adjacent and non-adjacent sites (i.e. potential contact sites across chains)
 
 to see GUI layout - 
 
