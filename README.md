@@ -1,4 +1,4 @@
-# ATOMDANCE-1.0-comparative-protein-dynamics
+# ATOMDANCE-1.3-comparative-protein-dynamics
 ATOMDANCE software containing DROIDS 5.0/maxDemon 4.0/Choreograph 1.0 is a python-based suite of machine learning assisted statistical methods for comparing molecular dynamic trajectories of proteins in two functional states (e.g. unbound vs. bound to something or wildtype vs mutated or hot vs. cold).  It was developed on a python 3 science stack and only additionally requires the cpptraj library software and UCSF Chimerax molecular visualization software to be installed.  The methods and software is offered freely (without guarantee) under GPL 3.0 and was developed by Dr. Gragory A. Babbitt, Dr. Ernest P. Fokoue and bioinformatics students at the Rochester Institute of Technology in 2017-2023. 
 
 ATOMDANCE combines 3 main programs
