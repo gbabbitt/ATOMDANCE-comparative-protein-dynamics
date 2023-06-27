@@ -66,7 +66,7 @@ https://www.rbvi.ucsf.edu/chimerax/
 
 FOR OUR CODE: 
 python module dependencies (os, getopt, sys, threading, random, re, chimerax.core.commands) 
-python modules to be installed (PyQt5, numpy, scipy, pandas, sklearn, scikit-learn, matplotlib, plotnine, progress, parmed and netCDF4)
+python modules to be installed (PyQt5, numpy, scipy, pandas, sklearn, scikit-learn, matplotlib, plotnine, progress, pinguoin, networkx, parmed and netCDF4)
 NOTE: for best results, the CPU on the computer should support at least 4-6 cores
 
 Molecular dynamics file inputs to ATOMDANCE include 6 files (3 for each functional state including a .pdb formatted structure file, a .prmtop formatted topology file and a .nc (i.e. NetCDF) formatted trajectory file.  To run the program put these input files in the local folder you have downloaded from us, open a terminal or cmd line from that folder and type 'python3 ATOMDANCE.py'.  Then follow directions on the graphical interface. These files can be generated on any molecular dynamics engine the user prefers (e.g. QwikMD using NAMD, OpenMM in python, or Amber/Ambertools in Linux).  We also offer a useful GUI for open source AmberTools+openMM MD simulations on Linux available within the download (MDgui.py). This can be used to generate the files required for the ATOMDANCE statistical machine learning post-processor.
@@ -81,6 +81,8 @@ python3 ATOMDANCE_ctlNEG.py
 python3 ATOMDANCE_ctlPOS.py
 
 please cite us (as well as ChimeraX and cpptraj)
+
+Babbitt G.A. et al. 2023. ATOMDANCE: machine learning denoising and resonance analysis for functional and evolutionary comparisons of protein dynamics bioRxiv 2023.04.20.537698; doi: https://doi.org/10.1101/2023.04.20.537698
 
 Babbitt G.A. Coppola E.E. Mortensen J.S. Adams L.E. Liao J. K. 2018. DROIDS 1.2 – a GUI-based pipeline for GPU-accelerated comparative protein dynamics. BIOPHYSICAL JOURNAL 114: 1009-1017. CELL Press.
 
