@@ -220,7 +220,8 @@ def compare_dynamics_KL():
     # rename/add header to columns
     myFrames = (myPOS, myRES, diff_flux, myKLneg, myDstat, myPval, myKScolorlist, dfflux_all_ref, dfflux_all_query)
     myKLindex = pd.concat(myFrames, axis = 1, join="inner")
-    myKLindex = myKLindex.set_axis(['pos', 'res', 'dFLUX', 'KL', 'D', 'pvalue', 'p_value', 'FLUX_ref', 'FLUX_query'], axis=1, inplace=False)
+    #myKLindex = myKLindex.set_axis(['pos', 'res', 'dFLUX', 'KL', 'D', 'pvalue', 'p_value', 'FLUX_ref', 'FLUX_query'], axis=1, inplace=False)
+    myKLindex = myKLindex.set_axis(['pos', 'res', 'dFLUX', 'KL', 'D', 'pvalue', 'p_value', 'FLUX_ref', 'FLUX_query'], axis=1)
     print(myKLindex)
      # write to output file
     if not os.path.exists('divergenceMetrics_%s' % PDB_id_reference):

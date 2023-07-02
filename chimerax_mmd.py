@@ -334,11 +334,13 @@ def compare_dynamics_MMD_flux():
     df_neutralMMDs = pd.DataFrame(neutralMMDs)
     myFrames = (df_neutralMMDs, df_neutralMMDs)
     myMMDneutral = pd.concat(myFrames, axis = 1, join="inner")
-    myMMDneutral = myMMDneutral.set_axis(['MMDneutral', 'MMDneutralAgain'], axis=1, inplace=False)
+    #myMMDneutral = myMMDneutral.set_axis(['MMDneutral', 'MMDneutralAgain'], axis=1, inplace=False)
+    myMMDneutral = myMMDneutral.set_axis(['MMDneutral', 'MMDneutralAgain'], axis=1)
     #print(myMMDneutral)
     myFrames = (myPOS, myRES, MMD_output, PVAL_output, PLAB_output)
     myMMDindex = pd.concat(myFrames, axis = 1, join="inner")
-    myMMDindex = myMMDindex.set_axis(['pos', 'res', 'MMD', 'pval', 'plab'], axis=1, inplace=False)
+    #myMMDindex = myMMDindex.set_axis(['pos', 'res', 'MMD', 'pval', 'plab'], axis=1, inplace=False)
+    myMMDindex = myMMDindex.set_axis(['pos', 'res', 'MMD', 'pval', 'plab'], axis=1)
     print(myMMDindex)
     # write to output file
     if not os.path.exists('maxMeanDiscrepancy_%s' % PDB_id_reference):
@@ -642,11 +644,13 @@ def compare_dynamics_MMD_corr():
     df_neutralMMDs = pd.DataFrame(neutralMMDs)
     myFrames = (df_neutralMMDs, df_neutralMMDs)
     myMMDneutral = pd.concat(myFrames, axis = 1, join="inner")
-    myMMDneutral = myMMDneutral.set_axis(['MMDneutral', 'MMDneutralAgain'], axis=1, inplace=False)
+    #myMMDneutral = myMMDneutral.set_axis(['MMDneutral', 'MMDneutralAgain'], axis=1, inplace=False)
+    myMMDneutral = myMMDneutral.set_axis(['MMDneutral', 'MMDneutralAgain'], axis=1)
     #print(myMMDneutral)
     myFrames = (myPOS, myRES, MMD_output, PVAL_output, PLAB_output)
     myMMDindex = pd.concat(myFrames, axis = 1, join="inner")
-    myMMDindex = myMMDindex.set_axis(['pos', 'res', 'MMD', 'pval', 'plab'], axis=1, inplace=False)
+    #myMMDindex = myMMDindex.set_axis(['pos', 'res', 'MMD', 'pval', 'plab'], axis=1, inplace=False)
+    myMMDindex = myMMDindex.set_axis(['pos', 'res', 'MMD', 'pval', 'plab'], axis=1)
     print(myMMDindex)
     # write to output file
     if not os.path.exists('maxMeanDiscrepancy_%s' % PDB_id_reference):

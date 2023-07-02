@@ -726,11 +726,13 @@ def conserved_dynamics_analysis():
     # export data
     myFrames = (df_neutralMMDs, df_neutralMMDs)
     myMMDneutral = pd.concat(myFrames, axis = 1, join="inner")
-    myMMDneutral = myMMDneutral.set_axis(['MMDneutral', 'MMDneutralAgain'], axis=1, inplace=False)
+    #myMMDneutral = myMMDneutral.set_axis(['MMDneutral', 'MMDneutralAgain'], axis=1, inplace=False)
+    myMMDneutral = myMMDneutral.set_axis(['MMDneutral', 'MMDneutralAgain'], axis=1)
     print(myMMDneutral)
     myFrames = (myPOS, AAquery, AAortho, df_siteMMDs, df_obsMMDs, df_PVAL, df_PLAB)
     myMMDindex = pd.concat(myFrames, axis = 1, join="inner")
-    myMMDindex = myMMDindex.set_axis(['pos', 'AAquery', 'AAortho', 'MMDall', 'MMDmismatch', 'pval', 'plab'], axis=1, inplace=False)
+    #myMMDindex = myMMDindex.set_axis(['pos', 'AAquery', 'AAortho', 'MMDall', 'MMDmismatch', 'pval', 'plab'], axis=1, inplace=False)
+    myMMDindex = myMMDindex.set_axis(['pos', 'AAquery', 'AAortho', 'MMDall', 'MMDmismatch', 'pval', 'plab'], axis=1)
     print(myMMDindex)
     # copy learning matrix for heatmapping coordinated dynamics
     if not os.path.exists('conservedDynamics_%s' % PDB_id_reference):
