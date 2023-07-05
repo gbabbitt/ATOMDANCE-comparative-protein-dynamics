@@ -58,7 +58,7 @@ export PATH=$PATH:$CPPTRAJ_HOME/bin
 
 To check this, open a terminal and type 'cpptraj'.  If the program opens, this has worked. If you get an error message, you'll likely need to correct the bashrc file and try again
 
-NOTE: to use older versions of cpptraj (version 18 and prior) open the three following files (cpptraj_parser.py, cpptraj_ortholog_sampler.py, and chimerax_coordyn.py) and change the line of code in the header part of the script to read 'cpptraj_version = 'old'' instead of 'cpptraj_version = 'new''. 
+NOTE: to use older versions of cpptraj (version 18 and prior) open the three following files (cpptraj_sampler.py, cpptraj_ortholog_sampler.py) and change the line of code in the header part of the script to read 'cpptraj_version = 'old'' instead of 'cpptraj_version = 'new''. 
 
 
 more on UCSF ChimeraX
