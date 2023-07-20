@@ -626,7 +626,8 @@ def network_plot_int_query():
     plt.title("communities of sites with significant interactions over time (p<0.05)")
     nx.draw_networkx(G, with_labels=True, node_color=colors, node_size=100, edge_color='black', linewidths=0.5, font_size=7, cmap=plt.get_cmap("hsv"))
     plt.savefig("./coordinatedDynamics_%s/coordinatedNetwork_query.png" % PDB_id_reference)
-    G.clear()
+    G=nx.Graph(G) # to unfreeze graph
+    G.clear() # to clear for next graph
     plt.close()
     
     # collect NET mapping data
@@ -748,7 +749,8 @@ def network_plot_int_reference():
     plt.title("communities of sites with significant interactions over time (p<0.05)")
     nx.draw_networkx(G, with_labels=True, node_color=colors, node_size=100, edge_color='black', linewidths=0.5, font_size=7, cmap=plt.get_cmap("hsv"))
     plt.savefig("./coordinatedDynamics_%s/coordinatedNetwork_reference.png" % PDB_id_reference)
-    G.clear()
+    G=nx.Graph(G) # to unfreeze graph
+    G.clear() # to clear for next graph
     plt.close()
     
     # collect NET mapping data
@@ -847,7 +849,8 @@ def network_plot_site_query():
     plt.title("communities of sites with ns differences in atom fluctuation (p>0.95)")
     nx.draw_networkx(G, with_labels=True, node_color=colors, node_size=100, edge_color='black', linewidths=0.5, font_size=7, cmap=plt.get_cmap("hsv"))
     plt.savefig("./coordinatedDynamics_%s/siteNSnetwork_query.png" % PDB_id_reference)
-    G.clear()
+    G=nx.Graph(G) # to unfreeze graph
+    G.clear() # to clear for next graph
     plt.close()
     
     # collect NET mapping data
@@ -933,7 +936,8 @@ def network_plot_site_reference():
     plt.title("communities of sites with ns differences in atom fluctuation (p>0.95)")
     nx.draw_networkx(G, with_labels=True, node_color=colors, node_size=100, edge_color='black', linewidths=0.5, font_size=7, cmap=plt.get_cmap("hsv"))
     plt.savefig("./coordinatedDynamics_%s/siteNSnetwork_reference.png" % PDB_id_reference)
-    G.clear()
+    G=nx.Graph(G) # to unfreeze graph
+    G.clear() # to clear for next graph
     plt.close()
     
     # collect NET mapping data
