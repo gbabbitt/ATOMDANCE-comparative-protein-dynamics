@@ -567,19 +567,40 @@ def network_plot_int_query():
     myNodes = G.nodes
     myNodes = list(myNodes)
     #print(myNodes)
-    print("detecting communities on network")
+    print("detecting communities on network") 
     coms = nx.community.louvain_communities(G)
-    print("calculating network connectivity and non-randomness") 
-    avg_con = nx.average_node_connectivity(G, flow_func=None)
-    non_rand = nx.non_randomness(G, k=None, weight=None)
-    G1=G
+    print("removing isolates from network")
+    if(nx.is_connected(G)):
+        print("test-graph is connected")
+        print("calculating network connectivity and non-randomness")
+        avg_con = nx.average_node_connectivity(G, flow_func=None)
+        non_rand = nx.non_randomness(G, k=None, weight=None)
+    else:
+        print("test-graph is unconnected")    
+        most_nodes = max(nx.connected_components(G), key=len)
+        M = nx.subgraph(G, most_nodes)
+        print("after isolated nodes removed")
+        print(M)
+        if(nx.is_connected(M)):
+            print("test-graph is now connected")
+            G=M
+            print("calculating network connectivity and non-randomness")
+            avg_con = nx.average_node_connectivity(G, flow_func=None)
+            non_rand = nx.non_randomness(G, k=None, weight=None)
+        else:
+            print("ERROR-graph is still unconnected") 
+            avg_con = "undetermined"
+            non_rand = "undetermined"
     #print(coms)
+    str_G = str(G)
     str_coms = str(coms)
     str_avg_con = str(avg_con)
     str_non_rand = str(non_rand)
     writePath= "./coordinatedDynamics_%s/coordinatedDynamics_query_communities.txt" % PDB_id_reference
     with open(writePath, 'w') as f_out:
-            f_out.write("resonance connectivity across AA sites on protein - query state\n")
+            f_out.write("graph network (isolates removed) - query state\n")
+            f_out.write(str_G)
+            f_out.write("\nresonance connectivity across AA sites on protein - query state\n")
             f_out.write(str_avg_con)
             f_out.write("\nresonance non-randomness (nr) - query state\n")
             f_out.write("1st value = sum of nr for all edges (NOTE: nr of edge (i.e. site resonance) is small when 2 linked nodes (i.e. AA sites) are from different communities)\n")
@@ -670,16 +691,38 @@ def network_plot_int_reference():
     #print(myNodes)
     print("detecting communities on network") 
     coms = nx.community.louvain_communities(G)
-    print("calculating network connectivity and non-randomness") 
-    avg_con = nx.average_node_connectivity(G, flow_func=None)
-    non_rand = nx.non_randomness(G, k=None, weight=None)
+    print("removing isolates from network")
+    if(nx.is_connected(G)):
+        print("test-graph is connected")
+        print("calculating network connectivity and non-randomness")
+        avg_con = nx.average_node_connectivity(G, flow_func=None)
+        non_rand = nx.non_randomness(G, k=None, weight=None)
+    else:
+        print("test-graph is unconnected")    
+        most_nodes = max(nx.connected_components(G), key=len)
+        M = nx.subgraph(G, most_nodes)
+        print("after isolated nodes removed")
+        print(M)
+        if(nx.is_connected(M)):
+            print("test-graph is now connected")
+            G=M
+            print("calculating network connectivity and non-randomness")
+            avg_con = nx.average_node_connectivity(G, flow_func=None)
+            non_rand = nx.non_randomness(G, k=None, weight=None)
+        else:
+            print("ERROR-graph is still unconnected") 
+            avg_con = "undetermined"
+            non_rand = "undetermined"
     #print(coms)
+    str_G = str(G)
     str_coms = str(coms)
     str_avg_con = str(avg_con)
     str_non_rand = str(non_rand)
     writePath= "./coordinatedDynamics_%s/coordinatedDynamics_reference_communities.txt" % PDB_id_reference
     with open(writePath, 'w') as f_out:
-            f_out.write("resonance connectivity across AA sites on protein - reference state\n")
+            f_out.write("graph network (isolates removed) - query state\n")
+            f_out.write(str_G)
+            f_out.write("\nresonance connectivity across AA sites on protein - reference state\n")
             f_out.write(str_avg_con)
             f_out.write("\nresonance non-randomness (nr) - reference state\n")
             f_out.write("1st value = sum of nr for all edges (NOTE: nr of edge (i.e. site resonance) is small when 2 linked nodes (i.e. AA sites) are from different communities)\n")
