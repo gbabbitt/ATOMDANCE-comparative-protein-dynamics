@@ -158,6 +158,57 @@ def resinfo():
                outfile.write("\n")
     outfile.close
 
+
+def rmsd_plot():
+    print("plotting rmsd over production runs to examine stability of the MD simulations")
+    # include stat test for stability over time    
+    f1 = open("RMSF_%s.ctl" % PDB_id_query, "w")
+    f2 = open("RMSF_%s.ctl" % PDB_id_reference, "w")
+    f1.write("parm %s\n" % top_file_query)
+    f1.write("trajin %s\n" % traj_file_query)
+    f1.write("rms out RMSF_%s.txt ToFirst @CA,C,O,N,H&!(:WAT) first\n" % PDB_id_query)
+    f1.write("run\n")
+    f1.close()
+    f2.write("parm %s\n" % top_file_reference)
+    f2.write("trajin %s\n" % traj_file_reference)
+    f2.write("rms ToFirst @CA,C,O,N,H&!(:WAT) first out RMSF_%s.txt\n" % PDB_id_reference)
+    f2.write("run\n")
+    f2.close()
+    print("calculating RMSF for query protein")
+    cmd = 'cpptraj -i RMSF_%s.ctl -o RMSF_%s_out.txt' % (PDB_id_query,PDB_id_query)
+    os.system(cmd)
+    print("calculating RMSF for reference protein")
+    cmd = 'cpptraj -i RMSF_%s.ctl -o RMSF_%s_out.txt' % (PDB_id_reference,PDB_id_reference)
+    os.system(cmd)
+    inrmsf_query = "RMSF_%s.txt" % PDB_id_query     
+    dfrmsf_query = pd.read_csv(inrmsf_query, sep="\s+")
+    #print(dfrmsf_query)
+    inrmsf_reference = "RMSF_%s.txt" % PDB_id_reference     
+    dfrmsf_reference = pd.read_csv(inrmsf_reference, sep="\s+")
+    #print(dfrmsf_reference)
+    # combine data
+    myRMSFframes = (dfrmsf_query, dfrmsf_reference)
+    myRMSFindex = pd.concat(myRMSFframes, axis = 1, join="inner")
+    #myRMSFindex = myRMSFindex.set_axis(['#FrameQ', 'ToFirstQ', '#FrameR', 'ToFirstR'], axis=1, inplace=False)
+    myRMSFindex = myRMSFindex.set_axis(['#FrameQ', 'ToFirstQ', '#FrameR', 'ToFirstR'], axis=1)
+    print(myRMSFindex)
+    #make and save plot
+    myRMSFplot = (ggplot() + labs(title='root mean square fluctuation (red is bound or mutated state)', x='frame number', y='RMSF') + geom_line(data = myRMSFindex, mapping = aes(x='#FrameR', y='ToFirstR'), color = 'black') + geom_line(data = myRMSFindex, mapping = aes(x='#FrameQ', y='ToFirstQ'), color = 'red') + theme(panel_background=element_rect(fill='black', alpha=.1)))
+    if not os.path.exists('rmsd_%s'% PDB_id_reference):
+        os.mkdir('rmsd_%s'% PDB_id_reference)
+    myRMSFplot.save("rmsd_%s/RMSF_plot.png" % PDB_id_reference, width=10, height=5, dpi=300)
+    #print(myRMSFplot)
+    
+    # open RMSD image
+    print("plotting rmsd over production runs to examine stability of the MD simulations")
+    print("NOTE: to examine rmsd over equilibration runs replace the prod.nc traj file with the eq.nc in the GUI and rerun analyses")
+    #print("opening RMSD plot for query and reference proteins %s %s" % (PDB_id_query, PDB_id_reference))
+    #image_path = "rmsd_%s/RMSF_plot.png" % PDB_id_reference
+    #image = mpimg.imread(image_path)
+    #plt.imshow(image)
+    #plt.show(block=True)
+
+
 ################################################################################
 def feature_vector_corr():
     print("creating feature vector files for machine learning on atom correlations")
@@ -1054,6 +1105,7 @@ def main():
     feature_vector_flux()
     #view_query()
     #view_reference()
+    rmsd_plot()
     if(div_anal == "yes"):
         compare_dynamics_KL()
         #view_KL()
