@@ -225,7 +225,7 @@ class Ui_Dialog(object):
         self.label_15.setText(_translate("Dialog", "<html><head/><body><p>i.e. unbound state</p></body></html>"))
         self.label_2.setText(_translate("Dialog", "<html><head/><body><p><span style=\" font-weight:600;\">reference protein file list</span></p></body></html>"))
         self.label_5.setText(_translate("Dialog", "<html><head/><body><p>number of subsamples</p></body></html>"))
-        self.label_6.setText(_translate("Dialog", "<html><head/><body><p>frames iper subsample (e.g. 100)</p></body></html>"))
+        self.label_6.setText(_translate("Dialog", "<html><head/><body><p>frames per subsample (e.g. 100)</p></body></html>"))
         self.label_8.setText(_translate("Dialog", "<html><head/><body><p>total number of frames</p></body></html>"))
         self.label_9.setText(_translate("Dialog", "<html><head/><body><p>multi-chain c-terminals (e.g. 134 or 134 278)</p></body></html>"))
         self.label_10.setText(_translate("Dialog", "<html><head/><body><p>number of AA sites in protein</p></body></html>"))
