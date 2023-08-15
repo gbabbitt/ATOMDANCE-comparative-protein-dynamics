@@ -721,7 +721,7 @@ def network_plot_int_reference():
     str_non_rand = str(non_rand)
     writePath= "./coordinatedDynamics_%s/coordinatedDynamics_reference_communities.txt" % PDB_id_reference
     with open(writePath, 'w') as f_out:
-            f_out.write("graph network (isolates removed) - query state\n")
+            f_out.write("graph network (isolates removed) - reference state\n")
             f_out.write(str_G)
             f_out.write("\nresonance connectivity across AA sites on protein - reference state\n")
             f_out.write(str_avg_con)
@@ -985,8 +985,37 @@ def network_plot_site_reference():
         NETpos = NET_output.iat[x,0]
         #print(NETpos)
         f6.write("\t:%s\t%s\n" % (sitepos,NETpos))
+
+def resonance_gain():
+    print("calculating resonance gain/loss for query state compared to reference state")
+    myREF = open("./coordinatedDynamics_%s/coordinatedDynamics_reference_communities.txt" % PDB_id_reference, "r")
+    myREF = myREF.readlines()
+    myREF = myREF[7]
+    myREF = myREF.split(",")
+    myREF = myREF[0]
+    myREF = myREF.lstrip('(')
+    myREF = float(myREF)
+    print("resonance-reference state")
+    print(myREF)
+    myQRY = open("./coordinatedDynamics_%s/coordinatedDynamics_query_communities.txt" % PDB_id_reference, "r")
+    myQRY = myQRY.readlines()
+    myQRY = myQRY[7]
+    myQRY = myQRY.split(",")
+    myQRY = myQRY[0]
+    myQRY = myQRY.lstrip('(')
+    myQRY = float(myQRY)
+    print("resonance-query state")
+    print(myQRY)
+    print("resonance gain from reference to query state")
+    reso_gain = (myQRY-myREF)
+    print(reso_gain)
+    writePath= "./coordinatedDynamics_%s/coordinateddynamics_resonance gain.txt" % PDB_id_reference
+    with open(writePath, 'w') as f_out:
+            f_out.write("resonance gain from reference to query state = ")
+            reso_gain_str = str(reso_gain)
+            f_out.write(reso_gain_str)
+            f_out.close
     
-        
 ###############################################################
 ###############################################################
 
@@ -1000,7 +1029,7 @@ def main():
     matrix_plot_int()
     network_plot_int_query()
     network_plot_int_reference()
-    
+    resonance_gain()
     
     print("comparative analyses of molecular dynamics is completed")
     
