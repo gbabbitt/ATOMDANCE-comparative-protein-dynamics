@@ -304,7 +304,7 @@ def compare_dynamics_MMD_flux():
         emp_P = cntGREATER/(cntGREATER+cntLESSER)
         #print("empirical P value")
         #print(emp_P)
-        cutoff = 0.05
+        cutoff = (0.05/length_prot)
         if(emp_P < cutoff or emp_P > 1-cutoff):
             p_label = "sig"
         if(emp_P >= cutoff and emp_P <= 1-cutoff):
@@ -614,7 +614,7 @@ def compare_dynamics_MMD_corr():
         emp_P = cntGREATER/(cntGREATER+cntLESSER)
         #print("empirical P value")
         #print(emp_P)
-        cutoff = 0.05
+        cutoff = (0.05/length_prot)
         if(emp_P < cutoff or emp_P > 1-cutoff):
             p_label = "sig"
         if(emp_P >= cutoff and emp_P <= 1-cutoff):
