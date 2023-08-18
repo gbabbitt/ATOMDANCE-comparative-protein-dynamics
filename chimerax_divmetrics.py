@@ -75,9 +75,9 @@ for x in range(len(infile_lines)):
     if(header == "n_frames"):
         n_fr = value
         print("my number of frames is",n_fr)
-    if(header == "c_terminals"):
-        c_ch = value
-        print("my c terminals chains is",c_ch)
+    if(header == "n_terminals"):
+        n_ch = value
+        print("my n terminals chains is",n_ch)
     if(header == "length"):
         l_pr = value
         print("my total protein length is",l_pr)    
@@ -117,7 +117,7 @@ traj_file_reference = ""+ref_traj+""
 subsamples = int(sub_samples)
 frame_size = int(fr_sz)
 n_frames = int(n_fr)
-c_chains = ""+c_ch+""
+n_chains = ""+n_ch+""
 length_prot = int(l_pr)
 start_prot = int(st_pr)
 chimerax_path = ""+ch_path+""
@@ -128,6 +128,31 @@ disc_anal = ""+disc_anal+""
 cons_anal = ""+cons_anal+""
 coord_anal = ""+coord_anal+""
 #var_anal = ""+var_anal+""
+
+# create lists for multichain plots
+print(n_chains)
+n_chains = "%s %s %s" % (st_pr, n_chains, l_pr)
+n_chains = n_chains.split()
+print(n_chains)
+len_chains = []
+start_chains = []
+stop_chains = []
+label_chains = []
+labels = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P"]  # no more than 16 chains allowed
+for x in range(len(n_chains)-1):
+    chain_label = labels[x]
+    chain_start = int(n_chains[x])
+    chain_stop = int(n_chains[x+1])-1
+    chain_length = (chain_stop - chain_start)
+    len_chains.append(chain_length)
+    label_chains.append(chain_label)
+    start_chains.append(chain_start)
+    stop_chains.append(chain_stop)
+print("multichain information")
+print(len_chains)
+print(start_chains)
+print(stop_chains)
+print(label_chains)
     
         
 #################################################################################
@@ -233,6 +258,7 @@ def compare_dynamics_KL():
         f_out.write(dfAsString)
         f_out.close
     
+      
     # plot KL divergence and dFLUX
     myplot1 = (ggplot(myKLindex) + aes(x='pos', y='KL', color='res', fill='res') + geom_bar(stat='identity') + labs(title='site-wise divergence in atom fluctuation upon binding (+ amplified / - dampened)', x='amino acid site', y='signed KL divergence') + theme(panel_background=element_rect(fill='black', alpha=.6)))
     myplot2 = (ggplot(myKLindex) + aes(x='pos', y='dFLUX', color='res', fill='res') + geom_bar(stat='identity') + labs(title='site-wise difference in atom fluctuation upon binding (+ amplified / - dampened)', x='amino acid site', y='dFLUX') + theme(panel_background=element_rect(fill='black', alpha=.6)))
@@ -260,6 +286,43 @@ def compare_dynamics_KL():
     myplot10.save("divergenceMetrics_%s/KS_pvalue_light.png" % PDB_id_reference, width=10, height=5, dpi=300)
     myplot11.save("divergenceMetrics_%s/KL_value_dark.png" % PDB_id_reference, width=10, height=5, dpi=300)
     myplot12.save("divergenceMetrics_%s/KL_value_light.png" % PDB_id_reference, width=10, height=5, dpi=300)
+    
+    # loop through multi-chains
+    if(len(n_chains) > 2):
+        for x in range(len(n_chains)-1):
+            myStart = start_chains[x]
+            myStop = stop_chains[x]
+            myLabel = label_chains[x]
+    
+            # plot KL divergence and dFLUX
+            myplot1 = (ggplot(myKLindex) + aes(x='pos', y='KL', color='res', fill='res') + geom_bar(stat='identity') + scale_x_continuous(limits=(myStart, myStop)) + labs(title='site-wise divergence in atom fluctuation upon binding (+ amplified / - dampened)', x='amino acid site', y='signed KL divergence') + theme(panel_background=element_rect(fill='black', alpha=.6)))
+            myplot2 = (ggplot(myKLindex) + aes(x='pos', y='dFLUX', color='res', fill='res') + geom_bar(stat='identity') + scale_x_continuous(limits=(myStart, myStop)) + labs(title='site-wise difference in atom fluctuation upon binding (+ amplified / - dampened)', x='amino acid site', y='dFLUX') + theme(panel_background=element_rect(fill='black', alpha=.6)))
+            myplot5 = (ggplot(myKLindex) + aes(x='pos', y='D', color='p_value', fill='p_value') + geom_bar(stat='identity') + scale_x_continuous(limits=(myStart, myStop)) + labs(title='bonferroni corrected significance in divergence in atom fluctuation', x='amino acid site', y='D (2 sample KS test)') + theme(panel_background=element_rect(fill='black', alpha=.6)))
+            myplot7 = (ggplot() + scale_x_continuous(limits=(myStart, myStop)) + labs(title='site-wise atom fluctuation (orange is bound or mutated state)', x='amino acid site', y='atom fluctuation') + geom_line(data = myKLindex, mapping = aes(x='pos', y='FLUX_ref'), color = 'white') + geom_line(data = myKLindex, mapping = aes(x='pos', y='FLUX_query'), color = 'orange') + theme(panel_background=element_rect(fill='black', alpha=.6)))
+            myplot9 = (ggplot(myKLindex) + aes(x='pos', y='KL', color='pvalue', fill='pvalue') + geom_bar(stat='identity') + scale_x_continuous(limits=(myStart, myStop)) + scale_color_gradient2(low="purple",mid="white",high="purple",midpoint=0.5,limits=(0,1)) + scale_fill_gradient2(low="purple",mid="white",high="purple",midpoint=0.5,limits=(0,1)) + labs(title='site-wise divergence in atom fluctuation upon binding (+ amplified / - dampened)', x='amino acid site', y='signed KL divergence', fill= "p value", color= "p value") + theme(panel_background=element_rect(fill='black', alpha=.6)))
+            myplot11 = (ggplot(myKLindex) + aes(x='pos', y='KL', color='KL', fill='KL') + geom_bar(stat='identity') + scale_x_continuous(limits=(myStart, myStop)) + scale_color_gradient2(low="blue",mid="white",high="red",midpoint=0) + scale_fill_gradient2(low="blue",mid="white",high="red",midpoint=0) + labs(title='site-wise divergence in atom fluctuation upon binding (+ amplified / - dampened)', x='amino acid site', y='signed KL divergence', fill= "KL divergence", color= "KL divergence") + theme(panel_background=element_rect(fill='black', alpha=.6)))
+    
+            myplot3 = (ggplot(myKLindex) + aes(x='pos', y='KL', color='res', fill='res') + geom_bar(stat='identity') + scale_x_continuous(limits=(myStart, myStop)) + labs(title='site-wise divergence in atom fluctuation upon binding (+ amplified / - dampened)', x='amino acid site', y='signed KL divergence') + theme(panel_background=element_rect(fill='black', alpha=.1)))
+            myplot4 = (ggplot(myKLindex) + aes(x='pos', y='dFLUX', color='res', fill='res') + geom_bar(stat='identity') + scale_x_continuous(limits=(myStart, myStop)) + labs(title='site-wise difference in atom fluctuation upon binding (+ amplified / - dampened)', x='amino acid site', y='dFLUX') + theme(panel_background=element_rect(fill='black', alpha=.1)))
+            myplot6 = (ggplot(myKLindex) + aes(x='pos', y='D', color='p_value', fill='p_value') + geom_bar(stat='identity') + scale_x_continuous(limits=(myStart, myStop)) + labs(title='bonferroni corrected significance in divergence in atom fluctuation', x='amino acid site', y='D (2 sample KS test)') + theme(panel_background=element_rect(fill='black', alpha=.1)))
+            myplot8 = (ggplot() + scale_x_continuous(limits=(myStart, myStop)) + labs(title='site-wise atom fluctuation (red is bound or mutated state)', x='amino acid site', y='atom fluctuation') + geom_line(data = myKLindex, mapping = aes(x='pos', y='FLUX_ref'), color = 'black') + geom_line(data = myKLindex, mapping = aes(x='pos', y='FLUX_query'), color = 'red') + theme(panel_background=element_rect(fill='black', alpha=.1)))
+            myplot10 = (ggplot(myKLindex) + aes(x='pos', y='KL', color='pvalue', fill='pvalue') + geom_bar(stat='identity') + scale_x_continuous(limits=(myStart, myStop)) + scale_color_gradient2(low="purple",mid="white",high="purple",midpoint=0.5,limits=(0,1)) + scale_fill_gradient2(low="purple",mid="white",high="purple",midpoint=0.5,limits=(0,1)) + labs(title='site-wise divergence in atom fluctuation upon binding (+ amplified / - dampened)', x='amino acid site', y='signed KL divergence', fill= "p value", color= "p value") + theme(panel_background=element_rect(fill='black', alpha=.1)))
+            myplot12 = (ggplot(myKLindex) + aes(x='pos', y='KL', color='KL', fill='KL') + geom_bar(stat='identity') + scale_x_continuous(limits=(myStart, myStop)) + scale_color_gradient2(low="blue",mid="white",high="red",midpoint=0) + scale_fill_gradient2(low="blue",mid="white",high="red",midpoint=0) + labs(title='site-wise divergence in atom fluctuation upon binding (+ amplified / - dampened)', x='amino acid site', y='signed KL divergence', fill= "KL divergence", color= "KL divergence") + theme(panel_background=element_rect(fill='black', alpha=.1)))
+    
+            myplot1.save("divergenceMetrics_%s/KLdivergence_dark_%s.png" % (PDB_id_reference, myLabel), width=10, height=5, dpi=300)
+            myplot2.save("divergenceMetrics_%s/deltaFLUX_dark_%s.png" % (PDB_id_reference, myLabel), width=10, height=5, dpi=300)
+            myplot3.save("divergenceMetrics_%s/KLdivergence_light_%s.png" % (PDB_id_reference, myLabel), width=10, height=5, dpi=300)
+            myplot4.save("divergenceMetrics_%s/deltaFLUX_light_%s.png" % (PDB_id_reference, myLabel), width=10, height=5, dpi=300)
+            myplot5.save("divergenceMetrics_%s/KStest_dark_%s.png" % (PDB_id_reference, myLabel), width=10, height=5, dpi=300)
+            myplot6.save("divergenceMetrics_%s/KStest_light_%s.png" % (PDB_id_reference, myLabel), width=10, height=5, dpi=300)
+            myplot7.save("divergenceMetrics_%s/fluxlines_dark_%s.png" % (PDB_id_reference, myLabel), width=10, height=5, dpi=300)
+            myplot8.save("divergenceMetrics_%s/fluxlines_light_%s.png" % (PDB_id_reference, myLabel), width=10, height=5, dpi=300)
+            myplot9.save("divergenceMetrics_%s/KS_pvalue_dark_%s.png" % (PDB_id_reference, myLabel), width=10, height=5, dpi=300)
+            myplot10.save("divergenceMetrics_%s/KS_pvalue_light_%s.png" % (PDB_id_reference, myLabel), width=10, height=5, dpi=300)
+            myplot11.save("divergenceMetrics_%s/KL_value_dark_%s.png" % (PDB_id_reference, myLabel), width=10, height=5, dpi=300)
+            myplot12.save("divergenceMetrics_%s/KL_value_light_%s.png" % (PDB_id_reference, myLabel), width=10, height=5, dpi=300)
+    
+    
     
     #if(graph_scheme == "light"):
     #    print(myplot3)
