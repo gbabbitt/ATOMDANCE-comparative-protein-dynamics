@@ -75,9 +75,9 @@ for x in range(len(infile_lines)):
     if(header == "n_frames"):
         n_fr = value
         print("my number of frames is",n_fr)
-    if(header == "c_terminals"):
-        c_ch = value
-        print("my c terminals chains is",c_ch)
+    if(header == "n_terminals"):
+        n_ch = value
+        print("my n terminals chains is",n_ch)
     if(header == "length"):
         l_pr = value
         print("my total protein length is",l_pr)    
@@ -117,7 +117,7 @@ traj_file_reference = ""+ref_traj+""
 subsamples = int(sub_samples)
 frame_size = int(fr_sz)
 n_frames = int(n_fr)
-c_chains = ""+c_ch+""
+n_chains = ""+n_ch+""
 length_prot = int(l_pr)
 start_prot = int(st_pr)
 chimerax_path = ""+ch_path+""
@@ -128,6 +128,33 @@ disc_anal = ""+disc_anal+""
 cons_anal = ""+cons_anal+""
 coord_anal = ""+coord_anal+""
 #var_anal = ""+var_anal+""
+
+# create lists for multichain plots
+print(n_chains)
+n_chains = "%s %s %s" % (st_pr, n_chains, l_pr)
+n_chains = n_chains.split()
+print(n_chains)
+len_chains = []
+start_chains = []
+stop_chains = []
+label_chains = []
+labels = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P"]  # no more than 16 chains allowed
+for x in range(len(n_chains)-1):
+    chain_label = labels[x]
+    chain_start = int(n_chains[x])
+    chain_stop = int(n_chains[x+1])-1
+    chain_length = (chain_stop - chain_start)
+    len_chains.append(chain_length)
+    label_chains.append(chain_label)
+    start_chains.append(chain_start)
+    stop_chains.append(chain_stop)
+print("multichain information")
+print(len_chains)
+print(start_chains)
+print(stop_chains)
+print(label_chains)
+
+
 ###############################################################################
 ###############################################################################
 # set number of features for tuning gamma in RBF kernel
@@ -372,6 +399,32 @@ def compare_dynamics_MMD_flux():
     myplot14.save("maxMeanDiscrepancy_%s/MMD_light_sig_flux.png" % PDB_id_reference, width=10, height=5, dpi=300)
     myplot15.save("maxMeanDiscrepancy_%s/MMD_dark_MMD_flux.png" % PDB_id_reference, width=10, height=5, dpi=300)
     myplot16.save("maxMeanDiscrepancy_%s/MMD_light_MMD_flux.png" % PDB_id_reference, width=10, height=5, dpi=300)
+    
+    
+    # loop through multi-chains
+    if(len(n_chains) > 2):
+        for x in range(len(n_chains)-1):
+            myStart = start_chains[x]
+            myStop = stop_chains[x]
+            myLabel = label_chains[x]
+            
+             # make MMD plots
+            myplot9 = (ggplot(myMMDindex) + aes(x='pos', y='MMD', color='pval', fill='pval') + geom_bar(stat='identity') + scale_x_continuous(limits=(myStart, myStop)) + scale_color_gradient2(low="purple",mid="white",high="purple",midpoint=0.5,limits=(0,1)) + scale_fill_gradient2(low="purple",mid="white",high="purple",midpoint=0.5,limits=(0,1)) + labs(title='site-wise MMD of learned features upon binding (+ amplified / - dampened)', x='amino acid site', y='MMD (atom fluctuation upon binding)') + theme(panel_background=element_rect(fill='black', alpha=.6)))
+            myplot10 = (ggplot(myMMDindex) + aes(x='pos', y='MMD', color='pval', fill='pval') + geom_bar(stat='identity') + scale_x_continuous(limits=(myStart, myStop)) + scale_color_gradient2(low="purple",mid="white",high="purple",midpoint=0.5,limits=(0,1)) + scale_fill_gradient2(low="purple",mid="white",high="purple",midpoint=0.5,limits=(0,1)) + labs(title='site-wise MMD of learned features upon binding  (+ amplified / - dampened)', x='amino acid site', y='MMD (atom fluctuation upon binding)') + theme(panel_background=element_rect(fill='black', alpha=.1)))
+            myplot11 = (ggplot(myMMDindex) + aes(x='pos', y='MMD', color='res', fill='res') + geom_bar(stat='identity') + scale_x_continuous(limits=(myStart, myStop)) + labs(title='site-wise MMD of learned features upon binding  (+ amplified / - dampened)', x='amino acid site', y='MMD (atom fluctuation upon binding)') + theme(panel_background=element_rect(fill='black', alpha=.6)))
+            myplot12 = (ggplot(myMMDindex) + aes(x='pos', y='MMD', color='res', fill='res') + geom_bar(stat='identity') + scale_x_continuous(limits=(myStart, myStop)) + labs(title='site-wise MMD of learned features upon binding  (+ amplified / - dampened)', x='amino acid site', y='MMD (atom fluctuation upon binding)') + theme(panel_background=element_rect(fill='black', alpha=.1)))
+            myplot13 = (ggplot(myMMDindex) + aes(x='pos', y='MMD', color='plab', fill='plab') + geom_bar(stat='identity') + scale_x_continuous(limits=(myStart, myStop)) + labs(title='site-wise MMD of learned features upon binding (+ amplified / - dampened)', x='amino acid site', y='MMD (atom fluctuation upon binding)') + theme(panel_background=element_rect(fill='black', alpha=.6)))
+            myplot14 = (ggplot(myMMDindex) + aes(x='pos', y='MMD', color='plab', fill='plab') + geom_bar(stat='identity') + scale_x_continuous(limits=(myStart, myStop)) + labs(title='site-wise MMD of learned features upon binding  (+ amplified / - dampened)', x='amino acid site', y='MMD (atom fluctuation upon binding)') + theme(panel_background=element_rect(fill='black', alpha=.1)))
+            myplot15 = (ggplot(myMMDindex) + aes(x='pos', y='MMD', color='MMD', fill='MMD') + geom_bar(stat='identity') + scale_x_continuous(limits=(myStart, myStop)) + scale_color_gradient2(low="blue",mid="white",high="red",midpoint=0) + scale_fill_gradient2(low="blue",mid="white",high="red",midpoint=0) + labs(title='site-wise MMD of learned features upon binding  (+ amplified / - dampened)', x='amino acid site', y='MMD (atom fluctuation upon binding)') + theme(panel_background=element_rect(fill='black', alpha=.6)))
+            myplot16 = (ggplot(myMMDindex) + aes(x='pos', y='MMD', color='MMD', fill='MMD') + geom_bar(stat='identity') + scale_x_continuous(limits=(myStart, myStop)) + scale_color_gradient2(low="blue",mid="white",high="red",midpoint=0) + scale_fill_gradient2(low="blue",mid="white",high="red",midpoint=0) + labs(title='site-wise MMD of learned features upon binding (+ amplified / - dampened)', x='amino acid site', y='MMD (atom fluctuation upon binding)') + theme(panel_background=element_rect(fill='black', alpha=.1)))
+            myplot9.save("maxMeanDiscrepancy_%s/MMD_dark_p_flux_%s.png" % (PDB_id_reference, myLabel), width=10, height=5, dpi=300)
+            myplot10.save("maxMeanDiscrepancy_%s/MMD_light_p_flux_%s.png" % (PDB_id_reference, myLabel), width=10, height=5, dpi=300)
+            myplot11.save("maxMeanDiscrepancy_%s/MMD_dark_res_flux_%s.png" % (PDB_id_reference, myLabel), width=10, height=5, dpi=300)
+            myplot12.save("maxMeanDiscrepancy_%s/MMD_light_res_flux_%s.png" % (PDB_id_reference, myLabel), width=10, height=5, dpi=300)
+            myplot13.save("maxMeanDiscrepancy_%s/MMD_dark_sig_flux_%s.png" % (PDB_id_reference, myLabel), width=10, height=5, dpi=300)
+            myplot14.save("maxMeanDiscrepancy_%s/MMD_light_sig_flux_%s.png" % (PDB_id_reference, myLabel), width=10, height=5, dpi=300)
+            myplot15.save("maxMeanDiscrepancy_%s/MMD_dark_MMD_flux_%s.png" % (PDB_id_reference, myLabel), width=10, height=5, dpi=300)
+            myplot16.save("maxMeanDiscrepancy_%s/MMD_light_MMD_flux_%s.png" % (PDB_id_reference, myLabel), width=10, height=5, dpi=300)
     
     #if(graph_scheme == "light"):
     #    print(myplot8)

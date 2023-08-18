@@ -106,9 +106,9 @@ for x in range(len(infile_lines)):
     if(header == "n_frames"):
         n_fr = value
         print("my number of frames is",n_fr)
-    if(header == "c_terminals"):
-        c_ch = value
-        print("my c terminals chains is",c_ch)
+    if(header == "n_terminals"):
+        n_ch = value
+        print("my n terminals chains is",n_ch)
     if(header == "length"):
         l_pr = value
         print("my total protein length is",l_pr)    
@@ -152,7 +152,7 @@ traj_file_ortho = ""+ortho_traj+""
 subsamples = int(sub_samples)
 frame_size = int(fr_sz)
 n_frames = int(n_fr)
-c_chains = ""+c_ch+""
+n_chains = ""+n_ch+""
 length_prot = int(l_pr)
 start_prot = int(st_pr)
 chimerax_path = ""+ch_path+""
@@ -163,6 +163,33 @@ disc_anal = ""+disc_anal+""
 cons_anal = ""+cons_anal+""
 coord_anal = ""+coord_anal+""
 #var_anal = ""+var_anal+""
+
+# create lists for multichain plots
+print(n_chains)
+n_chains = "%s %s %s" % (st_pr, n_chains, l_pr)
+n_chains = n_chains.split()
+print(n_chains)
+len_chains = []
+start_chains = []
+stop_chains = []
+label_chains = []
+labels = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P"]  # no more than 16 chains allowed
+for x in range(len(n_chains)-1):
+    chain_label = labels[x]
+    chain_start = int(n_chains[x])
+    chain_stop = int(n_chains[x+1])-1
+    chain_length = (chain_stop - chain_start)
+    len_chains.append(chain_length)
+    label_chains.append(chain_label)
+    start_chains.append(chain_start)
+    stop_chains.append(chain_stop)
+print("multichain information")
+print(len_chains)
+print(start_chains)
+print(stop_chains)
+print(label_chains)
+
+
 
 # set number of features for tuning gamma in RBF kernel
 infeature_ref = "./features/featureFLUX_sub_ref/feature_%s_sub_ref_0.txt" % PDB_id_reference
@@ -757,6 +784,25 @@ def conserved_dynamics_analysis():
     myplot4.save("conservedDynamics_%s/MMD_light_sig.png" % PDB_id_reference, width=10, height=5, dpi=300)
     myplot5.save("conservedDynamics_%s/MMD_dark_histo.png" % PDB_id_reference, width=10, height=5, dpi=300)
     myplot6.save("conservedDynamics_%s/MMD_light_histo.png" % PDB_id_reference, width=10, height=5, dpi=300)
+    
+    # loop through multi-chains
+    if(len(n_chains) > 2):
+        for x in range(len(n_chains)-1):
+            myStart = start_chains[x]
+            myStop = stop_chains[x]
+            myLabel = label_chains[x]
+            
+            # plot MMD profile and obs mismatch MMD colored via p value
+            myplot1 = (ggplot(myMMDindex) + aes(x='pos', y='MMDall', color='plab', fill='plab') + geom_bar(stat='identity') + scale_x_continuous(limits=(myStart, myStop)) + labs(title='significant site-wise MMD of learned features during amino acid replacement (i.e. mutational impact)', x='amino acid site', y='MMD (mutational impact)') + theme(panel_background=element_rect(fill='black', alpha=.6)))
+            myplot2 = (ggplot(myMMDindex) + aes(x='pos', y='MMDall', color='plab', fill='plab') + geom_bar(stat='identity') + scale_x_continuous(limits=(myStart, myStop)) + labs(title='significant site-wise MMD of learned features during amino acid replacement (i.e. mutational impact)', x='amino acid site', y='MMD (mutational impact)') + theme(panel_background=element_rect(fill='black', alpha=.1)))
+            myplot3 = (ggplot(myMMDindex) + aes(x='pos', y='MMDall', color='pval', fill='pval') + geom_bar(stat='identity') + scale_x_continuous(limits=(myStart, myStop)) + scale_color_gradient2(low="red",mid="white",high="green",midpoint=0.5,limits=(0,1)) + scale_fill_gradient2(low="red",mid="white",high="green",midpoint=0.5,limits=(0,1)) + labs(title='significant site-wise MMD of learned features during amino acid replacements (i.e. mutational impact)', x='amino acid site (red - functionally conserved / green - adaptively altered)', y='MMD (mutational impact)') + theme(panel_background=element_rect(fill='black', alpha=.6)))
+            myplot4 = (ggplot(myMMDindex) + aes(x='pos', y='MMDall', color='pval', fill='pval') + geom_bar(stat='identity') + scale_x_continuous(limits=(myStart, myStop)) + scale_color_gradient2(low="red",mid="white",high="green",midpoint=0.5,limits=(0,1)) + scale_fill_gradient2(low="red",mid="white",high="green",midpoint=0.5,limits=(0,1))  + labs(title='significant site-wise MMD of learned features during amino acid replacements (i.e. mutational impact)', x='amino acid site (red - functionally conserved / green - adaptively altered)', y='MMD (mutational impact)') + theme(panel_background=element_rect(fill='black', alpha=.1)))
+            myplot1.save("conservedDynamics_%s/MMD_dark_p_%s.png" % (PDB_id_reference, myLabel), width=10, height=5, dpi=300)
+            myplot2.save("conservedDynamics_%s/MMD_light_p_%s.png" % (PDB_id_reference, myLabel), width=10, height=5, dpi=300)
+            myplot3.save("conservedDynamics_%s/MMD_dark_sig_%s.png" % (PDB_id_reference, myLabel), width=10, height=5, dpi=300)
+            myplot4.save("conservedDynamics_%s/MMD_light_sig_%s.png" % (PDB_id_reference, myLabel), width=10, height=5, dpi=300)
+            
+    
     
     #if(graph_scheme == "light"):
     #    print(myplot6)
