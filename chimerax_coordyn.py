@@ -73,9 +73,9 @@ for x in range(len(infile_lines)):
     if(header == "n_frames"):
         n_fr = value
         print("my number of frames is",n_fr)
-    if(header == "c_terminals"):
-        c_ch = value
-        print("my number of chains is",c_ch)
+    if(header == "n_terminals"):
+        n_ch = value
+        print("my n terminals chains is",n_ch)
     if(header == "length"):
         l_pr = value
         print("my total protein length is",l_pr)    
@@ -115,7 +115,7 @@ traj_file_reference = ""+ref_traj+""
 subsamples = int(sub_samples)
 frame_size = int(fr_sz)
 n_frames = int(n_fr)
-c_chains = ""+c_ch+""
+n_chains = ""+n_ch+""
 length_prot = int(l_pr)
 start_prot = int(st_pr)
 chimerax_path = ""+ch_path+""
