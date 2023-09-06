@@ -24,7 +24,7 @@ from pandas.api.types import CategoricalDtype
 from plotnine import *
 #from pyvis.network import Network
 #from plotnine.data import mpg
-
+from scipy.stats import ttest_ind
 
 
 ################################################################################
@@ -555,7 +555,7 @@ def matrix_plot_int():
     myMATRIX_plot.save("./coordinatedDynamics_%s/coordinatedDynamics_reference.png" % PDB_id_reference, width=10, height=5, dpi=300)
 
 def network_plot_int_query():   
-    print("creating network-query state")
+    print("\ncreating network-query state\n")
     myNET=pd.read_csv("./coordinatedDynamics_%s/coordinatedDynamics_query.txt" % PDB_id_reference, sep="\s+")
     myNET = pd.DataFrame(myNET)
     #print(myNET)
@@ -569,12 +569,13 @@ def network_plot_int_query():
     #print(myNodes)
     print("detecting communities on network") 
     coms = nx.community.louvain_communities(G)
+    n_coms = len(coms)
     print("removing isolates from network")
     if(nx.is_connected(G)):
         print("test-graph is connected")
         print("calculating network connectivity and non-randomness")
         avg_con = nx.average_node_connectivity(G, flow_func=None)
-        non_rand = nx.non_randomness(G, k=None, weight=None)
+        non_rand = nx.non_randomness(G, k=n_coms, weight=None)
     else:
         print("test-graph is unconnected")    
         most_nodes = max(nx.connected_components(G), key=len)
@@ -586,7 +587,7 @@ def network_plot_int_query():
             G=M
             print("calculating network connectivity and non-randomness")
             avg_con = nx.average_node_connectivity(G, flow_func=None)
-            non_rand = nx.non_randomness(G, k=None, weight=None)
+            non_rand = nx.non_randomness(G, k=n_coms, weight=None)
         else:
             print("ERROR-graph is still unconnected") 
             avg_con = "undetermined"
@@ -675,10 +676,93 @@ def network_plot_int_query():
         NETpos = NET_output.iat[x,0]
         #print(NETpos)
         f6.write("\t:%s\t%s\n" % (sitepos,NETpos))
+
+def network_plot_int_query_bootstrap():   
+    for x in range(100):
+        print("\nbootstrapping network-query state %s out of 100\n" % x)
+        myNET=pd.read_csv("./coordinatedDynamics_%s/coordinatedDynamics_query.txt" % PDB_id_reference, sep="\s+")
+        myNET = pd.DataFrame(myNET)
+        #print(myNET)
+        links_filtered=myNET.loc[ (myNET['p-val'] < (0.05)) & (myNET['i'] != myNET['j']) ]
+        #print(links_filtered)
+        links_filtered=links_filtered.sample(len(links_filtered), replace=True) # bootstrap here
+        # Build graph
+        G=nx.from_pandas_edgelist(links_filtered, 'i', 'j')
+        print(G)
+        myNodes = G.nodes
+        myNodes = list(myNodes)
+        #print(myNodes)
+        #print(myStop)
+        print("detecting communities on network") 
+        coms = nx.community.louvain_communities(G)
+        n_coms = len(coms)
+        print("removing isolates from network")
+        if(nx.is_connected(G)):
+            print("test-graph is connected")
+            print("calculating network connectivity and non-randomness")
+            avg_con = nx.average_node_connectivity(G, flow_func=None)
+            non_rand = nx.non_randomness(G, k=n_coms, weight=None)
+        else:
+            print("test-graph is unconnected")    
+            most_nodes = max(nx.connected_components(G), key=len)
+            M = nx.subgraph(G, most_nodes)
+            print("after isolated nodes removed")
+            print(M)
+            if(nx.is_connected(M)):
+                print("test-graph is now connected")
+                G=M
+                print("calculating network connectivity and non-randomness")
+                avg_con = nx.average_node_connectivity(G, flow_func=None)
+                non_rand = nx.non_randomness(G, k=n_coms, weight=None)
+            else:
+                print("ERROR-graph is still unconnected") 
+                avg_con = "undetermined"
+                non_rand = "undetermined"
+        #print(coms)
+        str_G = str(G)
+        str_coms = str(coms)
+        str_avg_con = str(avg_con)
+        str_non_rand = str(non_rand)
+        if(x==0):
+            writePath= "./coordinatedDynamics_%s/coordinatedDynamics_query_communities_bootstrap_connectivity.txt" % PDB_id_reference
+            with open(writePath, 'w') as f_out:
+                    f_out.write("connectivity_qry\n")
+                    f_out.write(str_avg_con)
+                    f_out.close
+            writePath= "./coordinatedDynamics_%s/coordinatedDynamics_query_communities_bootstrap_nonrandomness.txt" % PDB_id_reference
+            with open(writePath, 'w') as f_out:
+                    f_out.write("nr1_qry\tnr2_qry\n")
+                    str_non_rand = str_non_rand.split(",")
+                    str_non_rand0 = str_non_rand[0]
+                    str_non_rand1 = str_non_rand[1]
+                    str_non_rand0 = str_non_rand0.lstrip('(')
+                    str_non_rand1 = str_non_rand1.rstrip(')')
+                    f_out.write(str_non_rand0)
+                    f_out.write("\t")
+                    f_out.write(str_non_rand1)
+                    f_out.close
+        if(x!=0):
+            writePath= "./coordinatedDynamics_%s/coordinatedDynamics_query_communities_bootstrap_connectivity.txt" % PDB_id_reference
+            with open(writePath, 'a') as f_out:
+                    f_out.write("\n")
+                    f_out.write(str_avg_con)
+                    f_out.close
+            writePath= "./coordinatedDynamics_%s/coordinatedDynamics_query_communities_bootstrap_nonrandomness.txt" % PDB_id_reference
+            with open(writePath, 'a') as f_out:
+                    f_out.write("\n")
+                    str_non_rand = str_non_rand.split(",")
+                    str_non_rand0 = str_non_rand[0]
+                    str_non_rand1 = str_non_rand[1]
+                    str_non_rand0 = str_non_rand0.lstrip('(')
+                    str_non_rand1 = str_non_rand1.rstrip(')')
+                    f_out.write(str_non_rand0)
+                    f_out.write("\t")
+                    f_out.write(str_non_rand1)
+                    f_out.close
     
         
 def network_plot_int_reference():   
-    print("creating network-reference state")   
+    print("\ncreating network-reference state\n")   
     myNET=pd.read_csv("./coordinatedDynamics_%s/coordinatedDynamics_reference.txt" % PDB_id_reference, sep="\s+")
     myNET = pd.DataFrame(myNET)
     #print(myNET)
@@ -692,12 +776,13 @@ def network_plot_int_reference():
     #print(myNodes)
     print("detecting communities on network") 
     coms = nx.community.louvain_communities(G)
+    n_coms = len(coms)
     print("removing isolates from network")
     if(nx.is_connected(G)):
         print("test-graph is connected")
         print("calculating network connectivity and non-randomness")
         avg_con = nx.average_node_connectivity(G, flow_func=None)
-        non_rand = nx.non_randomness(G, k=None, weight=None)
+        non_rand = nx.non_randomness(G, k=n_coms, weight=None)
     else:
         print("test-graph is unconnected")    
         most_nodes = max(nx.connected_components(G), key=len)
@@ -709,7 +794,7 @@ def network_plot_int_reference():
             G=M
             print("calculating network connectivity and non-randomness")
             avg_con = nx.average_node_connectivity(G, flow_func=None)
-            non_rand = nx.non_randomness(G, k=None, weight=None)
+            non_rand = nx.non_randomness(G, k=n_coms, weight=None)
         else:
             print("ERROR-graph is still unconnected") 
             avg_con = "undetermined"
@@ -798,6 +883,91 @@ def network_plot_int_reference():
         NETpos = NET_output.iat[x,0]
         #print(NETpos)
         f6.write("\t:%s\t%s\n" % (sitepos,NETpos))
+
+
+def network_plot_int_reference_bootstrap():   
+    for x in range(100):
+        print("\nbootstrapping network-reference state %s out of 100\n" % x)   
+        myNET=pd.read_csv("./coordinatedDynamics_%s/coordinatedDynamics_reference.txt" % PDB_id_reference, sep="\s+")
+        myNET = pd.DataFrame(myNET)
+        #print(myNET)
+        links_filtered=myNET.loc[ (myNET['p-val'] < (0.05)) & (myNET['i'] != myNET['j']) ]
+        #print(links_filtered)
+        links_filtered=links_filtered.sample(len(links_filtered), replace=True) # bootstrap here
+        
+        # Build graph
+        G=nx.from_pandas_edgelist(links_filtered, 'i', 'j')
+        print(G)
+        myNodes = G.nodes
+        myNodes = list(myNodes)
+        #print(myNodes)
+        print("detecting communities on network") 
+        coms = nx.community.louvain_communities(G)
+        n_coms = len(coms)
+        print("removing isolates from network")
+        if(nx.is_connected(G)):
+            print("test-graph is connected")
+            print("calculating network connectivity and non-randomness")
+            avg_con = nx.average_node_connectivity(G, flow_func=None)
+            non_rand = nx.non_randomness(G, k=n_coms, weight=None)
+        else:
+            print("test-graph is unconnected")    
+            most_nodes = max(nx.connected_components(G), key=len)
+            M = nx.subgraph(G, most_nodes)
+            print("after isolated nodes removed")
+            print(M)
+            if(nx.is_connected(M)):
+                print("test-graph is now connected")
+                G=M
+                print("calculating network connectivity and non-randomness")
+                avg_con = nx.average_node_connectivity(G, flow_func=None)
+                non_rand = nx.non_randomness(G, k=n_coms, weight=None)
+            else:
+                print("ERROR-graph is still unconnected") 
+                avg_con = "undetermined"
+                non_rand = "undetermined"
+        #print(coms)
+        str_G = str(G)
+        str_coms = str(coms)
+        str_avg_con = str(avg_con)
+        str_non_rand = str(non_rand)
+        if(x==0):
+            writePath= "./coordinatedDynamics_%s/coordinatedDynamics_reference_communities_bootstrap_connectivity.txt" % PDB_id_reference
+            with open(writePath, 'w') as f_out:
+                    f_out.write("connectivity_ref\n")
+                    f_out.write(str_avg_con)
+                    f_out.close
+            writePath= "./coordinatedDynamics_%s/coordinatedDynamics_reference_communities_bootstrap_nonrandomness.txt" % PDB_id_reference
+            with open(writePath, 'w') as f_out:
+                    f_out.write("nr1_ref\tnr2_ref\n")
+                    str_non_rand = str_non_rand.split(",")
+                    str_non_rand0 = str_non_rand[0]
+                    str_non_rand1 = str_non_rand[1]
+                    str_non_rand0 = str_non_rand0.lstrip('(')
+                    str_non_rand1 = str_non_rand1.rstrip(')')
+                    f_out.write(str_non_rand0)
+                    f_out.write("\t")
+                    f_out.write(str_non_rand1)
+                    f_out.close
+        if(x!=0):
+            writePath= "./coordinatedDynamics_%s/coordinatedDynamics_reference_communities_bootstrap_connectivity.txt" % PDB_id_reference
+            with open(writePath, 'a') as f_out:
+                    f_out.write("\n")
+                    f_out.write(str_avg_con)
+                    f_out.close
+            writePath= "./coordinatedDynamics_%s/coordinatedDynamics_reference_communities_bootstrap_nonrandomness.txt" % PDB_id_reference
+            with open(writePath, 'a') as f_out:
+                    f_out.write("\n")
+                    str_non_rand = str_non_rand.split(",")
+                    str_non_rand0 = str_non_rand[0]
+                    str_non_rand1 = str_non_rand[1]
+                    str_non_rand0 = str_non_rand0.lstrip('(')
+                    str_non_rand1 = str_non_rand1.rstrip(')')
+                    f_out.write(str_non_rand0)
+                    f_out.write("\t")
+                    f_out.write(str_non_rand1)
+                    f_out.close
+
     
         
 def matrix_plot_site():   
@@ -986,35 +1156,124 @@ def network_plot_site_reference():
         #print(NETpos)
         f6.write("\t:%s\t%s\n" % (sitepos,NETpos))
 
-def resonance_gain():
-    print("calculating resonance gain/loss for query state compared to reference state")
-    myREF = open("./coordinatedDynamics_%s/coordinatedDynamics_reference_communities.txt" % PDB_id_reference, "r")
-    myREF = myREF.readlines()
-    myREF = myREF[7]
-    myREF = myREF.split(",")
-    myREF = myREF[0]
-    myREF = myREF.lstrip('(')
-    myREF = float(myREF)
-    print("resonance-reference state")
-    print(myREF)
-    myQRY = open("./coordinatedDynamics_%s/coordinatedDynamics_query_communities.txt" % PDB_id_reference, "r")
-    myQRY = myQRY.readlines()
-    myQRY = myQRY[7]
-    myQRY = myQRY.split(",")
-    myQRY = myQRY[0]
-    myQRY = myQRY.lstrip('(')
-    myQRY = float(myQRY)
-    print("resonance-query state")
-    print(myQRY)
-    print("resonance gain from reference to query state")
-    reso_gain = (myQRY-myREF)
-    print(reso_gain)
-    writePath= "./coordinatedDynamics_%s/coordinateddynamics_resonance gain.txt" % PDB_id_reference
+
+def resonance_gain_bootstrap():
+    print("bootstrapping connectivity gain/loss for query state compared to reference state")
+    myREF=pd.read_csv("./coordinatedDynamics_%s/coordinatedDynamics_reference_communities_bootstrap_connectivity.txt" % PDB_id_reference, sep="\s+")
+    print("connectivity-reference state")
+    #print(myREF)
+    myQRY=pd.read_csv("./coordinatedDynamics_%s/coordinatedDynamics_query_communities_bootstrap_connectivity.txt" % PDB_id_reference, sep="\s+")
+    print("connectivity-query state")
+    #print(myQRY)
+    print("connectivity gain from reference to query state")
+    frames = [myREF, myQRY]
+    dfCON = pd.concat(frames, axis=1, join="inner")
+    #print(dfCON)
+    con_gain = (dfCON.connectivity_qry-dfCON.connectivity_ref)
+    #print(con_gain)   
+    avg_con_gain = con_gain.mean()
+    std_con_gain = con_gain.std()
+    print("\nmean gain")
+    print(avg_con_gain)
+    print("+- std")
+    print(std_con_gain)
+    myT = ttest_ind(dfCON.connectivity_qry, dfCON.connectivity_ref, equal_var=False)
+    print("significance")
+    print(myT)
+    print("\n")
+    # plot
+    dfCON_graph=dfCON.melt()
+    print(dfCON_graph)
+    myplot = (ggplot(data = dfCON_graph) + geom_boxplot(aes(x='variable', y='value', color='variable'))+ labs(title=myT, x='connectivity (from NetworkX)', y='value') + theme(panel_background=element_rect(fill='black', alpha=.1)))
+    myplot.save("./coordinatedDynamics_%s/connectivity_errorbar.png" % PDB_id_reference, width=10, height=5, dpi=300)
+   
+    
+    writePath= "./coordinatedDynamics_%s/coordinateddynamics_connectivity_gain_bootstrap.txt" % PDB_id_reference
     with open(writePath, 'w') as f_out:
-            f_out.write("resonance gain from reference to query state = ")
-            reso_gain_str = str(reso_gain)
-            f_out.write(reso_gain_str)
+            f_out.write("connectivity gain from reference to query state")
+            con_gain_avg_str = str(avg_con_gain)
+            con_gain_std_str = str(std_con_gain)
+            myT_str = str(myT)
+            f_out.write("\naverage connectivity gain\n")
+            f_out.write(con_gain_avg_str)
+            f_out.write("\nstd connectivity gain\n")
+            f_out.write(con_gain_std_str)
+            f_out.write("\nsignificance - Welch's T test\n")
+            f_out.write(myT_str)
             f_out.close
+    
+    
+    
+    print("bootstrapping resonance gain/loss for query state compared to reference state")
+    myREF=pd.read_csv("./coordinatedDynamics_%s/coordinatedDynamics_reference_communities_bootstrap_nonrandomness.txt" % PDB_id_reference, sep="\s+")
+    print("resonance-reference state")
+    #print(myREF)
+    myQRY=pd.read_csv("./coordinatedDynamics_%s/coordinatedDynamics_query_communities_bootstrap_nonrandomness.txt" % PDB_id_reference, sep="\s+")
+    print("resonance-query state")
+    #print(myQRY)
+    print("resonance gain from reference to query state")
+    frames = [myREF, myQRY]
+    dfRES = pd.concat(frames, axis=1, join="inner")
+    #print(dfRES)
+    
+    res_gain1 = (abs(dfRES.nr1_qry)-abs(dfRES.nr1_ref))
+    #print(res_gain1)
+    avg_res_gain1 = res_gain1.mean()
+    std_res_gain1 = res_gain1.std()
+    print("\nmean gain - nr method 1")
+    print(avg_res_gain1)
+    print("+- std")
+    print(std_res_gain1)
+    myT1 = ttest_ind(abs(dfRES.nr1_qry), abs(dfRES.nr1_ref), equal_var=False)
+    print("significance - nr method 1")
+    print(myT1)
+    print("\n")
+    #print(dfRES.nr2_qry)
+    #print(abs(dfRES.nr2_qry))
+    res_gain2 = (abs(dfRES.nr2_qry)-abs(dfRES.nr2_ref))
+    #print(res_gain2)
+    avg_res_gain2 = res_gain2.mean()
+    std_res_gain2 = res_gain2.std()
+    print("\nmean gain - nr method 2")
+    print(avg_res_gain2)
+    print("+- std")
+    print(std_res_gain2)
+    myT2 = ttest_ind(abs(dfRES.nr2_qry), abs(dfRES.nr2_ref), equal_var=False)
+    print("significance - nr method 2")
+    print(myT2)
+    print("\n")
+    # plot
+    dfRES_graph=dfRES.melt()
+    dfRES_graph['value'] = dfRES_graph['value'].map(lambda x: abs(x))
+    print(dfRES_graph)
+    myplot = (ggplot(data = dfRES_graph) + geom_boxplot(aes(x='variable', y='value', color='variable'))+ labs(title=myT1, subtitle=myT2, x='two measures of non-randomness (from NetworkX)', y='value') + theme(panel_background=element_rect(fill='black', alpha=.1)))
+    myplot.save("./coordinatedDynamics_%s/nonrandomness_errorbar.png" % PDB_id_reference, width=10, height=5, dpi=300)
+   
+    writePath= "./coordinatedDynamics_%s/coordinateddynamics_resonance_gain_bootstrap.txt" % PDB_id_reference
+    with open(writePath, 'w') as f_out:
+            f_out.write("resonance gain from reference to query state - method 1")
+            res_gain1_avg_str = str(avg_res_gain1)
+            res_gain1_std_str = str(std_res_gain1)
+            myT1_str = str(myT1)
+            f_out.write("\naverage resonance gain\n")
+            f_out.write(res_gain1_avg_str)
+            f_out.write("\nstd resonance gain\n")
+            f_out.write(res_gain1_std_str)
+            f_out.write("\nsignificance - Welch's T test\n")
+            f_out.write(myT1_str)
+            f_out.close
+            f_out.write("\nresonance gain from reference to query state - method 2")
+            res_gain2_avg_str = str(avg_res_gain2)
+            res_gain2_std_str = str(std_res_gain2)
+            myT2_str = str(myT2)
+            f_out.write("\naverage resonance gain\n")
+            f_out.write(res_gain2_avg_str)
+            f_out.write("\nstd resonance gain\n")
+            f_out.write(res_gain2_std_str)
+            f_out.write("\nsignificance - Welch's T test\n")
+            f_out.write(myT2_str)
+            f_out.close
+    
     
 ###############################################################
 ###############################################################
@@ -1029,8 +1288,12 @@ def main():
     matrix_plot_int()
     network_plot_int_query()
     network_plot_int_reference()
-    resonance_gain()
-    
+    inp = input("\nDo you want to calculate bootstrap comparisons for network calculations? (y or n)      ...time consuming\n" )
+    if(inp == "y" or inp == "yes" or inp == "Y" or inp == "YES"):
+        network_plot_int_reference_bootstrap()
+        network_plot_int_query_bootstrap()
+        resonance_gain_bootstrap()
+        
     print("comparative analyses of molecular dynamics is completed")
     
     
