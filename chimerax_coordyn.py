@@ -1185,7 +1185,7 @@ def resonance_gain_bootstrap():
     dfCON_graph=dfCON.melt()
     print(dfCON_graph)
     myplot = (ggplot(data = dfCON_graph) + geom_boxplot(aes(x='variable', y='value', color='variable'))+ labs(title=myT, x='connectivity (from NetworkX)', y='value') + theme(panel_background=element_rect(fill='black', alpha=.1)))
-    myplot.save("./coordinatedDynamics_%s/connectivity_errorbar.png" % PDB_id_reference, width=10, height=5, dpi=300)
+    myplot.save("./coordinatedDynamics_%s/connectivity_boxplot.png" % PDB_id_reference, width=10, height=5, dpi=300)
    
     
     writePath= "./coordinatedDynamics_%s/coordinateddynamics_connectivity_gain_bootstrap.txt" % PDB_id_reference
@@ -1247,7 +1247,7 @@ def resonance_gain_bootstrap():
     dfRES_graph['value'] = dfRES_graph['value'].map(lambda x: abs(x))
     print(dfRES_graph)
     myplot = (ggplot(data = dfRES_graph) + geom_boxplot(aes(x='variable', y='value', color='variable'))+ labs(title=myT1, subtitle=myT2, x='two measures of non-randomness (from NetworkX)', y='value') + theme(panel_background=element_rect(fill='black', alpha=.1)))
-    myplot.save("./coordinatedDynamics_%s/nonrandomness_errorbar.png" % PDB_id_reference, width=10, height=5, dpi=300)
+    myplot.save("./coordinatedDynamics_%s/nonrandomness_boxplot.png" % PDB_id_reference, width=10, height=5, dpi=300)
    
     writePath= "./coordinatedDynamics_%s/coordinateddynamics_resonance_gain_bootstrap.txt" % PDB_id_reference
     with open(writePath, 'w') as f_out:

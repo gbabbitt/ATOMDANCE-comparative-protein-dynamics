@@ -496,6 +496,16 @@ def coor_network():
     image = mpimg.imread(image_path)
     plt.imshow(image)
     plt.show(block=True)
+    print("plotting bootstrap comparison of connectivity for query vs reference protein %s" % PDB_id_query)
+    image_path = "./coordinatedDynamics_%s/connectivity_boxplot.png" % PDB_id_reference
+    image = mpimg.imread(image_path)
+    plt.imshow(image)
+    plt.show(block=True)
+    print("plotting bootstrap comparison on non-randomness for query vs reference protein %s" % PDB_id_reference)
+    image_path = "./coordinatedDynamics_%s/nonrandomness_boxplot.png" % PDB_id_reference
+    image = mpimg.imread(image_path)
+    plt.imshow(image)
+    plt.show(block=True)
     
 def map_NET_coor():   
     #print("mapping adjacent and non adjacent site contacts to query protein %s" % PDB_id_query)
