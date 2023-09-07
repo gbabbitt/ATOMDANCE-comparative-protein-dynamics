@@ -592,6 +592,21 @@ def matrix_plot_int():
     print(myMATRIX)
     myMATRIX_plot =  (ggplot(myMATRIX, aes('i', 'j', fill='p-val')) + scale_fill_gradient(low="white",high="black") + geom_tile() + labs(title='resonance map - mixed model ANOVA (i.e. signif interaction of atom fluctuation at sites i and j over time)', x='amino acid position', y='amino acid position'))
     myMATRIX_plot.save("./coordinatedDynamics_%s/coordinatedDynamics_reference.png" % PDB_id_reference, width=10, height=5, dpi=300)
+    
+    myMATRIX=pd.read_csv("./coordinatedDynamics_%s/coordinatedDynamics_query_adj.txt" % PDB_id_reference, sep="\s+")
+    myMATRIX = pd.DataFrame(myMATRIX)
+    print(myMATRIX)
+    myMATRIX_plot =  (ggplot(myMATRIX, aes('i', 'j', fill='p-val')) + scale_fill_gradient(low="white",high="black") + geom_tile() + labs(title='resonance map - mixed model ANOVA (i.e. signif interaction of atom fluctuation at sites i and j over time)', x='amino acid position', y='amino acid position'))
+    myMATRIX_plot.save("./coordinatedDynamics_%s/coordinatedDynamics_query_adj.png" % PDB_id_reference, width=10, height=5, dpi=300)
+    
+    myMATRIX=pd.read_csv("./coordinatedDynamics_%s/coordinatedDynamics_reference_adj.txt" % PDB_id_reference, sep="\s+")
+    myMATRIX = pd.DataFrame(myMATRIX)
+    print(myMATRIX)
+    myMATRIX_plot =  (ggplot(myMATRIX, aes('i', 'j', fill='p-val')) + scale_fill_gradient(low="white",high="black") + geom_tile() + labs(title='resonance map - mixed model ANOVA (i.e. signif interaction of atom fluctuation at sites i and j over time)', x='amino acid position', y='amino acid position'))
+    myMATRIX_plot.save("./coordinatedDynamics_%s/coordinatedDynamics_reference_adj.png" % PDB_id_reference, width=10, height=5, dpi=300)
+
+
+
 
 def network_plot_int_query():   
     print("\ncreating network-query state\n")
@@ -1318,12 +1333,12 @@ def resonance_gain_bootstrap():
 ###############################################################
 
 def main():
-    feature_anova()
-    coordinated_dynamics()
+    #feature_anova()
+    #coordinated_dynamics()
     coordinated_dynamics_fdr()
-    matrix_plot_site()
-    network_plot_site_query()
-    network_plot_site_reference()
+    #matrix_plot_site()
+    #network_plot_site_query()
+    #network_plot_site_reference()
     matrix_plot_int()
     network_plot_int_query()
     network_plot_int_reference()
