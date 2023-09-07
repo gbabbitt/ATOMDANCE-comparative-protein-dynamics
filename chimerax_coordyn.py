@@ -25,7 +25,7 @@ from plotnine import *
 #from pyvis.network import Network
 #from plotnine.data import mpg
 from scipy.stats import ttest_ind
-
+from scipy import stats
 
 ################################################################################
 # READ CONTROL FORM
@@ -365,7 +365,46 @@ def feature_anova():
 ###############################################################
 def coordinated_dynamics_fdr():
     print("making FDR corrected p-value matrix for coordinated dynamics")
-
+    myREF=pd.read_csv("./coordinatedDynamics_%s/coordinatedDynamics_reference.txt" % PDB_id_reference, sep="\s+")
+    print(myREF)
+    myREF["p-val"] = myREF["p-val"].replace(np.nan, 1)
+    pval = myREF['p-val']
+    #print(pval)
+    pval_adj = pd.DataFrame(stats.false_discovery_control(pval))
+    #print(pval_adj)
+    myREF['p-val'] = pval_adj.values
+    print(myREF)
+    myQRY=pd.read_csv("./coordinatedDynamics_%s/coordinatedDynamics_query.txt" % PDB_id_reference, sep="\s+")
+    print(myQRY)
+    myQRY["p-val"] = myQRY["p-val"].replace(np.nan, 1)
+    pval = myQRY['p-val']
+    #print(pval)
+    pval_adj = pd.DataFrame(stats.false_discovery_control(pval))
+    #print(pval_adj)
+    myQRY['p-val'] = pval_adj.values
+    print(myQRY)
+    writePath1= "./coordinatedDynamics_%s/coordinatedDynamics_query_adj.txt" % PDB_id_reference
+    with open(writePath1, 'w') as f_out1:
+            f_out1.write('%s\t%s\t%s\n' % ("i", "j", "p-val"))
+            #f_out1.write(myQRY)
+            f_out1.close
+    with open(writePath1, 'a') as f_out1:
+            dfAsString = myQRY.to_string(header=False, index=False)
+            f_out1.write(dfAsString)
+    
+    writePath2= "./coordinatedDynamics_%s/coordinatedDynamics_reference_adj.txt" % PDB_id_reference
+    with open(writePath2, 'w') as f_out2:
+            f_out2.write('%s\t%s\t%s\n' % ("i", "j", "p-val"))
+            #f_out2.write(myREF)
+            f_out2.close
+    with open(writePath2, 'a') as f_out2:
+            dfAsString = myREF.to_string(header=False, index=False)
+            f_out2.write(dfAsString)
+    
+        
+        
+        
+        
 ############################################################### 
 
 def coordinated_dynamics():
