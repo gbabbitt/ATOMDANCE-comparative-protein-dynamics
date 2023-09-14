@@ -1269,6 +1269,14 @@ def resonance_gain_bootstrap():
     frames = [myREF, myQRY]
     dfRES = pd.concat(frames, axis=1, join="inner")
     #print(dfRES)
+    nr1REF = dfRES.iloc[:,:1]
+    nr1QRY = dfRES.iloc[:,2:3]
+    nr2REF = dfRES.iloc[:,1:2]
+    nr2QRY = dfRES.iloc[:,3:4]
+    frames_nr1 = [nr1REF, nr1QRY]
+    dfRES_nr1 = pd.concat(frames_nr1, axis=1, join="inner")
+    frames_nr2 = [nr2REF, nr2QRY]
+    dfRES_nr2 = pd.concat(frames_nr2, axis=1, join="inner")
     
     res_gain1 = (abs(dfRES.nr1_qry)-abs(dfRES.nr1_ref))
     #print(res_gain1)
@@ -1300,8 +1308,21 @@ def resonance_gain_bootstrap():
     dfRES_graph=dfRES.melt()
     dfRES_graph['value'] = dfRES_graph['value'].map(lambda x: abs(x))
     print(dfRES_graph)
+    
+    dfRES_graph_nr1=dfRES_nr1.melt()
+    dfRES_graph_nr1['value'] = dfRES_graph_nr1['value'].map(lambda x: abs(x))
+    #print(dfRES_graph_nr1)
+    
+    dfRES_graph_nr2=dfRES_nr2.melt()
+    dfRES_graph_nr2['value'] = dfRES_graph_nr2['value'].map(lambda x: abs(x))
+    #print(dfRES_graph_nr2)
+          
     myplot = (ggplot(data = dfRES_graph) + geom_boxplot(aes(x='variable', y='value', color='variable'))+ labs(title=myT1, subtitle=myT2, x='two measures of non-randomness (from NetworkX)', y='value') + theme(panel_background=element_rect(fill='black', alpha=.1)))
-    myplot.save("./coordinatedDynamics_%s/nonrandomness_boxplot.png" % PDB_id_reference, width=10, height=5, dpi=300)
+    myplot.save("./coordinatedDynamics_%s/nonrandomness_boxplot_both.png" % PDB_id_reference, width=10, height=5, dpi=300)
+    myplot1 = (ggplot(data = dfRES_graph_nr1) + geom_boxplot(aes(x='variable', y='value', color='variable'))+ labs(title=myT1, x='non-randomness (probability - 2 sites = same community)', y='value') + theme(panel_background=element_rect(fill='black', alpha=.1)))
+    myplot1.save("./coordinatedDynamics_%s/nonrandomness_boxplot_nr1.png" % PDB_id_reference, width=10, height=5, dpi=300)
+    myplot2 = (ggplot(data = dfRES_graph_nr2) + geom_boxplot(aes(x='variable', y='value', color='variable'))+ labs(title=myT2, x='non-randomness (distance from Erdos-Renyi random graph)', y='value') + theme(panel_background=element_rect(fill='black', alpha=.1)))
+    myplot2.save("./coordinatedDynamics_%s/nonrandomness_boxplot_nr2.png" % PDB_id_reference, width=10, height=5, dpi=300)
    
     writePath= "./coordinatedDynamics_%s/coordinateddynamics_resonance_gain_bootstrap.txt" % PDB_id_reference
     with open(writePath, 'w') as f_out:
