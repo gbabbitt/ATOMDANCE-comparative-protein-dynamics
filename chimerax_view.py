@@ -502,7 +502,7 @@ def coor_network():
     plt.imshow(image)
     plt.show(block=True)
     print("plotting bootstrap comparison on non-randomness for query vs reference protein %s" % PDB_id_reference)
-    image_path = "./coordinatedDynamics_%s/nonrandomness_boxplot.png" % PDB_id_reference
+    image_path = "./coordinatedDynamics_%s/nonrandomness_boxplot_nr2.png" % PDB_id_reference
     image = mpimg.imread(image_path)
     plt.imshow(image)
     plt.show(block=True)
