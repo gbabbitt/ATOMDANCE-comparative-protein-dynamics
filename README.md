@@ -46,7 +46,11 @@ https://github.com/Amber-MD/cpptraj
 GitHub repo for cpptraj
 https://amber-md.github.io/cpptraj/CPPTRAJ.xhtml
 
-TO INSTALL cpptraj
+TO INSTALL cpptraj (the easy way)
+1. install anaconda from https://www.anaconda.com/
+2. conda install -c conda-forge ambertools=23
+
+TO INSTALL cpptraj (the hard way)
 1. check/install gcc, g++ and gfortran compilers (e.g. sudo apt install gcc g++ gfortran)
 2. sudo ./configure gcc
 3. make install
@@ -70,6 +74,14 @@ python modules to be installed (PyQt5, numpy, scipy, pandas, sklearn, scikit-lea
 NOTE: for best results, the CPU on the computer should support at least 4-6 cores
 
 Molecular dynamics file inputs to ATOMDANCE include 6 files (3 for each functional state including a .pdb formatted structure file, a .prmtop formatted topology file and a .nc (i.e. NetCDF) formatted trajectory file.  To run the program put these input files in the local folder you have downloaded from us, open a terminal or cmd line from that folder and type 'python3 ATOMDANCE.py'.  Then follow directions on the graphical interface. These files can be generated on any molecular dynamics engine the user prefers (e.g. QwikMD using NAMD, OpenMM in python, or Amber/Ambertools in Linux).  We also offer a useful GUI for open source AmberTools+openMM MD simulations on Linux available within the download (MDgui.py). This can be used to generate the files required for the ATOMDANCE statistical machine learning post-processor.
+
+TO INSTALL AmberTools and OpenMM (the easy way)
+1. install anaconda from https://www.anaconda.com/
+2. conda install -c conda-forge ambertools=23
+3. conda install -c conda-forge openmm
+
+TO INSTALL EVERYTHING (ambertools, openmm and all python modules) INTO YOUR CONDA ENVIRONMENT IN ONE STEP, grab our installer script
+1. python3 INSTALL.py
 
 For fully licensed Amber software users, we also have a standalone GUI as well...available here
 https://gbabbitt.github.io/amberMDgui/
