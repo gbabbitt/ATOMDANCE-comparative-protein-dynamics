@@ -14,7 +14,7 @@
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
-amber_setpath = "/home/gabsbi/anaconda3/envs/AmberTools23/dat/leap/cmd/"
+amber_setpath = "/home/gabsbi/anaconda3/envs/atomdance/dat/leap/cmd/"
 
 class Ui_Dialog(object):
     def setupUi(self, Dialog):
@@ -368,8 +368,8 @@ class Ui_Dialog(object):
         print("\nIMPORTANT: CHECK THAT RESIDUES IN ALL CHAINS ARE NUMBERED SEQUENTIALLY STARTING FROM 1 to END OF LAST CHAIN\n")
         print("\nALSO: SET STARTING CHAIN LABEL TO A, put additional things (ligands, DNA etc) at end of PDB file and SAVE AS SINGLE MODEL (i.e. may need to remove model X and endmdl lines manually\n")
                
-        user_input = input("\nIs AmberToolsXX installed in the AmberToolsXX conda environment? (yes/no)\n\n")
-        
+        #user_input = input("\nIs AmberToolsXX installed in the AmberToolsXX conda environment? (yes/no)\n\n")
+        user_input = "no"
         if(user_input == "yes" or user_input == "y"):
             #what_version = input("\n Enter AmberTools version number (e.g. 22)")
             #os.system("conda activate AmberTools%s\n" % what_version)
@@ -405,7 +405,8 @@ class Ui_Dialog(object):
             gpu = "single"
         else:
             gpu = "dual"
-        user_input = input("\nIs openMM installed in the base conda environment? (yes/no)\n\n")
+        #user_input = input("\nIs openMM installed in the base conda environment? (yes/no)\n\n")
+        user_input = "no"
         if(gpu == "single"):
             if(user_input == "yes" or user_input == "y"):
                 #os.system("conda config --set auto_activate_base true\n")
@@ -420,8 +421,8 @@ class Ui_Dialog(object):
                 os.system("x-terminal-emulator\n")
         
             if(user_input == "no" or user_input == "n"):
-                os.system("x-terminal-emulator -e top\n")
-                os.system("x-terminal-emulator -e nvidia-smi -l 10\n")
+                #os.system("x-terminal-emulator -e top\n")
+                #os.system("x-terminal-emulator -e nvidia-smi -l 10\n")
                 cmd = "python3 MD_protein_openMM.py"
                 os.system(cmd)
         
@@ -442,8 +443,8 @@ class Ui_Dialog(object):
                 os.system("x-terminal-emulator\n")
         
             if(user_input == "no" or user_input == "n"):
-                os.system("x-terminal-emulator -e top\n")
-                os.system("x-terminal-emulator -e nvidia-smi -l 10\n")
+                #os.system("x-terminal-emulator -e top\n")
+                #os.system("x-terminal-emulator -e nvidia-smi -l 10\n")
                 cmd = "python3 MD_protein_openMM_2gpu.py"
                 os.system(cmd)
             print("\nPLEASE CHECK TERMINAL OUTPUT FOR WARNINGS\n")

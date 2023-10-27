@@ -47,8 +47,8 @@ if(inp1 == "y" or inp1 == "yes" or inp1 == "Y" or inp1 == "YES"):
     print("installing parmed")
     cmd = 'pip3 install parmed'
     os.system(cmd)
-    print("installing NetCDF")
-    cmd = 'pip3 install NetCDF'
+    print("installing NetCDF4")
+    cmd = 'pip3 install NetCDF4'
     os.system(cmd)
     print("installing pingouin")
     cmd = 'pip3 install pingouin'
