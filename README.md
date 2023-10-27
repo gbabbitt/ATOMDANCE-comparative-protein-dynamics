@@ -48,7 +48,9 @@ https://amber-md.github.io/cpptraj/CPPTRAJ.xhtml
 
 TO INSTALL cpptraj (the easy way)
 1. install anaconda from https://www.anaconda.com/
-2. conda install -c conda-forge ambertools=23
+2. conda create --name atomdance
+3. conda activate atomdance
+4. conda install -c conda-forge ambertools=23
 
 TO INSTALL cpptraj (the hard way)
 1. check/install gcc, g++ and gfortran compilers (e.g. sudo apt install gcc g++ gfortran)
@@ -77,11 +79,16 @@ Molecular dynamics file inputs to ATOMDANCE include 6 files (3 for each function
 
 TO INSTALL AmberTools and OpenMM (the easy way)
 1. install anaconda from https://www.anaconda.com/
-2. conda install -c conda-forge ambertools=23
-3. conda install -c conda-forge openmm
+2. conda create --name atomdance
+3. conda activate atomdance
+4. conda install -c conda-forge ambertools=23
+5. conda install -c conda-forge openmm
 
 TO INSTALL EVERYTHING (ambertools, openmm and all python modules) INTO YOUR CONDA ENVIRONMENT IN ONE STEP, grab our installer script
-1. python3 INSTALL.py
+1. install anaconda from https://www.anaconda.com/
+2. conda create --name atomdance
+3. conda activate atomdance
+4. python3 INSTALL.py
 
 For fully licensed Amber software users, we also have a standalone GUI as well...available here
 https://gbabbitt.github.io/amberMDgui/
