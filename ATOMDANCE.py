@@ -286,6 +286,8 @@ class Ui_Dialog(object):
         #print(frs_subsample)
         frs_total = self.lineEdit_3.text()
         #print(frs_total)
+        frs_usable = int(frs_total)-int(frs_subsample) - 1
+        
         n_chains = self.lineEdit_4.text()
         #print(n_chains)
         n_sites = self.lineEdit_5.text()
@@ -351,7 +353,7 @@ class Ui_Dialog(object):
         f.write("referenceTRAJ,%s,#trajectory for ref structure\n" % reference_traj)
         f.write("subsamples,%s,#number of subsamples\n" % n_subsamples)
         f.write("frame_size,%s,#number of frames per subsample\n" % frs_subsample)
-        f.write("n_frames,%s,#total number of frames in simulation (5000 per ns)\n" % frs_total)
+        f.write("n_frames,%s,#total number of frames in simulation (5000 per ns)\n" % frs_usable)
         f.write("n_terminals,%s,#n terminal locations for multi-chain PDB\n" % n_chains)
         f.write("length,%s,#total length of protein\n" % n_sites)
         f.write("start,%s,#Nterminal AA starts at position...\n" % start_site)
