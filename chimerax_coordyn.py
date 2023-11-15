@@ -1037,7 +1037,114 @@ def matrix_plot_site():
     print(myMATRIX)
     myMATRIX_plot =  (ggplot(myMATRIX, aes('i', 'j', fill='p-val')) + scale_fill_gradient(low="white",high="black") + geom_tile() + labs(title='contact map - mixed model ANOVA (i.e. non-signif differences in atom fluctuation between sites i and j)', x='amino acid position', y='amino acid position'))
     myMATRIX_plot.save("./coordinatedDynamics_%s/siteNSdynamics_reference.png" % PDB_id_reference, width=10, height=5, dpi=300)
-    
+
+def matrix_plot_corr():   
+    print("creating heatmaps")
+    myMATRIX=pd.read_csv("./features/feature_all_query/feature_%s_all_query.txt" % PDB_id_query, sep="\s+")
+    myMATRIX = pd.DataFrame(myMATRIX)
+    print(myMATRIX)
+    myHEADER = "i\tj\tcrosscorr\n"
+    print(myHEADER)
+    f= open("./features/feature_all_query/feature_%s_all_query_3col.txt" % PDB_id_reference, "w")
+    f.write(str(myHEADER))
+    for i in range(length_prot-1):
+        str_i = str(i)
+        for j in range(length_prot-1):
+            str_j = str(j)
+            crosscorr = myMATRIX.iloc[i,j]
+            #print(crosscorr)
+            str_crosscorr = str(crosscorr)
+            myLINE = "%s\t%s\t%s\n" % (str_i, str_j, str_crosscorr)
+            #print(myLINE)
+            if(j>1):
+                f.write(str(myLINE))
+    my3COL=pd.read_csv("./features/feature_all_query/feature_%s_all_query_3col.txt" % PDB_id_reference, sep="\s+")
+    my3COL = pd.DataFrame(my3COL)
+    print(my3COL)
+    my3COL_plot =  (ggplot(my3COL, aes('i', 'j', fill='crosscorr')) + scale_fill_gradient(low="white",high="black") + geom_tile() + labs(title='cross correlations between sites i and j (i.e. atomcorr from cpptraj)', x='amino acid position', y='amino acid position'))
+    my3COL_plot.save("./coordinatedDynamics_%s/crosscorrelations_query.png" % PDB_id_reference, width=10, height=5, dpi=300)
+    ########################################
+    myMATRIX=pd.read_csv("./features/feature_all_ref/feature_%s_all_ref.txt" % PDB_id_reference, sep="\s+")
+    myMATRIX = pd.DataFrame(myMATRIX)
+    print(myMATRIX)
+    myHEADER = "i\tj\tcrosscorr\n"
+    print(myHEADER)
+    f= open("./features/feature_all_ref/feature_%s_all_ref_3col.txt" % PDB_id_reference, "w")
+    f.write(str(myHEADER))
+    for i in range(length_prot-1):
+        str_i = str(i)
+        for j in range(length_prot-1):
+            str_j = str(j)
+            crosscorr = myMATRIX.iloc[i,j]
+            #print(crosscorr)
+            str_crosscorr = str(crosscorr)
+            myLINE = "%s\t%s\t%s\n" % (str_i, str_j, str_crosscorr)
+            #print(myLINE)
+            if(j>1):
+                f.write(str(myLINE))
+    my3COL=pd.read_csv("./features/feature_all_ref/feature_%s_all_ref_3col.txt" % PDB_id_reference, sep="\s+")
+    my3COL = pd.DataFrame(my3COL)
+    print(my3COL)
+    my3COL_plot =  (ggplot(my3COL, aes('i', 'j', fill='crosscorr')) + scale_fill_gradient(low="white",high="black") + geom_tile() + labs(title='cross correlations between sites i and j (i.e. atomcorr from cpptraj)', x='amino acid position', y='amino acid position'))
+    my3COL_plot.save("./coordinatedDynamics_%s/crosscorrelations_reference.png" % PDB_id_reference, width=10, height=5, dpi=300)
+    ########################################
+    print("creating heatmaps")
+    myMATRIX=pd.read_csv("./features/feature_all_query_reduced/feature_%s_all_query.txt" % PDB_id_query, sep="\s+")
+    myMATRIX = pd.DataFrame(myMATRIX)
+    print(myMATRIX)
+    shape = myMATRIX.shape
+    print(shape)
+    rows = shape[0]
+    cols = shape[1]
+    myHEADER = "i\tj\tcrosscorr\n"
+    print(myHEADER)
+    f= open("./features/feature_all_query_reduced/feature_%s_all_query_3col.txt" % PDB_id_reference, "w")
+    f.write(str(myHEADER))
+    for i in range(rows):
+        str_i = str(i)
+        for j in range(cols):
+            str_j = str(j)
+            crosscorr = myMATRIX.iloc[i,j]
+            #print(crosscorr)
+            str_crosscorr = str(crosscorr)
+            myLINE = "%s\t%s\t%s\n" % (str_i, str_j, str_crosscorr)
+            #print(myLINE)
+            if(j>1):
+                f.write(str(myLINE))
+    my3COL=pd.read_csv("./features/feature_all_query_reduced/feature_%s_all_query_3col.txt" % PDB_id_reference, sep="\s+")
+    my3COL = pd.DataFrame(my3COL)
+    print(my3COL)
+    my3COL_plot =  (ggplot(my3COL, aes('i', 'j', fill='crosscorr')) + scale_fill_gradient(low="white",high="black") + geom_tile() + labs(title='reduced cross correlations between sites i and j (i.e. SVD of atomcorr from cpptraj)', x='amino acid position', y='singular value component'))
+    my3COL_plot.save("./coordinatedDynamics_%s/crosscorrelations_query_reduced.png" % PDB_id_reference, width=10, height=5, dpi=300)
+    ########################################
+    myMATRIX=pd.read_csv("./features/feature_all_ref_reduced/feature_%s_all_ref.txt" % PDB_id_reference, sep="\s+")
+    myMATRIX = pd.DataFrame(myMATRIX)
+    print(myMATRIX)
+    shape = myMATRIX.shape
+    print(shape)
+    rows = shape[0]
+    cols = shape[1]
+    myHEADER = "i\tj\tcrosscorr\n"
+    print(myHEADER)
+    f= open("./features/feature_all_ref_reduced/feature_%s_all_ref_3col.txt" % PDB_id_reference, "w")
+    f.write(str(myHEADER))
+    for i in range(rows):
+        str_i = str(i)
+        for j in range(cols):
+            str_j = str(j)
+            crosscorr = myMATRIX.iloc[i,j]
+            #print(crosscorr)
+            str_crosscorr = str(crosscorr)
+            myLINE = "%s\t%s\t%s\n" % (str_i, str_j, str_crosscorr)
+            #print(myLINE)
+            if(j>1):
+                f.write(str(myLINE))
+    my3COL=pd.read_csv("./features/feature_all_ref_reduced/feature_%s_all_ref_3col.txt" % PDB_id_reference, sep="\s+")
+    my3COL = pd.DataFrame(my3COL)
+    print(my3COL)
+    my3COL_plot =  (ggplot(my3COL, aes('i', 'j', fill='crosscorr')) + scale_fill_gradient(low="white",high="black") + geom_tile() + labs(title='reduced cross correlations between sites i and j (i.e. SVD of atomcorr from cpptraj)', x='amino acid position', y='singular value component'))
+    my3COL_plot.save("./coordinatedDynamics_%s/crosscorrelations_reference_reduced.png" % PDB_id_reference, width=10, height=5, dpi=300)
+
 def network_plot_site_query():   
     print("creating networks")
     myNET=pd.read_csv("./coordinatedDynamics_%s/siteNSdynamics_query.txt" % PDB_id_reference, sep="\s+")
@@ -1357,6 +1464,7 @@ def main():
     feature_anova()
     coordinated_dynamics()
     coordinated_dynamics_fdr()
+    matrix_plot_corr()
     matrix_plot_site()
     network_plot_site_query()
     network_plot_site_reference()
