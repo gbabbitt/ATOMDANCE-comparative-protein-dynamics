@@ -606,15 +606,40 @@ def matrix_plot_int():
     myMATRIX_plot.save("./coordinatedDynamics_%s/coordinatedDynamics_reference_adj.png" % PDB_id_reference, width=10, height=5, dpi=300)
 
 
-
-
-def network_plot_int_query():   
-    print("\ncreating network-query state\n")
-    myNET=pd.read_csv("./coordinatedDynamics_%s/coordinatedDynamics_query.txt" % PDB_id_reference, sep="\s+")
-    myNET = pd.DataFrame(myNET)
-    #print(myNET)
-    links_filtered=myNET.loc[ (myNET['p-val'] < (0.05)) & (myNET['i'] != myNET['j']) ]
-    #print(links_filtered)
+def network_plot_int_query(inp1, inp2):   
+    print("\ncreating network-query state\n")   
+    #inp1 = input("\nUse multiple test corrected p-values? (y or n)\n" )
+    if(inp1 == "N" or inp1 == "n" or inp1 == "NO" or inp1 == "no"):
+        myNET=pd.read_csv("./coordinatedDynamics_%s/coordinatedDynamics_query.txt" % PDB_id_reference, sep="\s+")
+        myNET = pd.DataFrame(myNET)
+        #print(myNET)
+    if(inp1 == "Y" or inp1 == "y" or inp1 == "YES" or inp1 == "yes"):
+        myNET=pd.read_csv("./coordinatedDynamics_%s/coordinatedDynamics_query_adj.txt" % PDB_id_reference, sep="\s+")
+        myNET = pd.DataFrame(myNET)
+        #print(myNET)    
+    #inp2 = input("\nEnter fixed or autotuned p-value threshold? (e.g. 0.05 or auto (default))\n" )
+    if(inp2 != "auto" and inp2 != ""):
+        p_threshold = float(inp2)
+    if(inp2 == "auto" or inp2 == ""):
+        print("autotuning p-value threshold")
+        p_threshold = 0.001 # initialize
+        len_links_filtered = 0 # initialize
+        total_links = (length_prot*length_prot)-length_prot
+        top_5percent_links = int(0.05*total_links)
+        #print(top_5percent_links)
+        while (len_links_filtered < top_5percent_links and p_threshold < 0.5):
+            p_threshold = p_threshold+0.001
+            links_filtered=myNET.loc[ (myNET['p-val'] < (p_threshold)) & (myNET['i'] != myNET['j']) ]
+            len_links_filtered = len(links_filtered)
+            #print(len_links_filtered)
+        print("top 5% strongest resonance interactions fall below p-value of")
+        print(p_threshold)
+        if(len_links_filtered < top_5percent_links):
+            print("not enough links with sufficiently low p-value to build network")
+            
+    #resume with designated p threshold
+    links_filtered=myNET.loc[ (myNET['p-val'] < (p_threshold)) & (myNET['i'] != myNET['j']) ]
+    print(links_filtered)
     # Build graph
     G=nx.from_pandas_edgelist(links_filtered, 'i', 'j')
     print(G)
@@ -629,7 +654,7 @@ def network_plot_int_query():
         print("test-graph is connected")
         print("calculating network connectivity and non-randomness")
         avg_con = nx.average_node_connectivity(G, flow_func=None)
-        non_rand = nx.non_randomness(G, k=n_coms, weight=None)
+        #non_rand = nx.non_randomness(G, k=n_coms, weight=None)
     else:
         print("test-graph is unconnected")    
         most_nodes = max(nx.connected_components(G), key=len)
@@ -641,26 +666,29 @@ def network_plot_int_query():
             G=M
             print("calculating network connectivity and non-randomness")
             avg_con = nx.average_node_connectivity(G, flow_func=None)
-            non_rand = nx.non_randomness(G, k=n_coms, weight=None)
+            #non_rand = nx.non_randomness(G, k=n_coms, weight=None)
         else:
             print("ERROR-graph is still unconnected") 
             avg_con = "undetermined"
-            non_rand = "undetermined"
+            #non_rand = "undetermined"
     #print(coms)
     str_G = str(G)
     str_coms = str(coms)
     str_avg_con = str(avg_con)
-    str_non_rand = str(non_rand)
+    str_p_threshold = str(p_threshold)
+    #str_non_rand = str(non_rand)
     writePath= "./coordinatedDynamics_%s/coordinatedDynamics_query_communities.txt" % PDB_id_reference
     with open(writePath, 'w') as f_out:
             f_out.write("graph network (isolates removed) - query state\n")
             f_out.write(str_G)
             f_out.write("\nresonance connectivity across AA sites on protein - query state\n")
             f_out.write(str_avg_con)
-            f_out.write("\nresonance non-randomness (nr) - query state\n")
-            f_out.write("1st value = sum of nr for all edges (NOTE: nr of edge (i.e. site resonance) is small when 2 linked nodes (i.e. AA sites) are from different communities)\n")
-            f_out.write("2nd value = relative measure to what extent graph is similar to an Erdos-Renyi graph (NOTE: 0 is random linkage between AA sites)\n")
-            f_out.write(str_non_rand)
+            f_out.write("\nautotuned p-value threshold is (top 5% strongest resonance interactions fall below p-value of)\n")
+            f_out.write(str_p_threshold)
+            #f_out.write("\nresonance non-randomness (nr) - query state\n")
+            #f_out.write("1st value = sum of nr for all edges (NOTE: nr of edge (i.e. site resonance) is small when 2 linked nodes (i.e. AA sites) are from different communities)\n")
+            #f_out.write("2nd value = relative measure to what extent graph is similar to an Erdos-Renyi graph (NOTE: 0 is random linkage between AA sites)\n")
+            #f_out.write(str_non_rand)
             f_out.write("\nAA sites in resonance communities - query state\n")
             f_out.write("colors - turqoise=0=no community\n")
             f_out.write("colors - communities 1-7: lt orange,lavender,pink,lt green,yellow,lt brown, lt gray\n")
@@ -704,7 +732,7 @@ def network_plot_int_query():
     #print(NET_output)
     NET_output = pd.DataFrame(NET_output)
     #print(NET_output)
-    # create control, reference PDB and attribute file for chimerax
+    # create control, query PDB and attribute file for chimerax
     os.popen('cp %s.pdb ./ChimeraXvis/query.pdb' % PDB_id_query) # linix
     #os.popen('copy %sREDUCED.pdb ./ChimeraXvis/reference.pdb' % PDB_id_reference) # Windows
     f5 = open("ChimeraXvis_NET_intQ.ctl", "w")
@@ -730,23 +758,51 @@ def network_plot_int_query():
         NETpos = NET_output.iat[x,0]
         #print(NETpos)
         f6.write("\t:%s\t%s\n" % (sitepos,NETpos))
+    
 
-def network_plot_int_query_bootstrap():   
+def network_plot_int_query_bootstrap(inp1, inp2):   
     for x in range(100):
-        print("\nbootstrapping network-query state %s out of 100\n" % x)
-        myNET=pd.read_csv("./coordinatedDynamics_%s/coordinatedDynamics_query.txt" % PDB_id_reference, sep="\s+")
-        myNET = pd.DataFrame(myNET)
-        #print(myNET)
-        links_filtered=myNET.loc[ (myNET['p-val'] < (0.05)) & (myNET['i'] != myNET['j']) ]
+        print("\nbootstrapping network-query state %s out of 100\n" % x)   
+        #inp1 = input("\nUse multiple test corrected p-values? (y or n)\n" )
+        if(inp1 == "N" or inp1 == "n" or inp1 == "NO" or inp1 == "no"):
+            myNET=pd.read_csv("./coordinatedDynamics_%s/coordinatedDynamics_query.txt" % PDB_id_reference, sep="\s+")
+            myNET = pd.DataFrame(myNET)
+            #print(myNET)
+        if(inp1 == "Y" or inp1 == "y" or inp1 == "YES" or inp1 == "yes"):
+            myNET=pd.read_csv("./coordinatedDynamics_%s/coordinatedDynamics_query_adj.txt" % PDB_id_reference, sep="\s+")
+            myNET = pd.DataFrame(myNET)
+            #print(myNET)    
+        #inp2 = input("\nEnter fixed or autotuned p-value threshold? (e.g. 0.05 or auto (default))\n" )
+        if(inp2 != "auto" and inp2 != ""):
+            p_threshold = float(inp2)
+        if(inp2 == "auto" or inp2 == ""):
+            print("autotuning p-value threshold")
+            p_threshold = 0.001 # initialize
+            len_links_filtered = 0 # initialize
+            total_links = (length_prot*length_prot)-length_prot
+            top_5percent_links = int(0.05*total_links)
+            #print(top_5percent_links)
+            while (len_links_filtered < top_5percent_links and p_threshold < 0.5):
+                p_threshold = p_threshold+0.001
+                links_filtered=myNET.loc[ (myNET['p-val'] < (p_threshold)) & (myNET['i'] != myNET['j']) ]
+                len_links_filtered = len(links_filtered)
+                #print(len_links_filtered)
+            print("top 5% strongest resonance interactions fall below p-value of")
+            print(p_threshold)
+            if(len_links_filtered < top_5percent_links):
+                print("not enough links with sufficiently low p-value to build network")
+            
+        #resume with designated p threshold
+        links_filtered=myNET.loc[ (myNET['p-val'] < (p_threshold)) & (myNET['i'] != myNET['j']) ]
         #print(links_filtered)
         links_filtered=links_filtered.sample(len(links_filtered), replace=True) # bootstrap here
+        
         # Build graph
         G=nx.from_pandas_edgelist(links_filtered, 'i', 'j')
         print(G)
         myNodes = G.nodes
         myNodes = list(myNodes)
         #print(myNodes)
-        #print(myStop)
         print("detecting communities on network") 
         coms = nx.community.louvain_communities(G)
         n_coms = len(coms)
@@ -755,7 +811,7 @@ def network_plot_int_query_bootstrap():
             print("test-graph is connected")
             print("calculating network connectivity and non-randomness")
             avg_con = nx.average_node_connectivity(G, flow_func=None)
-            non_rand = nx.non_randomness(G, k=n_coms, weight=None)
+            #non_rand = nx.non_randomness(G, k=n_coms, weight=None)
         else:
             print("test-graph is unconnected")    
             most_nodes = max(nx.connected_components(G), key=len)
@@ -767,61 +823,88 @@ def network_plot_int_query_bootstrap():
                 G=M
                 print("calculating network connectivity and non-randomness")
                 avg_con = nx.average_node_connectivity(G, flow_func=None)
-                non_rand = nx.non_randomness(G, k=n_coms, weight=None)
+                #non_rand = nx.non_randomness(G, k=n_coms, weight=None)
             else:
                 print("ERROR-graph is still unconnected") 
                 avg_con = "undetermined"
-                non_rand = "undetermined"
+                #non_rand = "undetermined"
         #print(coms)
         str_G = str(G)
         str_coms = str(coms)
         str_avg_con = str(avg_con)
-        str_non_rand = str(non_rand)
+        #str_non_rand = str(non_rand)
         if(x==0):
             writePath= "./coordinatedDynamics_%s/coordinatedDynamics_query_communities_bootstrap_connectivity.txt" % PDB_id_reference
             with open(writePath, 'w') as f_out:
                     f_out.write("connectivity_qry\n")
                     f_out.write(str_avg_con)
                     f_out.close
-            writePath= "./coordinatedDynamics_%s/coordinatedDynamics_query_communities_bootstrap_nonrandomness.txt" % PDB_id_reference
-            with open(writePath, 'w') as f_out:
-                    f_out.write("nr1_qry\tnr2_qry\n")
-                    str_non_rand = str_non_rand.split(",")
-                    str_non_rand0 = str_non_rand[0]
-                    str_non_rand1 = str_non_rand[1]
-                    str_non_rand0 = str_non_rand0.lstrip('(')
-                    str_non_rand1 = str_non_rand1.rstrip(')')
-                    f_out.write(str_non_rand0)
-                    f_out.write("\t")
-                    f_out.write(str_non_rand1)
-                    f_out.close
+            #writePath= "./coordinatedDynamics_%s/coordinatedDynamics_reference_communities_bootstrap_nonrandomness.txt" % PDB_id_reference
+            #with open(writePath, 'w') as f_out:
+            #        f_out.write("nr1_ref\tnr2_ref\n")
+            #        str_non_rand = str_non_rand.split(",")
+            #        str_non_rand0 = str_non_rand[0]
+            #        str_non_rand1 = str_non_rand[1]
+            #        str_non_rand0 = str_non_rand0.lstrip('(')
+            #        str_non_rand1 = str_non_rand1.rstrip(')')
+            #        f_out.write(str_non_rand0)
+            #        f_out.write("\t")
+            #        f_out.write(str_non_rand1)
+            #        f_out.close
         if(x!=0):
             writePath= "./coordinatedDynamics_%s/coordinatedDynamics_query_communities_bootstrap_connectivity.txt" % PDB_id_reference
             with open(writePath, 'a') as f_out:
                     f_out.write("\n")
                     f_out.write(str_avg_con)
                     f_out.close
-            writePath= "./coordinatedDynamics_%s/coordinatedDynamics_query_communities_bootstrap_nonrandomness.txt" % PDB_id_reference
-            with open(writePath, 'a') as f_out:
-                    f_out.write("\n")
-                    str_non_rand = str_non_rand.split(",")
-                    str_non_rand0 = str_non_rand[0]
-                    str_non_rand1 = str_non_rand[1]
-                    str_non_rand0 = str_non_rand0.lstrip('(')
-                    str_non_rand1 = str_non_rand1.rstrip(')')
-                    f_out.write(str_non_rand0)
-                    f_out.write("\t")
-                    f_out.write(str_non_rand1)
-                    f_out.close
-    
+            #writePath= "./coordinatedDynamics_%s/coordinatedDynamics_reference_communities_bootstrap_nonrandomness.txt" % PDB_id_reference
+            #with open(writePath, 'a') as f_out:
+            #        f_out.write("\n")
+            #        str_non_rand = str_non_rand.split(",")
+            #        str_non_rand0 = str_non_rand[0]
+            #        str_non_rand1 = str_non_rand[1]
+            #        str_non_rand0 = str_non_rand0.lstrip('(')
+            #        str_non_rand1 = str_non_rand1.rstrip(')')
+            #        f_out.write(str_non_rand0)
+            #        f_out.write("\t")
+            #        f_out.write(str_non_rand1)
+            #        f_out.close
+
         
-def network_plot_int_reference():   
+def network_plot_int_reference(inp1, inp2):   
     print("\ncreating network-reference state\n")   
-    myNET=pd.read_csv("./coordinatedDynamics_%s/coordinatedDynamics_reference.txt" % PDB_id_reference, sep="\s+")
-    myNET = pd.DataFrame(myNET)
-    #print(myNET)
-    links_filtered=myNET.loc[ (myNET['p-val'] < (0.05)) & (myNET['i'] != myNET['j']) ]
-    #print(links_filtered)
+    #inp1 = input("\nUse multiple test corrected p-values? (y or n)\n" )
+    if(inp1 == "N" or inp1 == "n" or inp1 == "NO" or inp1 == "no"):
+        myNET=pd.read_csv("./coordinatedDynamics_%s/coordinatedDynamics_reference.txt" % PDB_id_reference, sep="\s+")
+        myNET = pd.DataFrame(myNET)
+        #print(myNET)
+    if(inp1 == "Y" or inp1 == "y" or inp1 == "YES" or inp1 == "yes"):
+        myNET=pd.read_csv("./coordinatedDynamics_%s/coordinatedDynamics_reference_adj.txt" % PDB_id_reference, sep="\s+")
+        myNET = pd.DataFrame(myNET)
+        #print(myNET)    
+    #inp2 = input("\nEnter fixed or autotuned p-value threshold? (e.g. 0.05 or auto (default))\n" )
+    if(inp2 != "auto" and inp2 != ""):
+        p_threshold = float(inp2)
+    if(inp2 == "auto" or inp2 == ""):
+        print("autotuning p-value threshold")
+        p_threshold = 0.001 # initialize
+        len_links_filtered = 0 # initialize
+        total_links = (length_prot*length_prot)-length_prot
+        top_5percent_links = int(0.05*total_links)
+        #print(top_5percent_links)
+        while (len_links_filtered < top_5percent_links and p_threshold < 0.5):
+            p_threshold = p_threshold+0.001
+            links_filtered=myNET.loc[ (myNET['p-val'] < (p_threshold)) & (myNET['i'] != myNET['j']) ]
+            len_links_filtered = len(links_filtered)
+            #print(len_links_filtered)
+        print("top 5% strongest resonance interactions fall below p-value of")
+        print(p_threshold)
+        if(len_links_filtered < top_5percent_links):
+            print("not enough links with sufficiently low p-value to build network")
+            
+    #resume with designated p threshold
+    links_filtered=myNET.loc[ (myNET['p-val'] < (p_threshold)) & (myNET['i'] != myNET['j']) ]
+    print(links_filtered)
     # Build graph
     G=nx.from_pandas_edgelist(links_filtered, 'i', 'j')
     print(G)
@@ -836,7 +919,7 @@ def network_plot_int_reference():
         print("test-graph is connected")
         print("calculating network connectivity and non-randomness")
         avg_con = nx.average_node_connectivity(G, flow_func=None)
-        non_rand = nx.non_randomness(G, k=n_coms, weight=None)
+        #non_rand = nx.non_randomness(G, k=n_coms, weight=None)
     else:
         print("test-graph is unconnected")    
         most_nodes = max(nx.connected_components(G), key=len)
@@ -848,26 +931,29 @@ def network_plot_int_reference():
             G=M
             print("calculating network connectivity and non-randomness")
             avg_con = nx.average_node_connectivity(G, flow_func=None)
-            non_rand = nx.non_randomness(G, k=n_coms, weight=None)
+            #non_rand = nx.non_randomness(G, k=n_coms, weight=None)
         else:
             print("ERROR-graph is still unconnected") 
             avg_con = "undetermined"
-            non_rand = "undetermined"
+            #non_rand = "undetermined"
     #print(coms)
     str_G = str(G)
     str_coms = str(coms)
     str_avg_con = str(avg_con)
-    str_non_rand = str(non_rand)
+    str_p_threshold = str(p_threshold)
+    #str_non_rand = str(non_rand)
     writePath= "./coordinatedDynamics_%s/coordinatedDynamics_reference_communities.txt" % PDB_id_reference
     with open(writePath, 'w') as f_out:
             f_out.write("graph network (isolates removed) - reference state\n")
             f_out.write(str_G)
             f_out.write("\nresonance connectivity across AA sites on protein - reference state\n")
             f_out.write(str_avg_con)
-            f_out.write("\nresonance non-randomness (nr) - reference state\n")
-            f_out.write("1st value = sum of nr for all edges (NOTE: nr of edge (i.e. site resonance) is small when 2 linked nodes (i.e. AA sites) are from different communities)\n")
-            f_out.write("2nd value = relative measure to what extent graph is similar to an Erdos-Renyi graph (NOTE: 0 is random linkage between AA sites)\n")
-            f_out.write(str_non_rand)
+            f_out.write("\nautotuned p-value threshold is (top 5% strongest resonance interactions fall below p-value of)\n")
+            f_out.write(str_p_threshold)
+            #f_out.write("\nresonance non-randomness (nr) - reference state\n")
+            #f_out.write("1st value = sum of nr for all edges (NOTE: nr of edge (i.e. site resonance) is small when 2 linked nodes (i.e. AA sites) are from different communities)\n")
+            #f_out.write("2nd value = relative measure to what extent graph is similar to an Erdos-Renyi graph (NOTE: 0 is random linkage between AA sites)\n")
+            #f_out.write(str_non_rand)
             f_out.write("\nAA sites in resonance communities - reference state\n")
             f_out.write("colors - turqoise=0=no community\n")
             f_out.write("colors - communities 1-7: lt orange,lavender,pink,lt green,yellow,lt brown, lt gray\n")
@@ -937,15 +1023,42 @@ def network_plot_int_reference():
         NETpos = NET_output.iat[x,0]
         #print(NETpos)
         f6.write("\t:%s\t%s\n" % (sitepos,NETpos))
+    
 
-
-def network_plot_int_reference_bootstrap():   
+def network_plot_int_reference_bootstrap(inp1, inp2):   
     for x in range(100):
         print("\nbootstrapping network-reference state %s out of 100\n" % x)   
-        myNET=pd.read_csv("./coordinatedDynamics_%s/coordinatedDynamics_reference.txt" % PDB_id_reference, sep="\s+")
-        myNET = pd.DataFrame(myNET)
-        #print(myNET)
-        links_filtered=myNET.loc[ (myNET['p-val'] < (0.05)) & (myNET['i'] != myNET['j']) ]
+        #inp1 = input("\nUse multiple test corrected p-values? (y or n)\n" )
+        if(inp1 == "N" or inp1 == "n" or inp1 == "NO" or inp1 == "no"):
+            myNET=pd.read_csv("./coordinatedDynamics_%s/coordinatedDynamics_reference.txt" % PDB_id_reference, sep="\s+")
+            myNET = pd.DataFrame(myNET)
+            #print(myNET)
+        if(inp1 == "Y" or inp1 == "y" or inp1 == "YES" or inp1 == "yes"):
+            myNET=pd.read_csv("./coordinatedDynamics_%s/coordinatedDynamics_reference_adj.txt" % PDB_id_reference, sep="\s+")
+            myNET = pd.DataFrame(myNET)
+            #print(myNET)    
+        #inp2 = input("\nEnter fixed or autotuned p-value threshold? (e.g. 0.05 or auto (default))\n" )
+        if(inp2 != "auto" and inp2 != ""):
+            p_threshold = float(inp2)
+        if(inp2 == "auto" or inp2 == ""):
+            print("autotuning p-value threshold")
+            p_threshold = 0.001 # initialize
+            len_links_filtered = 0 # initialize
+            total_links = (length_prot*length_prot)-length_prot
+            top_5percent_links = int(0.05*total_links)
+            #print(top_5percent_links)
+            while (len_links_filtered < top_5percent_links and p_threshold < 0.5):
+                p_threshold = p_threshold+0.001
+                links_filtered=myNET.loc[ (myNET['p-val'] < (p_threshold)) & (myNET['i'] != myNET['j']) ]
+                len_links_filtered = len(links_filtered)
+                #print(len_links_filtered)
+            print("top 5% strongest resonance interactions fall below p-value of")
+            print(p_threshold)
+            if(len_links_filtered < top_5percent_links):
+                print("not enough links with sufficiently low p-value to build network")
+            
+        #resume with designated p threshold
+        links_filtered=myNET.loc[ (myNET['p-val'] < (p_threshold)) & (myNET['i'] != myNET['j']) ]
         #print(links_filtered)
         links_filtered=links_filtered.sample(len(links_filtered), replace=True) # bootstrap here
         
@@ -963,7 +1076,7 @@ def network_plot_int_reference_bootstrap():
             print("test-graph is connected")
             print("calculating network connectivity and non-randomness")
             avg_con = nx.average_node_connectivity(G, flow_func=None)
-            non_rand = nx.non_randomness(G, k=n_coms, weight=None)
+            #non_rand = nx.non_randomness(G, k=n_coms, weight=None)
         else:
             print("test-graph is unconnected")    
             most_nodes = max(nx.connected_components(G), key=len)
@@ -975,52 +1088,52 @@ def network_plot_int_reference_bootstrap():
                 G=M
                 print("calculating network connectivity and non-randomness")
                 avg_con = nx.average_node_connectivity(G, flow_func=None)
-                non_rand = nx.non_randomness(G, k=n_coms, weight=None)
+                #non_rand = nx.non_randomness(G, k=n_coms, weight=None)
             else:
                 print("ERROR-graph is still unconnected") 
                 avg_con = "undetermined"
-                non_rand = "undetermined"
+                #non_rand = "undetermined"
         #print(coms)
         str_G = str(G)
         str_coms = str(coms)
         str_avg_con = str(avg_con)
-        str_non_rand = str(non_rand)
+        #str_non_rand = str(non_rand)
         if(x==0):
             writePath= "./coordinatedDynamics_%s/coordinatedDynamics_reference_communities_bootstrap_connectivity.txt" % PDB_id_reference
             with open(writePath, 'w') as f_out:
                     f_out.write("connectivity_ref\n")
                     f_out.write(str_avg_con)
                     f_out.close
-            writePath= "./coordinatedDynamics_%s/coordinatedDynamics_reference_communities_bootstrap_nonrandomness.txt" % PDB_id_reference
-            with open(writePath, 'w') as f_out:
-                    f_out.write("nr1_ref\tnr2_ref\n")
-                    str_non_rand = str_non_rand.split(",")
-                    str_non_rand0 = str_non_rand[0]
-                    str_non_rand1 = str_non_rand[1]
-                    str_non_rand0 = str_non_rand0.lstrip('(')
-                    str_non_rand1 = str_non_rand1.rstrip(')')
-                    f_out.write(str_non_rand0)
-                    f_out.write("\t")
-                    f_out.write(str_non_rand1)
-                    f_out.close
+            #writePath= "./coordinatedDynamics_%s/coordinatedDynamics_reference_communities_bootstrap_nonrandomness.txt" % PDB_id_reference
+            #with open(writePath, 'w') as f_out:
+            #        f_out.write("nr1_ref\tnr2_ref\n")
+            #        str_non_rand = str_non_rand.split(",")
+            #        str_non_rand0 = str_non_rand[0]
+            #        str_non_rand1 = str_non_rand[1]
+            #        str_non_rand0 = str_non_rand0.lstrip('(')
+            #        str_non_rand1 = str_non_rand1.rstrip(')')
+            #        f_out.write(str_non_rand0)
+            #        f_out.write("\t")
+            #        f_out.write(str_non_rand1)
+            #        f_out.close
         if(x!=0):
             writePath= "./coordinatedDynamics_%s/coordinatedDynamics_reference_communities_bootstrap_connectivity.txt" % PDB_id_reference
             with open(writePath, 'a') as f_out:
                     f_out.write("\n")
                     f_out.write(str_avg_con)
                     f_out.close
-            writePath= "./coordinatedDynamics_%s/coordinatedDynamics_reference_communities_bootstrap_nonrandomness.txt" % PDB_id_reference
-            with open(writePath, 'a') as f_out:
-                    f_out.write("\n")
-                    str_non_rand = str_non_rand.split(",")
-                    str_non_rand0 = str_non_rand[0]
-                    str_non_rand1 = str_non_rand[1]
-                    str_non_rand0 = str_non_rand0.lstrip('(')
-                    str_non_rand1 = str_non_rand1.rstrip(')')
-                    f_out.write(str_non_rand0)
-                    f_out.write("\t")
-                    f_out.write(str_non_rand1)
-                    f_out.close
+            #writePath= "./coordinatedDynamics_%s/coordinatedDynamics_reference_communities_bootstrap_nonrandomness.txt" % PDB_id_reference
+            #with open(writePath, 'a') as f_out:
+            #        f_out.write("\n")
+            #        str_non_rand = str_non_rand.split(",")
+            #        str_non_rand0 = str_non_rand[0]
+            #        str_non_rand1 = str_non_rand[1]
+            #        str_non_rand0 = str_non_rand0.lstrip('(')
+            #        str_non_rand1 = str_non_rand1.rstrip(')')
+            #        f_out.write(str_non_rand0)
+            #        f_out.write("\t")
+            #        f_out.write(str_non_rand1)
+            #        f_out.close
 
     
         
@@ -1364,7 +1477,7 @@ def resonance_gain_bootstrap():
             f_out.close
     
     
-    
+    """
     print("bootstrapping resonance gain/loss for query state compared to reference state")
     myREF=pd.read_csv("./coordinatedDynamics_%s/coordinatedDynamics_reference_communities_bootstrap_nonrandomness.txt" % PDB_id_reference, sep="\s+")
     print("resonance-reference state")
@@ -1455,7 +1568,7 @@ def resonance_gain_bootstrap():
             f_out.write("\nsignificance - Welch's T test\n")
             f_out.write(myT2_str)
             f_out.close
-    
+    """
     
 ###############################################################
 ###############################################################
@@ -1469,12 +1582,14 @@ def main():
     network_plot_site_query()
     network_plot_site_reference()
     matrix_plot_int()
-    network_plot_int_query()
-    network_plot_int_reference()
-    inp = input("\nDo you want to calculate bootstrap comparisons for network calculations? (y or n)      ...time consuming\n" )
-    if(inp == "y" or inp == "yes" or inp == "Y" or inp == "YES"):
-        network_plot_int_reference_bootstrap()
-        network_plot_int_query_bootstrap()
+    inp1 = input("\nUse multiple test corrected p-values? (y or n)\n")   
+    inp2 = input("\nEnter fixed or autotuned p-value threshold? (e.g. 0.05 or auto (default))\n")
+    network_plot_int_query(inp1, inp2)
+    network_plot_int_reference(inp1, inp2)
+    inp3 = input("\nDo you want to calculate bootstrap comparisons for network calculations? (y or n)      ...time consuming\n" )
+    if(inp3 == "y" or inp3 == "yes" or inp3 == "Y" or inp3 == "YES"):
+        network_plot_int_query_bootstrap(inp1, inp2)
+        network_plot_int_reference_bootstrap(inp1, inp2)
         resonance_gain_bootstrap()
         
     print("comparative analyses of molecular dynamics is completed")

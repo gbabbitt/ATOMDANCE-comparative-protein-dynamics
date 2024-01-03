@@ -453,12 +453,12 @@ def map_CONSsig():
 def coor_heatmap():
     # open heatmap image
     print("plotting coordinated dynamics (resonance analysis) for query protein %s" % PDB_id_query)
-    image_path = "./coordinatedDynamics_%s/coordinatedDynamics_query.png" % PDB_id_reference
+    image_path = "./coordinatedDynamics_%s/coordinatedDynamics_query_adj.png" % PDB_id_reference
     image = mpimg.imread(image_path)
     plt.imshow(image)
     plt.show(block=True)
     print("plotting coordinated dynamics (resonance analysis) for reference protein %s" % PDB_id_reference)
-    image_path = "./coordinatedDynamics_%s/coordinatedDynamics_reference.png" % PDB_id_reference
+    image_path = "./coordinatedDynamics_%s/coordinatedDynamics_reference_adj.png" % PDB_id_reference
     image = mpimg.imread(image_path)
     plt.imshow(image)
     plt.show(block=True)
@@ -486,26 +486,26 @@ def coor_network():
     image = mpimg.imread(image_path)
     plt.imshow(image)
     plt.show(block=True)
-    print("plotting contact map for query protein %s" % PDB_id_query)
-    image_path = "./coordinatedDynamics_%s/siteNSnetwork_query.png" % PDB_id_reference
-    image = mpimg.imread(image_path)
-    plt.imshow(image)
-    plt.show(block=True)
-    print("plotting contact map for reference protein %s" % PDB_id_reference)
-    image_path = "./coordinatedDynamics_%s/siteNSnetwork_reference.png" % PDB_id_reference
-    image = mpimg.imread(image_path)
-    plt.imshow(image)
-    plt.show(block=True)
-    print("plotting bootstrap comparison of connectivity for query vs reference protein %s" % PDB_id_query)
-    image_path = "./coordinatedDynamics_%s/connectivity_boxplot.png" % PDB_id_reference
-    image = mpimg.imread(image_path)
-    plt.imshow(image)
-    plt.show(block=True)
-    print("plotting bootstrap comparison on non-randomness for query vs reference protein %s" % PDB_id_reference)
-    image_path = "./coordinatedDynamics_%s/nonrandomness_boxplot_nr2.png" % PDB_id_reference
-    image = mpimg.imread(image_path)
-    plt.imshow(image)
-    plt.show(block=True)
+    #print("plotting contact map for query protein %s" % PDB_id_query)
+    #image_path = "./coordinatedDynamics_%s/siteNSnetwork_query.png" % PDB_id_reference
+    #image = mpimg.imread(image_path)
+    #plt.imshow(image)
+    #plt.show(block=True)
+    #print("plotting contact map for reference protein %s" % PDB_id_reference)
+    #image_path = "./coordinatedDynamics_%s/siteNSnetwork_reference.png" % PDB_id_reference
+    #image = mpimg.imread(image_path)
+    #plt.imshow(image)
+    #plt.show(block=True)
+    #print("plotting bootstrap comparison of connectivity for query vs reference protein %s" % PDB_id_query)
+    #image_path = "./coordinatedDynamics_%s/connectivity_boxplot.png" % PDB_id_reference
+    #image = mpimg.imread(image_path)
+    #plt.imshow(image)
+    #plt.show(block=True)
+    #print("plotting bootstrap comparison on non-randomness for query vs reference protein %s" % PDB_id_reference)
+    #image_path = "./coordinatedDynamics_%s/nonrandomness_boxplot_nr2.png" % PDB_id_reference
+    #image = mpimg.imread(image_path)
+    #plt.imshow(image)
+    #plt.show(block=True)
     
 def map_NET_coor():   
     #print("mapping adjacent and non adjacent site contacts to query protein %s" % PDB_id_query)
