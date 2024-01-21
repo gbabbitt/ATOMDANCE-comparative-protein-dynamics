@@ -70,7 +70,9 @@ for x in range(len(infile_lines)):
     if(header == "length"):
         l_pr = value
         print("my total protein length is",l_pr)    
-        
+    if(header == "coordination"):
+        coord_yn = value
+        print("ChoreoGraph 2.0 Y/N",coord_yn)  
 ###### variable assignments ######
 PDB_id_query = ""+query_id+""
 PDB_id_reference = ""+ref_id+""
@@ -85,7 +87,7 @@ frame_size = int(fr_sz)
 n_frames = int(n_fr)
 n_chains = ""+n_ch+""
 length_prot = int(l_pr)
-
+choreo = ""+coord_yn+""
 
 #subsamples = 10
 #frame_size = 100
@@ -170,9 +172,13 @@ def write_control_files():
     f1.write("run\n")
     f2.write("parm %s\n" % top_file_reference)
     f2.write("trajin %s\n"% traj_file_reference)
+    pos = 10 # init
+    step = (n_frames-frame_size)/subsamples
     for x in range(subsamples):
         upper_limit = n_frames-frame_size
-        start = rnd.randint(1, upper_limit)
+        start = rnd.randint(1, upper_limit) # random position subsampling
+        if(choreo=="yes"):
+            start = int(pos+(x*step)) # uniform spaced position subsampling
         stop = start+frame_size
         f1.write("rms ref MyAvg\n")
         f1.write("atomicfluct out fluct_%s_sub_reference.txt @CA,C,O,N&!(:WAT) byres start %s stop %s\n" % (PDB_id_reference, start, stop))
@@ -182,7 +188,7 @@ def write_control_files():
         f2.write("run\n")
     f1.close()
     f2.close()
-    
+
     ################# query protein ############################
     # for getting atom info
     f = open("./atominfo_%s_query.ctl" % PDB_id_query, "w")
@@ -226,9 +232,13 @@ def write_control_files():
     f1.write("run\n")
     f2.write("parm %s\n" % top_file_query)
     f2.write("trajin %s\n"% traj_file_query)
+    pos = 10 # init
+    step = (n_frames-frame_size)/subsamples
     for x in range(subsamples):
         upper_limit = n_frames-frame_size
-        start = rnd.randint(1, upper_limit)
+        start = rnd.randint(1, upper_limit) # random position subsampling
+        if(choreo=="yes"):
+            start = int(pos+(x*step)) # uniform spaced position subsampling
         stop = start+frame_size
         f1.write("rms ref MyAvg\n")
         f1.write("atomicfluct out fluct_%s_sub_query.txt @CA,C,O,N&!(:WAT) byres start %s stop %s\n" % (PDB_id_query, start, stop))
@@ -282,9 +292,13 @@ def write_control_files():
     f1.write("run\n")
     f2.write("parm %s\n" % top_file_reference)
     f2.write("trajin %s\n"% traj_file_reference)
+    pos = 10 # init
+    step = (n_frames-frame_size)/subsamples
     for x in range(subsamples):
         upper_limit = n_frames-frame_size
-        start = rnd.randint(1, upper_limit)
+        start = rnd.randint(1, upper_limit) # random position subsampling
+        if(choreo=="yes"):
+            start = int(pos+(x*step)) # uniform spaced position subsampling
         stop = start+frame_size
         f1.write("rms ref MyAvg\n")
         f1.write("atomicfluct out fluct_%s_sub_referenceCTL.txt @CA,C,O,N&!(:WAT) byres start %s stop %s\n" % (PDB_id_reference, start, stop))

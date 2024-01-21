@@ -222,63 +222,72 @@ def feature_anova():
                 #print(myFluct3_df1)
                 #print("my_siteJ")
                 #print(myFluct3_df3)
+                
+                # break subsamples into 26 groups
+                step = (subsamples/26)
+                step_array = []
+                for x in range(26):
+                    pos = int(x*step)
+                    step_array.append(pos)
+                #print(step_array)
+                
                 writePath1= "./coordinatedDynamics_%s/data_files_query/mixedmodelANOVA_%s_%s.csv" % (PDB_id_reference,i,j)
                 with open(writePath1, 'a') as f_out1:
                     #myClass = "query"
                     #mySite = "1st"
                     myID = myID+1
                        
-                    if(k<=10):
+                    if(k<=step_array[1]):
                         subsamp_grp = "A"
-                    if(k>10 and k<=20):
+                    if(k>step_array[1] and k<=step_array[2]):
                         subsamp_grp = "B"
-                    if(k>20 and k<=30):
+                    if(k>step_array[2] and k<=step_array[3]):
                         subsamp_grp = "C"    
-                    if(k>30 and k<=40):
+                    if(k>step_array[3] and k<=step_array[4]):
                         subsamp_grp = "D"
-                    if(k>40 and k<=50):
+                    if(k>step_array[4] and k<=step_array[5]):
                         subsamp_grp = "E"
-                    if(k>50 and k<=60):
+                    if(k>step_array[5] and k<=step_array[6]):
                         subsamp_grp = "F"    
-                    if(k>60 and k<=70):
+                    if(k>step_array[6] and k<=step_array[7]):
                         subsamp_grp = "G"
-                    if(k>70 and k<=80):
+                    if(k>step_array[7] and k<=step_array[8]):
                         subsamp_grp = "H"
-                    if(k>80 and k<=90):
+                    if(k>step_array[8] and k<=step_array[9]):
                         subsamp_grp = "I"    
-                    if(k>90 and k<=100):
+                    if(k>step_array[9] and k<=step_array[10]):
                         subsamp_grp = "J"
-                    if(k>100 and k<=110):
+                    if(k>step_array[10] and k<=step_array[11]):
                         subsamp_grp = "K"
-                    if(k>110 and k<=120):
+                    if(k>step_array[11] and k<=step_array[12]):
                         subsamp_grp = "L"    
-                    if(k>120 and k<=130):
+                    if(k>step_array[12] and k<=step_array[13]):
                         subsamp_grp = "M"
-                    if(k>130 and k<=140):
+                    if(k>step_array[13] and k<=step_array[14]):
                         subsamp_grp = "N"
-                    if(k>140 and k<=150):
+                    if(k>step_array[14] and k<=step_array[15]):
                         subsamp_grp = "O"    
-                    if(k>150 and k<=160):
+                    if(k>step_array[15] and k<=step_array[16]):
                         subsamp_grp = "P"
-                    if(k>160 and k<=170):
+                    if(k>step_array[16] and k<=step_array[17]):
                         subsamp_grp = "Q"
-                    if(k>170 and k<=180):
+                    if(k>step_array[17] and k<=step_array[18]):
                         subsamp_grp = "R"    
-                    if(k>180 and k<=190):
+                    if(k>step_array[18] and k<=step_array[19]):
                         subsamp_grp = "S"
-                    if(k>190 and k<=200):
+                    if(k>step_array[19] and k<=step_array[20]):
                         subsamp_grp = "T"
-                    if(k>200 and k<=210):
+                    if(k>step_array[20] and k<=step_array[21]):
                         subsamp_grp = "U"    
-                    if(k>210 and k<=220):
+                    if(k>step_array[21] and k<=step_array[22]):
                         subsamp_grp = "V"
-                    if(k>220 and k<=230):
+                    if(k>step_array[22] and k<=step_array[23]):
                         subsamp_grp = "W"
-                    if(k>230 and k<=240):
+                    if(k>step_array[23] and k<=step_array[24]):
                         subsamp_grp = "X"    
-                    if(k>240 and k<=250):
+                    if(k>step_array[24] and k<=step_array[25]):
                         subsamp_grp = "Y"
-                    if(k>250):
+                    if(k>step_array[25]):
                         subsamp_grp = "Z"
                     f_out1.write("%s,%s,%s," % (myID, subsamp_grp, myFluct1_df1))
                     f_out1.write("%s\n" % myFluct1_df3)    
@@ -291,63 +300,64 @@ def feature_anova():
                     f_out1.write("%s,%s,%s," % (myID, subsamp_grp, myFluct5_df1))
                     f_out1.write("%s\n" % myFluct5_df3)
                     f_out1.close
+                
                 writePath2= "./coordinatedDynamics_%s/data_files_reference/mixedmodelANOVA_%s_%s.csv" % (PDB_id_reference,i,j)
                 with open(writePath2, 'a') as f_out2:
                     #myClass = "query"
                     #mySite = "1st"
                     myID = myID+1
                        
-                    if(k<=10):
+                    if(k<=step_array[1]):
                         subsamp_grp = "A"
-                    if(k>10 and k<=20):
+                    if(k>step_array[1] and k<=step_array[2]):
                         subsamp_grp = "B"
-                    if(k>20 and k<=30):
+                    if(k>step_array[2] and k<=step_array[3]):
                         subsamp_grp = "C"    
-                    if(k>30 and k<=40):
+                    if(k>step_array[3] and k<=step_array[4]):
                         subsamp_grp = "D"
-                    if(k>40 and k<=50):
+                    if(k>step_array[4] and k<=step_array[5]):
                         subsamp_grp = "E"
-                    if(k>50 and k<=60):
+                    if(k>step_array[5] and k<=step_array[6]):
                         subsamp_grp = "F"    
-                    if(k>60 and k<=70):
+                    if(k>step_array[6] and k<=step_array[7]):
                         subsamp_grp = "G"
-                    if(k>70 and k<=80):
+                    if(k>step_array[7] and k<=step_array[8]):
                         subsamp_grp = "H"
-                    if(k>80 and k<=90):
+                    if(k>step_array[8] and k<=step_array[9]):
                         subsamp_grp = "I"    
-                    if(k>90 and k<=100):
+                    if(k>step_array[9] and k<=step_array[10]):
                         subsamp_grp = "J"
-                    if(k>100 and k<=110):
+                    if(k>step_array[10] and k<=step_array[11]):
                         subsamp_grp = "K"
-                    if(k>110 and k<=120):
+                    if(k>step_array[11] and k<=step_array[12]):
                         subsamp_grp = "L"    
-                    if(k>120 and k<=130):
+                    if(k>step_array[12] and k<=step_array[13]):
                         subsamp_grp = "M"
-                    if(k>130 and k<=140):
+                    if(k>step_array[13] and k<=step_array[14]):
                         subsamp_grp = "N"
-                    if(k>140 and k<=150):
+                    if(k>step_array[14] and k<=step_array[15]):
                         subsamp_grp = "O"    
-                    if(k>150 and k<=160):
+                    if(k>step_array[15] and k<=step_array[16]):
                         subsamp_grp = "P"
-                    if(k>160 and k<=170):
+                    if(k>step_array[16] and k<=step_array[17]):
                         subsamp_grp = "Q"
-                    if(k>170 and k<=180):
+                    if(k>step_array[17] and k<=step_array[18]):
                         subsamp_grp = "R"    
-                    if(k>180 and k<=190):
+                    if(k>step_array[18] and k<=step_array[19]):
                         subsamp_grp = "S"
-                    if(k>190 and k<=200):
+                    if(k>step_array[19] and k<=step_array[20]):
                         subsamp_grp = "T"
-                    if(k>200 and k<=210):
+                    if(k>step_array[20] and k<=step_array[21]):
                         subsamp_grp = "U"    
-                    if(k>210 and k<=220):
+                    if(k>step_array[21] and k<=step_array[22]):
                         subsamp_grp = "V"
-                    if(k>220 and k<=230):
+                    if(k>step_array[22] and k<=step_array[23]):
                         subsamp_grp = "W"
-                    if(k>230 and k<=240):
+                    if(k>step_array[23] and k<=step_array[24]):
                         subsamp_grp = "X"    
-                    if(k>240 and k<=250):
+                    if(k>step_array[24] and k<=step_array[25]):
                         subsamp_grp = "Y"
-                    if(k>250):
+                    if(k>step_array[25]):
                         subsamp_grp = "Z"
                     f_out2.write("%s,%s,%s," % (myID, subsamp_grp, myFluct1_df2))
                     f_out2.write("%s\n" % myFluct1_df4)    
