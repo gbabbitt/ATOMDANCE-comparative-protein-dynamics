@@ -716,7 +716,7 @@ def network_plot_int_query(inp1, inp2):
     #print(colors)
     # Plot network:
     plt.suptitle('DYNAMIC INTERACTION NETWORK (i.e. fluctuation x time) for %s' % PDB_id_query)
-    plt.title("communities of sites with significant interactions over time (p<0.05)")
+    plt.title("communities of sites with significant interactions over time (p<%s)" % p_threshold)
     nx.draw_networkx(G, with_labels=True, node_color=colors, node_size=100, edge_color='black', linewidths=0.5, font_size=7, cmap=plt.get_cmap("hsv"))
     plt.savefig("./coordinatedDynamics_%s/coordinatedNetwork_query.png" % PDB_id_reference)
     G=nx.Graph(G) # to unfreeze graph
@@ -981,7 +981,7 @@ def network_plot_int_reference(inp1, inp2):
     #print(colors)
     # Plot network:
     plt.suptitle('DYNAMIC INTERACTION NETWORK (i.e. fluctuation x time) for %s' % PDB_id_reference)
-    plt.title("communities of sites with significant interactions over time (p<0.05)")
+    plt.title("communities of sites with significant interactions over time (p<%s)" % p_threshold)
     nx.draw_networkx(G, with_labels=True, node_color=colors, node_size=100, edge_color='black', linewidths=0.5, font_size=7, cmap=plt.get_cmap("hsv"))
     plt.savefig("./coordinatedDynamics_%s/coordinatedNetwork_reference.png" % PDB_id_reference)
     G=nx.Graph(G) # to unfreeze graph
@@ -1584,9 +1584,9 @@ def resonance_gain_bootstrap():
 ###############################################################
 
 def main():
-    feature_anova()
-    coordinated_dynamics()
-    coordinated_dynamics_fdr()
+    #feature_anova()
+    #coordinated_dynamics()
+    #coordinated_dynamics_fdr()
     matrix_plot_corr()
     matrix_plot_site()
     network_plot_site_query()
