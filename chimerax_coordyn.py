@@ -594,25 +594,25 @@ def matrix_plot_int():
     myMATRIX=pd.read_csv("./coordinatedDynamics_%s/coordinatedDynamics_query.txt" % PDB_id_reference, sep="\s+")
     myMATRIX = pd.DataFrame(myMATRIX)
     print(myMATRIX)
-    myMATRIX_plot =  (ggplot(myMATRIX, aes('i', 'j', fill='p-val')) + scale_fill_gradient(low="white",high="black") + geom_tile() + labs(title='resonance map - mixed model ANOVA (i.e. signif interaction of atom fluctuation at sites i and j over time)', x='amino acid position', y='amino acid position'))
+    myMATRIX_plot =  (ggplot(myMATRIX, aes('i', 'j', fill='p-val')) + scale_fill_gradient(low="white",high="black") + geom_tile() + labs(title='choreographic map - mixed model ANOVA (i.e. signif interaction of atom fluctuation at sites i and j over time)', x='amino acid position', y='amino acid position'))
     myMATRIX_plot.save("./coordinatedDynamics_%s/coordinatedDynamics_query.png" % PDB_id_reference, width=10, height=5, dpi=300)
     
     myMATRIX=pd.read_csv("./coordinatedDynamics_%s/coordinatedDynamics_reference.txt" % PDB_id_reference, sep="\s+")
     myMATRIX = pd.DataFrame(myMATRIX)
     print(myMATRIX)
-    myMATRIX_plot =  (ggplot(myMATRIX, aes('i', 'j', fill='p-val')) + scale_fill_gradient(low="white",high="black") + geom_tile() + labs(title='resonance map - mixed model ANOVA (i.e. signif interaction of atom fluctuation at sites i and j over time)', x='amino acid position', y='amino acid position'))
+    myMATRIX_plot =  (ggplot(myMATRIX, aes('i', 'j', fill='p-val')) + scale_fill_gradient(low="white",high="black") + geom_tile() + labs(title='choreographic map - mixed model ANOVA (i.e. signif interaction of atom fluctuation at sites i and j over time)', x='amino acid position', y='amino acid position'))
     myMATRIX_plot.save("./coordinatedDynamics_%s/coordinatedDynamics_reference.png" % PDB_id_reference, width=10, height=5, dpi=300)
     
     myMATRIX=pd.read_csv("./coordinatedDynamics_%s/coordinatedDynamics_query_adj.txt" % PDB_id_reference, sep="\s+")
     myMATRIX = pd.DataFrame(myMATRIX)
     print(myMATRIX)
-    myMATRIX_plot =  (ggplot(myMATRIX, aes('i', 'j', fill='p-val')) + scale_fill_gradient(low="white",high="black") + geom_tile() + labs(title='resonance map - mixed model ANOVA (i.e. signif interaction of atom fluctuation at sites i and j over time)', x='amino acid position', y='amino acid position'))
+    myMATRIX_plot =  (ggplot(myMATRIX, aes('i', 'j', fill='p-val')) + scale_fill_gradient(low="white",high="black") + geom_tile() + labs(title='choreographic map - mixed model ANOVA (i.e. signif interaction of atom fluctuation at sites i and j over time)', x='amino acid position', y='amino acid position'))
     myMATRIX_plot.save("./coordinatedDynamics_%s/coordinatedDynamics_query_adj.png" % PDB_id_reference, width=10, height=5, dpi=300)
     
     myMATRIX=pd.read_csv("./coordinatedDynamics_%s/coordinatedDynamics_reference_adj.txt" % PDB_id_reference, sep="\s+")
     myMATRIX = pd.DataFrame(myMATRIX)
     print(myMATRIX)
-    myMATRIX_plot =  (ggplot(myMATRIX, aes('i', 'j', fill='p-val')) + scale_fill_gradient(low="white",high="black") + geom_tile() + labs(title='resonance map - mixed model ANOVA (i.e. signif interaction of atom fluctuation at sites i and j over time)', x='amino acid position', y='amino acid position'))
+    myMATRIX_plot =  (ggplot(myMATRIX, aes('i', 'j', fill='p-val')) + scale_fill_gradient(low="white",high="black") + geom_tile() + labs(title='choreographic map - mixed model ANOVA (i.e. signif interaction of atom fluctuation at sites i and j over time)', x='amino acid position', y='amino acid position'))
     myMATRIX_plot.save("./coordinatedDynamics_%s/coordinatedDynamics_reference_adj.png" % PDB_id_reference, width=10, height=5, dpi=300)
 
 
@@ -642,7 +642,7 @@ def network_plot_int_query(inp1, inp2):
             links_filtered=myNET.loc[ (myNET['p-val'] < (p_threshold)) & (myNET['i'] != myNET['j']) ]
             len_links_filtered = len(links_filtered)
             #print(len_links_filtered)
-        print("top 5% strongest resonance interactions fall below p-value of")
+        print("top 5% strongest time interactions fall below p-value of")
         print(p_threshold)
         if(len_links_filtered < top_5percent_links):
             print("not enough links with sufficiently low p-value to build network")
@@ -662,7 +662,7 @@ def network_plot_int_query(inp1, inp2):
     print("removing isolates from network")
     if(nx.is_connected(G)):
         print("test-graph is connected")
-        print("calculating network connectivity and non-randomness")
+        print("calculating network connectivity")
         avg_con = nx.average_node_connectivity(G, flow_func=None)
         #non_rand = nx.non_randomness(G, k=n_coms, weight=None)
     else:
@@ -674,7 +674,7 @@ def network_plot_int_query(inp1, inp2):
         if(nx.is_connected(M)):
             print("test-graph is now connected")
             G=M
-            print("calculating network connectivity and non-randomness")
+            print("calculating network connectivity")
             avg_con = nx.average_node_connectivity(G, flow_func=None)
             #non_rand = nx.non_randomness(G, k=n_coms, weight=None)
         else:
@@ -693,13 +693,13 @@ def network_plot_int_query(inp1, inp2):
             f_out.write(str_G)
             f_out.write("\nresonance connectivity across AA sites on protein - query state\n")
             f_out.write(str_avg_con)
-            f_out.write("\nautotuned p-value threshold is (top 5% strongest resonance interactions fall below p-value of)\n")
+            f_out.write("\nautotuned p-value threshold is (top 5% strongest time interactions fall below p-value of)\n")
             f_out.write(str_p_threshold)
             #f_out.write("\nresonance non-randomness (nr) - query state\n")
             #f_out.write("1st value = sum of nr for all edges (NOTE: nr of edge (i.e. site resonance) is small when 2 linked nodes (i.e. AA sites) are from different communities)\n")
             #f_out.write("2nd value = relative measure to what extent graph is similar to an Erdos-Renyi graph (NOTE: 0 is random linkage between AA sites)\n")
             #f_out.write(str_non_rand)
-            f_out.write("\nAA sites in resonance communities - query state\n")
+            f_out.write("\nAA sites in choreographic communities - query state\n")
             f_out.write("colors - turqoise=0=no community\n")
             f_out.write("colors - communities 1-7: lt orange,lavender,pink,lt green,yellow,lt brown, lt gray\n")
             f_out.write(str_coms)
@@ -715,7 +715,7 @@ def network_plot_int_query(inp1, inp2):
                 colors.append(com_num)
     #print(colors)
     # Plot network:
-    plt.suptitle('DYNAMIC INTERACTION NETWORK (i.e. site resonance) for %s' % PDB_id_query)
+    plt.suptitle('DYNAMIC INTERACTION NETWORK (i.e. fluctuation x time) for %s' % PDB_id_query)
     plt.title("communities of sites with significant interactions over time (p<0.05)")
     nx.draw_networkx(G, with_labels=True, node_color=colors, node_size=100, edge_color='black', linewidths=0.5, font_size=7, cmap=plt.get_cmap("hsv"))
     plt.savefig("./coordinatedDynamics_%s/coordinatedNetwork_query.png" % PDB_id_reference)
@@ -797,7 +797,7 @@ def network_plot_int_query_bootstrap(inp1, inp2):
                 links_filtered=myNET.loc[ (myNET['p-val'] < (p_threshold)) & (myNET['i'] != myNET['j']) ]
                 len_links_filtered = len(links_filtered)
                 #print(len_links_filtered)
-            print("top 5% strongest resonance interactions fall below p-value of")
+            print("top 5% strongest time interactions fall below p-value of")
             print(p_threshold)
             if(len_links_filtered < top_5percent_links):
                 print("not enough links with sufficiently low p-value to build network")
@@ -819,7 +819,7 @@ def network_plot_int_query_bootstrap(inp1, inp2):
         print("removing isolates from network")
         if(nx.is_connected(G)):
             print("test-graph is connected")
-            print("calculating network connectivity and non-randomness")
+            print("calculating network connectivity")
             avg_con = nx.average_node_connectivity(G, flow_func=None)
             #non_rand = nx.non_randomness(G, k=n_coms, weight=None)
         else:
@@ -831,7 +831,7 @@ def network_plot_int_query_bootstrap(inp1, inp2):
             if(nx.is_connected(M)):
                 print("test-graph is now connected")
                 G=M
-                print("calculating network connectivity and non-randomness")
+                print("calculating network connectivity")
                 avg_con = nx.average_node_connectivity(G, flow_func=None)
                 #non_rand = nx.non_randomness(G, k=n_coms, weight=None)
             else:
@@ -907,7 +907,7 @@ def network_plot_int_reference(inp1, inp2):
             links_filtered=myNET.loc[ (myNET['p-val'] < (p_threshold)) & (myNET['i'] != myNET['j']) ]
             len_links_filtered = len(links_filtered)
             #print(len_links_filtered)
-        print("top 5% strongest resonance interactions fall below p-value of")
+        print("top 5% strongest time interactions fall below p-value of")
         print(p_threshold)
         if(len_links_filtered < top_5percent_links):
             print("not enough links with sufficiently low p-value to build network")
@@ -927,7 +927,7 @@ def network_plot_int_reference(inp1, inp2):
     print("removing isolates from network")
     if(nx.is_connected(G)):
         print("test-graph is connected")
-        print("calculating network connectivity and non-randomness")
+        print("calculating network connectivity")
         avg_con = nx.average_node_connectivity(G, flow_func=None)
         #non_rand = nx.non_randomness(G, k=n_coms, weight=None)
     else:
@@ -939,7 +939,7 @@ def network_plot_int_reference(inp1, inp2):
         if(nx.is_connected(M)):
             print("test-graph is now connected")
             G=M
-            print("calculating network connectivity and non-randomness")
+            print("calculating network connectivity")
             avg_con = nx.average_node_connectivity(G, flow_func=None)
             #non_rand = nx.non_randomness(G, k=n_coms, weight=None)
         else:
@@ -958,13 +958,13 @@ def network_plot_int_reference(inp1, inp2):
             f_out.write(str_G)
             f_out.write("\nresonance connectivity across AA sites on protein - reference state\n")
             f_out.write(str_avg_con)
-            f_out.write("\nautotuned p-value threshold is (top 5% strongest resonance interactions fall below p-value of)\n")
+            f_out.write("\nautotuned p-value threshold is (top 5% strongest time interactions fall below p-value of)\n")
             f_out.write(str_p_threshold)
             #f_out.write("\nresonance non-randomness (nr) - reference state\n")
             #f_out.write("1st value = sum of nr for all edges (NOTE: nr of edge (i.e. site resonance) is small when 2 linked nodes (i.e. AA sites) are from different communities)\n")
             #f_out.write("2nd value = relative measure to what extent graph is similar to an Erdos-Renyi graph (NOTE: 0 is random linkage between AA sites)\n")
             #f_out.write(str_non_rand)
-            f_out.write("\nAA sites in resonance communities - reference state\n")
+            f_out.write("\nAA sites in choreographic communities - reference state\n")
             f_out.write("colors - turqoise=0=no community\n")
             f_out.write("colors - communities 1-7: lt orange,lavender,pink,lt green,yellow,lt brown, lt gray\n")
             f_out.write(str_coms)
@@ -980,7 +980,7 @@ def network_plot_int_reference(inp1, inp2):
                 colors.append(com_num)
     #print(colors)
     # Plot network:
-    plt.suptitle('DYNAMIC INTERACTION NETWORK (i.e. site resonance) for %s' % PDB_id_reference)
+    plt.suptitle('DYNAMIC INTERACTION NETWORK (i.e. fluctuation x time) for %s' % PDB_id_reference)
     plt.title("communities of sites with significant interactions over time (p<0.05)")
     nx.draw_networkx(G, with_labels=True, node_color=colors, node_size=100, edge_color='black', linewidths=0.5, font_size=7, cmap=plt.get_cmap("hsv"))
     plt.savefig("./coordinatedDynamics_%s/coordinatedNetwork_reference.png" % PDB_id_reference)
@@ -1062,7 +1062,7 @@ def network_plot_int_reference_bootstrap(inp1, inp2):
                 links_filtered=myNET.loc[ (myNET['p-val'] < (p_threshold)) & (myNET['i'] != myNET['j']) ]
                 len_links_filtered = len(links_filtered)
                 #print(len_links_filtered)
-            print("top 5% strongest resonance interactions fall below p-value of")
+            print("top 5% strongest time interactions fall below p-value of")
             print(p_threshold)
             if(len_links_filtered < top_5percent_links):
                 print("not enough links with sufficiently low p-value to build network")
@@ -1084,7 +1084,7 @@ def network_plot_int_reference_bootstrap(inp1, inp2):
         print("removing isolates from network")
         if(nx.is_connected(G)):
             print("test-graph is connected")
-            print("calculating network connectivity and non-randomness")
+            print("calculating network connectivity")
             avg_con = nx.average_node_connectivity(G, flow_func=None)
             #non_rand = nx.non_randomness(G, k=n_coms, weight=None)
         else:
@@ -1096,7 +1096,7 @@ def network_plot_int_reference_bootstrap(inp1, inp2):
             if(nx.is_connected(M)):
                 print("test-graph is now connected")
                 G=M
-                print("calculating network connectivity and non-randomness")
+                print("calculating network connectivity")
                 avg_con = nx.average_node_connectivity(G, flow_func=None)
                 #non_rand = nx.non_randomness(G, k=n_coms, weight=None)
             else:
