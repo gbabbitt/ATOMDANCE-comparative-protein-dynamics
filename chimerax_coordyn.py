@@ -1584,9 +1584,9 @@ def resonance_gain_bootstrap():
 ###############################################################
 
 def main():
-    #feature_anova()
-    #coordinated_dynamics()
-    #coordinated_dynamics_fdr()
+    feature_anova()
+    coordinated_dynamics()
+    coordinated_dynamics_fdr()
     matrix_plot_corr()
     matrix_plot_site()
     network_plot_site_query()
