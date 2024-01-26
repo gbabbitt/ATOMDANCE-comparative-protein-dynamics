@@ -133,9 +133,9 @@ coord_anal = ""+coord_anal+""
 infeature_ref = "./features/featureFLUX_sub_ref/feature_%s_sub_ref_0.txt" % PDB_id_reference
 df_feature_ref = pd.read_csv(infeature_ref, sep="\s+")
 n_features_flux = df_feature_ref.shape[1] - 1
-infeature_ref = "./features/feature_sub_ref_reduced/feature_%s_sub_ref_0.txt" % PDB_id_reference
-df_feature_ref = pd.read_csv(infeature_ref, sep="\s+")
-n_features_corr = df_feature_ref.shape[1] - 1      
+#infeature_ref = "./features/feature_sub_ref_reduced/feature_%s_sub_ref_0.txt" % PDB_id_reference
+#df_feature_ref = pd.read_csv(infeature_ref, sep="\s+")
+#n_features_corr = df_feature_ref.shape[1] - 1      
 
 n_bootstrap = subsamples*5
 if(n_bootstrap > 500):
@@ -147,11 +147,11 @@ setSize = int(0.2*length_prot)  # initiate set size of reduced feature vector
 
 print('n features (fluctuations)')
 print(n_features_flux)
-print('n features (correlations)')
-print(n_features_corr)
-n_features_comb = n_features_flux*2
-print('n features (combined)')
-print(n_features_comb)
+#print('n features (correlations)')
+#print(n_features_corr)
+#n_features_comb = n_features_flux*2
+#print('n features (combined)')
+#print(n_features_comb)
 print('n bootstrap')
 print(n_bootstrap)
 
@@ -1587,7 +1587,7 @@ def main():
     feature_anova()
     coordinated_dynamics()
     coordinated_dynamics_fdr()
-    matrix_plot_corr()
+    #matrix_plot_corr()
     matrix_plot_site()
     network_plot_site_query()
     network_plot_site_reference()

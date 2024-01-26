@@ -195,9 +195,9 @@ print(label_chains)
 infeature_ref = "./features/featureFLUX_sub_ref/feature_%s_sub_ref_0.txt" % PDB_id_reference
 df_feature_ref = pd.read_csv(infeature_ref, sep="\s+")
 n_features_flux = df_feature_ref.shape[1] - 1
-infeature_ref = "./features/feature_sub_ref_reduced/feature_%s_sub_ref_0.txt" % PDB_id_reference
-df_feature_ref = pd.read_csv(infeature_ref, sep="\s+")
-n_features_corr = df_feature_ref.shape[1] - 1      
+#infeature_ref = "./features/feature_sub_ref_reduced/feature_%s_sub_ref_0.txt" % PDB_id_reference
+#df_feature_ref = pd.read_csv(infeature_ref, sep="\s+")
+#n_features_corr = df_feature_ref.shape[1] - 1      
 
 n_bootstrap = subsamples*5
 if(n_bootstrap > 500):
@@ -207,8 +207,8 @@ if(n_bootstrap < 50):
 
 print('n features (fluctuations)')
 print(n_features_flux)
-print('n features (correlations)')
-print(n_features_corr)
+#print('n features (correlations)')
+#print(n_features_corr)
 print('n bootstrap')
 print(n_bootstrap)
 
@@ -227,10 +227,10 @@ def feature_vector_ortho():
         os.makedirs('features/feature_all_ortho')  
     if not os.path.exists('features/feature_sub_ortho'):
         os.makedirs('features/feature_sub_ortho')  
-    if not os.path.exists('features/feature_all_ortho_reduced'):
-        os.makedirs('features/feature_all_ortho_reduced')  
-    if not os.path.exists('features/feature_sub_ortho_reduced'):
-        os.makedirs('features/feature_sub_ortho_reduced')  
+    #if not os.path.exists('features/feature_all_ortho_reduced'):
+    #    os.makedirs('features/feature_all_ortho_reduced')  
+    #if not os.path.exists('features/feature_sub_ortho_reduced'):
+    #    os.makedirs('features/feature_sub_ortho_reduced')  
         
     #######################################################
     ###### feature vector for whole ortholog MD run #######
@@ -240,14 +240,16 @@ def feature_vector_ortho():
     setSize = int(0.2*length_prot)  # initiate set size of reduced feature vector
     
     influx_all_query = "fluct_%s_all_ortho.txt" % PDB_id_ortho 
-    incorr_all_query = "corr_%s_all_ortho_matrix.txt" % PDB_id_ortho    
+    #incorr_all_query = "corr_%s_all_ortho_matrix.txt" % PDB_id_ortho    
     dfflux_all_query = pd.read_csv(influx_all_query, sep="\s+")
-    dfcorr_all_query = pd.read_csv(incorr_all_query, sep="\s+", header=None)
+    #dfcorr_all_query = pd.read_csv(incorr_all_query, sep="\s+", header=None)
     del dfflux_all_query[dfflux_all_query.columns[0]] # remove first column
     # normalize atom fluctuations (minmax method)
     column = 'AtomicFlx'
     dfflux_all_query[column] = (dfflux_all_query[column] - dfflux_all_query[column].min()) / (dfflux_all_query[column].max() - dfflux_all_query[column].min())
     #dfflux_all_query[column] = dfflux_all_query[column] # option skip normalization
+    
+    """
     # trim uneccessary columns
     del dfcorr_all_query[dfcorr_all_query.columns[0]] # remove first column
     del dfcorr_all_query[dfcorr_all_query.columns[-1]] # remove last column = NaN
@@ -301,7 +303,7 @@ def feature_vector_ortho():
         f2.write(dfAsString)
     print("feature vector (whole ortholog MD run) = reduced atom corr features:")
     print(feature_all_query_reduced)
-        
+    """    
     ##############################################################
     ###### feature vectors for subsampled query MD runs     ######
     ##############################################################
@@ -309,9 +311,9 @@ def feature_vector_ortho():
     for i in range(subsamples):
         print("creating reduced feature vector for subsample %s MD ortholog/variant run" % i)
         influx_sub_query = "./subsamples/atomflux_ortho/fluct_%s_sub_ortho.txt" % PDB_id_ortho 
-        incorr_sub_query = "./subsamples/atomcorr_ortho_matrix/corr_%s_sub_ortho_matrix_%s.txt" % (PDB_id_ortho, i)    
+        #incorr_sub_query = "./subsamples/atomcorr_ortho_matrix/corr_%s_sub_ortho_matrix_%s.txt" % (PDB_id_ortho, i)    
         dfflux_sub_query = pd.read_csv(influx_sub_query, sep="\s+")
-        dfcorr_sub_query = pd.read_csv(incorr_sub_query, sep="\s+", header=None)
+        #dfcorr_sub_query = pd.read_csv(incorr_sub_query, sep="\s+", header=None)
         del dfflux_sub_query[dfflux_sub_query.columns[0]] # remove first column
         #del dfflux_sub_query[dfflux_sub_query.columns[0]] # remove next column
         # iterate over atom flux columns 
@@ -324,11 +326,15 @@ def feature_vector_ortho():
         myColumn = pd.DataFrame(myColumn)
         #print(myColumn)
         #dfflux_sub_query = dfflux_sub_query[column]
+        
+        
+        """
         # trim uneccessary columns
         del dfcorr_sub_query[dfcorr_sub_query.columns[0]] # remove first column
         del dfcorr_sub_query[dfcorr_sub_query.columns[-1]] # remove last column = NaN
         #print(dfflux_sub_query)
         #print(dfcorr_sub_query)
+        
         
         ### option to combine flux and corr ###
         #frames_sub_query = [myColumn, dfcorr_sub_query]
@@ -408,14 +414,16 @@ def feature_vector_ortho():
             f2.write(dfAsString)
         #print("feature vector(subsampled reference MD run %s) = atom fluct + 5 reduced atom corr features:" % i)
         #print(feature_sub_ref_reduced) 
-
+    """
+    
+    
     print("creating/adding feature vector files for machine learning on atom fluctuations")
     # create fluctuation feature vector
     if not os.path.exists('features/featureFLUX_sub_ortho'):
         os.makedirs('features/featureFLUX_sub_ortho')
     # create combined fluctuation and reduced correlation feature vector
-    if not os.path.exists('features/featureCOMBINE_sub_ortho'):
-        os.makedirs('features/featureCOMBINE_sub_ortho')     
+    #if not os.path.exists('features/featureCOMBINE_sub_ortho'):
+    #    os.makedirs('features/featureCOMBINE_sub_ortho')     
             
     for i in range(subsamples):
         ############ ortholog protein  ##########################
@@ -473,16 +481,16 @@ def feature_vector_ortho():
             f1.write(dfAsString)
                 
         #read in reduced correlations and create combined flux+corr feature vector
-        read_corr = "./features/feature_sub_ortho_reduced/feature_%s_sub_ortho_%s.txt" % (PDB_id_ortho, i)    
-        df3 = pd.read_csv(read_corr, sep="\s+", header=None)
-        del df3[df3.columns[0]] # remove first column
-        df3 = df3.iloc[:,:5]  # option take first 5 columns of correlations
-        frames = [df1, df3]
-        df_combined = pd.concat(frames, axis=1, join='inner')
-        writePath = "./features/featureCOMBINE_sub_ortho/feature_%s_sub_ortho_%s.txt" % (PDB_id_ortho, i)
-        with open(writePath, 'w') as f3:
-            dfAsString = df_combined.to_string(header=False, index=True)
-            f3.write(dfAsString)
+        #read_corr = "./features/feature_sub_ortho_reduced/feature_%s_sub_ortho_%s.txt" % (PDB_id_ortho, i)    
+        #df3 = pd.read_csv(read_corr, sep="\s+", header=None)
+        #del df3[df3.columns[0]] # remove first column
+        #df3 = df3.iloc[:,:5]  # option take first 5 columns of correlations
+        #frames = [df1, df3]
+        #df_combined = pd.concat(frames, axis=1, join='inner')
+        #writePath = "./features/featureCOMBINE_sub_ortho/feature_%s_sub_ortho_%s.txt" % (PDB_id_ortho, i)
+        #with open(writePath, 'w') as f3:
+        #    dfAsString = df_combined.to_string(header=False, index=True)
+        #    f3.write(dfAsString)
 
 
 def conserved_dynamics_analysis():
@@ -888,7 +896,7 @@ def mmd_rbf_flux(X, Y, gamma=1.0/n_features_flux):
     XY = metrics.pairwise.rbf_kernel(X, Y, gamma)
     return XX.mean() + YY.mean() - 2 * XY.mean()    
 
-def mmd_rbf_corr(X, Y, gamma=1.0/n_features_corr):
+def mmd_rbf_corr(X, Y, gamma=1.0/n_features_flux):
     """MMD using rbf (gaussian) kernel (i.e., k(x,y) = exp(-gamma * ||x-y||^2 / 2))
     Arguments:
         X {[n_sample1, dim]} -- [X matrix]

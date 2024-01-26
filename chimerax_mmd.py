@@ -161,9 +161,9 @@ print(label_chains)
 infeature_ref = "./features/featureFLUX_sub_ref/feature_%s_sub_ref_0.txt" % PDB_id_reference
 df_feature_ref = pd.read_csv(infeature_ref, sep="\s+")
 n_features_flux = df_feature_ref.shape[1] - 1
-infeature_ref = "./features/feature_sub_ref_reduced/feature_%s_sub_ref_0.txt" % PDB_id_reference
-df_feature_ref = pd.read_csv(infeature_ref, sep="\s+")
-n_features_corr = df_feature_ref.shape[1] - 1      
+#infeature_ref = "./features/feature_sub_ref_reduced/feature_%s_sub_ref_0.txt" % PDB_id_reference
+#df_feature_ref = pd.read_csv(infeature_ref, sep="\s+")
+#n_features_corr = df_feature_ref.shape[1] - 1      
 
 n_bootstrap = subsamples*5
 if(n_bootstrap > 500):
@@ -173,8 +173,8 @@ if(n_bootstrap < 50):
 
 print('n features (fluctuations)')
 print(n_features_flux)
-print('n features (correlations)')
-print(n_features_corr)
+#print('n features (correlations)')
+#print(n_features_corr)
 print('n bootstrap')
 print(n_bootstrap)
 ################################################################################
@@ -848,7 +848,7 @@ def mmd_rbf_flux(X, Y, gamma=1.0/n_features_flux):
     XY = metrics.pairwise.rbf_kernel(X, Y, gamma)
     return XX.mean() + YY.mean() - 2 * XY.mean()    
 
-def mmd_rbf_corr(X, Y, gamma=1.0/n_features_corr):
+def mmd_rbf_corr(X, Y, gamma=1.0/n_features_flux):
     """MMD using rbf (gaussian) kernel (i.e., k(x,y) = exp(-gamma * ||x-y||^2 / 2))
     Arguments:
         X {[n_sample1, dim]} -- [X matrix]

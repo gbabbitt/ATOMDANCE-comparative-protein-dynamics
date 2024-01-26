@@ -783,12 +783,12 @@ def feature_vector_flux():
     if not os.path.exists('features/featureFLUX_sub_refCTL'):
         os.makedirs('features/featureFLUX_sub_refCTL')
     # create combined fluctuation and reduced correlation feature vector
-    if not os.path.exists('features/featureCOMBINE_sub_query'):
-        os.makedirs('features/featureCOMBINE_sub_query')  
-    if not os.path.exists('features/featureCOMBINE_sub_ref'):
-        os.makedirs('features/featureCOMBINE_sub_ref')
-    if not os.path.exists('features/featureCOMBINE_sub_refCTL'):
-        os.makedirs('features/featureCOMBINE_sub_refCTL')
+    #if not os.path.exists('features/featureCOMBINE_sub_query'):
+    #    os.makedirs('features/featureCOMBINE_sub_query')  
+    #if not os.path.exists('features/featureCOMBINE_sub_ref'):
+    #    os.makedirs('features/featureCOMBINE_sub_ref')
+    #if not os.path.exists('features/featureCOMBINE_sub_refCTL'):
+    #    os.makedirs('features/featureCOMBINE_sub_refCTL')
     
     
     for i in range(subsamples):
@@ -846,16 +846,16 @@ def feature_vector_flux():
             dfAsString = df1.to_string(header=False, index=True)
             f1.write(dfAsString)
         #read in reduced correlations and create combined flux+corr feature vector
-        read_corr = "./features/feature_sub_ref_reduced/feature_%s_sub_ref_%s.txt" % (PDB_id_reference, i)    
-        df3 = pd.read_csv(read_corr, sep="\s+", header=None)
-        del df3[df3.columns[0]] # remove first column
-        df3 = df3.iloc[:,:5]  # option take first 5 columns of correlations
-        frames = [df1, df3]
-        df_combined = pd.concat(frames, axis=1, join='inner')
-        writePath = "./features/featureCOMBINE_sub_ref/feature_%s_sub_ref_%s.txt" % (PDB_id_reference, i)
-        with open(writePath, 'w') as f3:
-            dfAsString = df_combined.to_string(header=False, index=True)
-            f3.write(dfAsString)
+        #read_corr = "./features/feature_sub_ref_reduced/feature_%s_sub_ref_%s.txt" % (PDB_id_reference, i)    
+        #df3 = pd.read_csv(read_corr, sep="\s+", header=None)
+        #del df3[df3.columns[0]] # remove first column
+        #df3 = df3.iloc[:,:5]  # option take first 5 columns of correlations
+        #frames = [df1, df3]
+        #df_combined = pd.concat(frames, axis=1, join='inner')
+        #writePath = "./features/featureCOMBINE_sub_ref/feature_%s_sub_ref_%s.txt" % (PDB_id_reference, i)
+        #with open(writePath, 'w') as f3:
+        #    dfAsString = df_combined.to_string(header=False, index=True)
+        #    f3.write(dfAsString)
         
         ############ query protein  ##########################
         print("creating fluctuation feature vector for subsample %s MD query run" % i)
@@ -911,16 +911,16 @@ def feature_vector_flux():
             dfAsString = df1.to_string(header=False, index=True)
             f1.write(dfAsString)
         #read in reduced correlations and create combined flux+corr feature vector
-        read_corr = "./features/feature_sub_query_reduced/feature_%s_sub_query_%s.txt" % (PDB_id_query, i)    
-        df3 = pd.read_csv(read_corr, sep="\s+", header=None)
-        del df3[df3.columns[0]] # remove first column
-        df3 = df3.iloc[:,:5]  # option take first 5 columns of correlations
-        frames = [df1, df3]
-        df_combined = pd.concat(frames, axis=1, join='inner')
-        writePath = "./features/featureCOMBINE_sub_query/feature_%s_sub_query_%s.txt" % (PDB_id_query, i)
-        with open(writePath, 'w') as f3:
-            dfAsString = df_combined.to_string(header=False, index=True)
-            f3.write(dfAsString)
+        #read_corr = "./features/feature_sub_query_reduced/feature_%s_sub_query_%s.txt" % (PDB_id_query, i)    
+        #df3 = pd.read_csv(read_corr, sep="\s+", header=None)
+        #del df3[df3.columns[0]] # remove first column
+        #df3 = df3.iloc[:,:5]  # option take first 5 columns of correlations
+        #frames = [df1, df3]
+        #df_combined = pd.concat(frames, axis=1, join='inner')
+        #writePath = "./features/featureCOMBINE_sub_query/feature_%s_sub_query_%s.txt" % (PDB_id_query, i)
+        #with open(writePath, 'w') as f3:
+        #    dfAsString = df_combined.to_string(header=False, index=True)
+        #    f3.write(dfAsString)
         
         ############ reference protein  ##########################
         print("creating fluctuation feature vector for subsample %s MD reference control run" % i)
@@ -976,16 +976,16 @@ def feature_vector_flux():
             dfAsString = df1.to_string(header=False, index=True)
             f1.write(dfAsString)
         #read in reduced correlations and create combined flux+corr feature vector
-        read_corr = "./features/feature_sub_refCTL_reduced/feature_%s_sub_refCTL_%s.txt" % (PDB_id_reference, i)    
-        df3 = pd.read_csv(read_corr, sep="\s+", header=None)
-        del df3[df3.columns[0]] # remove first column
-        df3 = df3.iloc[:,:5]  # option take first 5 columns of correlations
-        frames = [df1, df3]
-        df_combined = pd.concat(frames, axis=1, join='inner')
-        writePath = "./features/featureCOMBINE_sub_refCTL/feature_%s_sub_refCTL_%s.txt" % (PDB_id_reference, i)
-        with open(writePath, 'w') as f3:
-            dfAsString = df_combined.to_string(header=False, index=True)
-            f3.write(dfAsString)
+        #read_corr = "./features/feature_sub_refCTL_reduced/feature_%s_sub_refCTL_%s.txt" % (PDB_id_reference, i)    
+        #df3 = pd.read_csv(read_corr, sep="\s+", header=None)
+        #del df3[df3.columns[0]] # remove first column
+        #df3 = df3.iloc[:,:5]  # option take first 5 columns of correlations
+        #frames = [df1, df3]
+        #df_combined = pd.concat(frames, axis=1, join='inner')
+        #writePath = "./features/featureCOMBINE_sub_refCTL/feature_%s_sub_refCTL_%s.txt" % (PDB_id_reference, i)
+        #with open(writePath, 'w') as f3:
+        #    dfAsString = df_combined.to_string(header=False, index=True)
+        #    f3.write(dfAsString)
         
         
         
@@ -1101,7 +1101,7 @@ def view_results():
 ###############################################################
 
 def main():
-    feature_vector_corr()
+    #feature_vector_corr()
     feature_vector_flux()
     rmsd_plot()
     

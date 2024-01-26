@@ -149,16 +149,22 @@ if not os.path.exists('subsamples/atomflux_ortho'):
 #    os.makedirs('subsamples/atomcorr_refCTL')  
 #if not os.path.exists('subsamples/atomcorr_query'):
 #    os.makedirs('subsamples/atomcorr_query')
-if not os.path.exists('subsamples/atomcorr_ortho'):
-    os.makedirs('subsamples/atomcorr_ortho')
+#if not os.path.exists('subsamples/atomcorr_ortho'):
+#    os.makedirs('subsamples/atomcorr_ortho')
 #if not os.path.exists('subsamples/atomcorr_ref_matrix'):
 #    os.makedirs('subsamples/atomcorr_ref_matrix')
 #if not os.path.exists('subsamples/atomcorr_refCTL_matrix'):
 #    os.makedirs('subsamples/atomcorr_refCTL_matrix')    
 #if not os.path.exists('subsamples/atomcorr_query_matrix'):
 #    os.makedirs('subsamples/atomcorr_query_matrix')
-if not os.path.exists('subsamples/atomcorr_ortho_matrix'):
-    os.makedirs('subsamples/atomcorr_ortho_matrix')
+#if not os.path.exists('subsamples/atomcorr_ortho_matrix'):
+#    os.makedirs('subsamples/atomcorr_ortho_matrix')
+
+if not os.path.exists('subsamples/countORTHO'):  #empty folder/files for progress bar subroutine
+    os.makedirs('subsamples/countORTHO')
+f = open("./subsamples/countORTHO/count.txt", "w")
+f.close()
+
     
 # collect atom information
 def write_control_files():
@@ -185,27 +191,27 @@ def write_control_files():
     f.write("run\n")
     f.close()
 
-    f = open("./atomcorr_%s_all_ortho.ctl" % PDB_id_ortho, "w") 
-    f.write("parm %s\n" % top_file_ortho)
-    f.write("trajin %s\n" % traj_file_ortho)
-    f.write("rms first\n")
-    f.write("average crdset MyAvg\n")
-    f.write("run\n")
-    f.write("rms ref MyAvg\n")
-    f.write("atomiccorr out corr_%s_all_ortho.txt @CA,C,O,N&!(:WAT) byres\n" % PDB_id_ortho)
-    f.write("run\n")
-    f.close()
+    #f = open("./atomcorr_%s_all_ortho.ctl" % PDB_id_ortho, "w") 
+    #f.write("parm %s\n" % top_file_ortho)
+    #f.write("trajin %s\n" % traj_file_ortho)
+    #f.write("rms first\n")
+    #f.write("average crdset MyAvg\n")
+    #f.write("run\n")
+    #f.write("rms ref MyAvg\n")
+    #f.write("atomiccorr out corr_%s_all_ortho.txt @CA,C,O,N&!(:WAT) byres\n" % PDB_id_ortho)
+    #f.write("run\n")
+    #f.close()
         
     # create subsampling .ctl routines for KL divergence
     f1 = open("./atomflux_%s_sub_ortho.ctl" % PDB_id_ortho, "w")
-    f2 = open("./atomcorr_%s_sub_ortho.ctl" % PDB_id_ortho, "w")
+    #f2 = open("./atomcorr_%s_sub_ortho.ctl" % PDB_id_ortho, "w")
     f1.write("parm %s\n" % top_file_ortho)
     f1.write("trajin %s\n"% traj_file_ortho)
     f1.write("rms first\n")
     f1.write("average crdset MyAvg\n")
     f1.write("run\n")
-    f2.write("parm %s\n" % top_file_ortho)
-    f2.write("trajin %s\n"% traj_file_ortho)
+    #f2.write("parm %s\n" % top_file_ortho)
+    #f2.write("trajin %s\n"% traj_file_ortho)
     pos = 10 # init
     step = (n_frames-frame_size)/subsamples
     for x in range(subsamples):
@@ -215,13 +221,14 @@ def write_control_files():
             start = int(pos+(x*step)) # uniform spaced position subsampling
         stop = start+frame_size
         f1.write("rms ref MyAvg\n")
+        f1.write("rms ref MyAvg out ./subsamples/countORTHO/count%s.txt\n" % x)
         f1.write("atomicfluct out fluct_%s_sub_ortho.txt @CA,C,O,N&!(:WAT) byres start %s stop %s\n" % (PDB_id_ortho, start, stop))
         f1.write("run\n")
-        f2.write("trajin %s %s %s\n"% (traj_file_ortho, start, stop))
-        f2.write("atomiccorr out ./subsamples/atomcorr_ortho/corr_%s_sub_ortho_%s.txt @CA,C,O,N&!(:WAT) byres\n" % (PDB_id_ortho, x))
-        f2.write("run\n")
+        #f2.write("trajin %s %s %s\n"% (traj_file_ortho, start, stop))
+        #f2.write("atomiccorr out ./subsamples/atomcorr_ortho/corr_%s_sub_ortho_%s.txt @CA,C,O,N&!(:WAT) byres\n" % (PDB_id_ortho, x))
+        #f2.write("run\n")
     f1.close()
-    f2.close()
+    #f2.close()
     
       
     
@@ -430,16 +437,16 @@ def runProgressBar():
     import time
     from progress.bar import IncrementalBar
     bar = IncrementalBar('subsamples_completed', max=subsamples)
-    lst = os.listdir('subsamples/atomcorr_ortho') # your directory path
+    lst = os.listdir('subsamples/countORTHO') # your directory path
     num_files = 0
     next_num_files = 0
     while (num_files < subsamples):
         if(num_files != next_num_files):
             bar.next()
-        lst = os.listdir('subsamples/atomcorr_ortho') # your directory path
+        lst = os.listdir('subsamples/countORTHO') # your directory path
         num_files = len(lst)
         time.sleep(2)
-        lst = os.listdir('subsamples/atomcorr_ortho') # your directory path
+        lst = os.listdir('subsamples/countORTHO') # your directory path
         next_num_files = len(lst)
     bar.finish()
 ###############################################################
@@ -450,23 +457,23 @@ def main():
     # creating thread
     
     t1 = threading.Thread(target=subsample_ortho_flux)
-    t2 = threading.Thread(target=subsample_ortho_corr)
+    #t2 = threading.Thread(target=subsample_ortho_corr)
     t3 = threading.Thread(target=runProgressBar)
     t1.start() # start threads
-    t2.start()
+    #t2.start()
     t3.start() 
     t1.join()  # wait until threads are completely executed
-    t2.join()
+    #t2.join()
     t3.join() 
     
     
     print("subsampling of MD trajectories is completed") 
-    if(cpptraj_version == "old"):
-        matrix_maker_old()  # for older version of cpptraj
-        matrix_maker_batch_old() # for older version of cpptraj
-    if(cpptraj_version == "new"):
-        matrix_maker_new()
-        matrix_maker_batch_new()
+    #if(cpptraj_version == "old"):
+        #matrix_maker_old()  # for older version of cpptraj
+        #matrix_maker_batch_old() # for older version of cpptraj
+    #if(cpptraj_version == "new"):
+        #matrix_maker_new()
+        #matrix_maker_batch_new()
     copy_flux()
     resinfo()
     print("parsing of MD trajectories is completed")    

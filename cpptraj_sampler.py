@@ -112,21 +112,26 @@ if not os.path.exists('subsamples/atomflux_refCTL'):
     os.makedirs('subsamples/atomflux_refCTL')
 if not os.path.exists('subsamples/atomflux_query'):
     os.makedirs('subsamples/atomflux_query')
-if not os.path.exists('subsamples/atomcorr_ref'):
-    os.makedirs('subsamples/atomcorr_ref')
-if not os.path.exists('subsamples/atomcorr_refCTL'):
-    os.makedirs('subsamples/atomcorr_refCTL')  
-if not os.path.exists('subsamples/atomcorr_query'):
-    os.makedirs('subsamples/atomcorr_query')
-if not os.path.exists('subsamples/atomcorr_ref_matrix'):
-    os.makedirs('subsamples/atomcorr_ref_matrix')
-if not os.path.exists('subsamples/atomcorr_refCTL_matrix'):
-    os.makedirs('subsamples/atomcorr_refCTL_matrix')    
-if not os.path.exists('subsamples/atomcorr_query_matrix'):
-    os.makedirs('subsamples/atomcorr_query_matrix')
+#if not os.path.exists('subsamples/atomcorr_ref'):
+#    os.makedirs('subsamples/atomcorr_ref')
+#if not os.path.exists('subsamples/atomcorr_refCTL'):
+#    os.makedirs('subsamples/atomcorr_refCTL')  
+#if not os.path.exists('subsamples/atomcorr_query'):
+#    os.makedirs('subsamples/atomcorr_query')
+#if not os.path.exists('subsamples/atomcorr_ref_matrix'):
+#    os.makedirs('subsamples/atomcorr_ref_matrix')
+#if not os.path.exists('subsamples/atomcorr_refCTL_matrix'):
+#    os.makedirs('subsamples/atomcorr_refCTL_matrix')    
+#if not os.path.exists('subsamples/atomcorr_query_matrix'):
+#    os.makedirs('subsamples/atomcorr_query_matrix')
 
+if not os.path.exists('subsamples/count'):  #empty folder/files for progress bar subroutine
+    os.makedirs('subsamples/count')
+f = open("./subsamples/count/count.txt", "w")
+f.close()
 
 # collect atom information
+
 def write_control_files():
     
     ################# reference protein ############################
@@ -151,27 +156,27 @@ def write_control_files():
     f.write("run\n")
     f.close()
 
-    f = open("./atomcorr_%s_all_reference.ctl" % PDB_id_reference, "w") 
-    f.write("parm %s\n" % top_file_reference)
-    f.write("trajin %s\n" % traj_file_reference)
-    f.write("rms first\n")
-    f.write("average crdset MyAvg\n")
-    f.write("run\n")
-    f.write("rms ref MyAvg\n")
-    f.write("atomiccorr out corr_%s_all_reference.txt @CA,C,O,N&!(:WAT) byres\n" % PDB_id_reference)
-    f.write("run\n")
-    f.close()
+    #f = open("./atomcorr_%s_all_reference.ctl" % PDB_id_reference, "w") 
+    #f.write("parm %s\n" % top_file_reference)
+    #f.write("trajin %s\n" % traj_file_reference)
+    #f.write("rms first\n")
+    #f.write("average crdset MyAvg\n")
+    #f.write("run\n")
+    #f.write("rms ref MyAvg\n")
+    #f.write("atomiccorr out corr_%s_all_reference.txt @CA,C,O,N&!(:WAT) byres\n" % PDB_id_reference)
+    #f.write("run\n")
+    #f.close()
         
     # create subsampling .ctl routines for KL divergence
     f1 = open("./atomflux_%s_sub_reference.ctl" % PDB_id_reference, "w")
-    f2 = open("./atomcorr_%s_sub_reference.ctl" % PDB_id_reference, "w")
+    #f2 = open("./atomcorr_%s_sub_reference.ctl" % PDB_id_reference, "w")
     f1.write("parm %s\n" % top_file_reference)
     f1.write("trajin %s\n"% traj_file_reference)
     f1.write("rms first\n")
     f1.write("average crdset MyAvg\n")
     f1.write("run\n")
-    f2.write("parm %s\n" % top_file_reference)
-    f2.write("trajin %s\n"% traj_file_reference)
+    #f2.write("parm %s\n" % top_file_reference)
+    #f2.write("trajin %s\n"% traj_file_reference)
     pos = 10 # init
     step = (n_frames-frame_size)/subsamples
     for x in range(subsamples):
@@ -183,11 +188,11 @@ def write_control_files():
         f1.write("rms ref MyAvg\n")
         f1.write("atomicfluct out fluct_%s_sub_reference.txt @CA,C,O,N&!(:WAT) byres start %s stop %s\n" % (PDB_id_reference, start, stop))
         f1.write("run\n")
-        f2.write("trajin %s %s %s\n"% (traj_file_reference, start, stop))
-        f2.write("atomiccorr out ./subsamples/atomcorr_ref/corr_%s_sub_reference_%s.txt @CA,C,O,N&!(:WAT) byres\n" % (PDB_id_reference, x))
-        f2.write("run\n")
+        #f2.write("trajin %s %s %s\n"% (traj_file_reference, start, stop))
+        #f2.write("atomiccorr out ./subsamples/atomcorr_ref/corr_%s_sub_reference_%s.txt @CA,C,O,N&!(:WAT) byres\n" % (PDB_id_reference, x))
+        #f2.write("run\n")
     f1.close()
-    f2.close()
+    #f2.close()
 
     ################# query protein ############################
     # for getting atom info
@@ -211,27 +216,27 @@ def write_control_files():
     f.write("run\n")
     f.close()
 
-    f = open("./atomcorr_%s_all_query.ctl" % PDB_id_query, "w") 
-    f.write("parm %s\n" % top_file_query)
-    f.write("trajin %s\n" % traj_file_query)
-    f.write("rms first\n")
-    f.write("average crdset MyAvg\n")
-    f.write("run\n")
-    f.write("rms ref MyAvg\n")
-    f.write("atomiccorr out corr_%s_all_query.txt @CA,C,O,N&!(:WAT) byres\n" % PDB_id_query)
-    f.write("run\n")
-    f.close()
+    #f = open("./atomcorr_%s_all_query.ctl" % PDB_id_query, "w") 
+    #f.write("parm %s\n" % top_file_query)
+    #f.write("trajin %s\n" % traj_file_query)
+    #f.write("rms first\n")
+    #f.write("average crdset MyAvg\n")
+    #f.write("run\n")
+    #f.write("rms ref MyAvg\n")
+    #f.write("atomiccorr out corr_%s_all_query.txt @CA,C,O,N&!(:WAT) byres\n" % PDB_id_query)
+    #f.write("run\n")
+    #f.close()
         
     # create subsampling .ctl routines for KL divergence
     f1 = open("./atomflux_%s_sub_query.ctl" % PDB_id_query, "w")
-    f2 = open("./atomcorr_%s_sub_query.ctl" % PDB_id_query, "w")
+    #f2 = open("./atomcorr_%s_sub_query.ctl" % PDB_id_query, "w")
     f1.write("parm %s\n" % top_file_query)
     f1.write("trajin %s\n"% traj_file_query)
     f1.write("rms first\n")
     f1.write("average crdset MyAvg\n")
     f1.write("run\n")
-    f2.write("parm %s\n" % top_file_query)
-    f2.write("trajin %s\n"% traj_file_query)
+    #f2.write("parm %s\n" % top_file_query)
+    #f2.write("trajin %s\n"% traj_file_query)
     pos = 10 # init
     step = (n_frames-frame_size)/subsamples
     for x in range(subsamples):
@@ -243,11 +248,11 @@ def write_control_files():
         f1.write("rms ref MyAvg\n")
         f1.write("atomicfluct out fluct_%s_sub_query.txt @CA,C,O,N&!(:WAT) byres start %s stop %s\n" % (PDB_id_query, start, stop))
         f1.write("run\n")
-        f2.write("trajin %s %s %s\n"% (traj_file_query, start, stop))
-        f2.write("atomiccorr out ./subsamples/atomcorr_query/corr_%s_sub_query_%s.txt @CA,C,O,N&!(:WAT) byres\n" % (PDB_id_query, x))
-        f2.write("run\n")
+        #f2.write("trajin %s %s %s\n"% (traj_file_query, start, stop))
+        #f2.write("atomiccorr out ./subsamples/atomcorr_query/corr_%s_sub_query_%s.txt @CA,C,O,N&!(:WAT) byres\n" % (PDB_id_query, x))
+        #f2.write("run\n")
     f1.close()
-    f2.close()
+    #f2.close()
     
     ################# control on reference protein ############################
     # for getting atom info
@@ -271,27 +276,27 @@ def write_control_files():
     f.write("run\n")
     f.close()
 
-    f = open("./atomcorr_%s_all_referenceCTL.ctl" % PDB_id_reference, "w") 
-    f.write("parm %s\n" % top_file_reference)
-    f.write("trajin %s\n" % traj_file_reference)
-    f.write("rms first\n")
-    f.write("average crdset MyAvg\n")
-    f.write("run\n")
-    f.write("rms ref MyAvg\n")
-    f.write("atomiccorr out corr_%s_all_referenceCTL.txt @CA,C,O,N&!(:WAT) byres\n" % PDB_id_reference)
-    f.write("run\n")
-    f.close()
+    #f = open("./atomcorr_%s_all_referenceCTL.ctl" % PDB_id_reference, "w") 
+    #f.write("parm %s\n" % top_file_reference)
+    #f.write("trajin %s\n" % traj_file_reference)
+    #f.write("rms first\n")
+    #f.write("average crdset MyAvg\n")
+    #f.write("run\n")
+    #f.write("rms ref MyAvg\n")
+    #f.write("atomiccorr out corr_%s_all_referenceCTL.txt @CA,C,O,N&!(:WAT) byres\n" % PDB_id_reference)
+    #f.write("run\n")
+    #f.close()
         
     # create subsampling .ctl routines for KL divergence
     f1 = open("./atomflux_%s_sub_referenceCTL.ctl" % PDB_id_reference, "w")
-    f2 = open("./atomcorr_%s_sub_referenceCTL.ctl" % PDB_id_reference, "w")
+    #f2 = open("./atomcorr_%s_sub_referenceCTL.ctl" % PDB_id_reference, "w")
     f1.write("parm %s\n" % top_file_reference)
     f1.write("trajin %s\n"% traj_file_reference)
     f1.write("rms first\n")
     f1.write("average crdset MyAvg\n")
     f1.write("run\n")
-    f2.write("parm %s\n" % top_file_reference)
-    f2.write("trajin %s\n"% traj_file_reference)
+    #f2.write("parm %s\n" % top_file_reference)
+    #f2.write("trajin %s\n"% traj_file_reference)
     pos = 10 # init
     step = (n_frames-frame_size)/subsamples
     for x in range(subsamples):
@@ -301,13 +306,14 @@ def write_control_files():
             start = int(pos+(x*step)) # uniform spaced position subsampling
         stop = start+frame_size
         f1.write("rms ref MyAvg\n")
+        f1.write("rms ref MyAvg out ./subsamples/count/count%s.txt\n" % x)
         f1.write("atomicfluct out fluct_%s_sub_referenceCTL.txt @CA,C,O,N&!(:WAT) byres start %s stop %s\n" % (PDB_id_reference, start, stop))
         f1.write("run\n")
-        f2.write("trajin %s %s %s\n"% (traj_file_reference, start, stop))
-        f2.write("atomiccorr out ./subsamples/atomcorr_refCTL/corr_%s_sub_referenceCTL_%s.txt @CA,C,O,N&!(:WAT) byres\n" % (PDB_id_reference, x))
-        f2.write("run\n")
+        #f2.write("trajin %s %s %s\n"% (traj_file_reference, start, stop))
+        #f2.write("atomiccorr out ./subsamples/atomcorr_refCTL/corr_%s_sub_referenceCTL_%s.txt @CA,C,O,N&!(:WAT) byres\n" % (PDB_id_reference, x))
+        #f2.write("run\n")
     f1.close()
-    f2.close()
+    #f2.close()
     
     
     
@@ -338,10 +344,10 @@ def subsample_reference_corr():
     #print(corr)  # overall correlation
     cmd = 'cpptraj -i atomcorr_%s_all_reference.ctl -o corr_%s_out_all_reference.txt' % (PDB_id_reference,PDB_id_reference) 
     os.system(cmd)
-    print("subsampling reference protein correlations")
-    print("NOTE: may take many minutes depending upon N subsamples & frames per subsample")
-    cmd = "cpptraj -i atomcorr_%s_sub_reference.ctl -o corr_%s_out_sub_reference.txt" % (PDB_id_reference,PDB_id_reference)
-    os.system(cmd)
+    #print("subsampling reference protein correlations")
+    #print("NOTE: may take many minutes depending upon N subsamples & frames per subsample")
+    #cmd = "cpptraj -i atomcorr_%s_sub_reference.ctl -o corr_%s_out_sub_reference.txt" % (PDB_id_reference,PDB_id_reference)
+    #os.system(cmd)
     
 def subsample_query_flux():
     print("collecting atom information")
@@ -365,10 +371,10 @@ def subsample_query_corr():
     #print(corr)  # overall correlation
     cmd = 'cpptraj -i atomcorr_%s_all_query.ctl -o corr_%s_out_all_query.txt' % (PDB_id_query,PDB_id_query) 
     os.system(cmd)
-    print("subsampling query protein correlations")
-    print("NOTE: may take many minutes depending upon N subsamples & frames per subsample")
-    cmd = "cpptraj -i atomcorr_%s_sub_query.ctl -o corr_%s_out_sub_query.txt" % (PDB_id_query,PDB_id_query)
-    os.system(cmd)
+    #print("subsampling query protein correlations")
+    #print("NOTE: may take many minutes depending upon N subsamples & frames per subsample")
+    #cmd = "cpptraj -i atomcorr_%s_sub_query.ctl -o corr_%s_out_sub_query.txt" % (PDB_id_query,PDB_id_query)
+    #os.system(cmd)
 
 def subsample_referenceCTL_flux():
     print("collecting atom information")
@@ -392,10 +398,10 @@ def subsample_referenceCTL_corr():
     #print(corr)  # overall correlation
     cmd = 'cpptraj -i atomcorr_%s_all_referenceCTL.ctl -o corr_%s_out_all_referenceCTL.txt' % (PDB_id_reference,PDB_id_reference) 
     os.system(cmd)
-    print("subsampling reference protein correlations")
-    print("NOTE: may take many minutes depending upon N subsamples & frames per subsample")
-    cmd = "cpptraj -i atomcorr_%s_sub_referenceCTL.ctl -o corr_%s_out_sub_referenceCTL.txt" % (PDB_id_reference,PDB_id_reference)
-    os.system(cmd)
+    #print("subsampling reference protein correlations")
+    #print("NOTE: may take many minutes depending upon N subsamples & frames per subsample")
+    #cmd = "cpptraj -i atomcorr_%s_sub_referenceCTL.ctl -o corr_%s_out_sub_referenceCTL.txt" % (PDB_id_reference,PDB_id_reference)
+    #os.system(cmd)
 
 #################################################################################
 # parse data files for further analyses
@@ -796,18 +802,23 @@ def runProgressBar():
     import time
     from progress.bar import IncrementalBar
     bar = IncrementalBar('subsamples_completed', max=subsamples)
-    lst = os.listdir('subsamples/atomcorr_ref') # your directory path
+    #lst = os.listdir('subsamples/atomcorr_ref') # your directory path
+    lst = os.listdir('subsamples/count') # your directory path
     num_files = 0
     next_num_files = 0
     while (num_files < subsamples):
         if(num_files != next_num_files):
             bar.next()
-        lst = os.listdir('subsamples/atomcorr_ref') # your directory path
+        #lst = os.listdir('subsamples/atomcorr_ref') # your directory path
+        lst = os.listdir('subsamples/count') # your directory path
         num_files = len(lst)
         time.sleep(2)
-        lst = os.listdir('subsamples/atomcorr_ref') # your directory path
+        #lst = os.listdir('subsamples/atomcorr_ref') # your directory path
+        lst = os.listdir('subsamples/count') # your directory path
         next_num_files = len(lst)
     bar.finish()
+    
+ 
 ###############################################################
 ###############################################################
 
@@ -817,32 +828,32 @@ def main():
     t1 = threading.Thread(target=subsample_reference_flux)
     t2 = threading.Thread(target=subsample_referenceCTL_flux)
     t3 = threading.Thread(target=subsample_query_flux)
-    t4 = threading.Thread(target=subsample_reference_corr)
-    t5 = threading.Thread(target=subsample_referenceCTL_corr)
-    t6 = threading.Thread(target=subsample_query_corr)
+    #t4 = threading.Thread(target=subsample_reference_corr)
+    #t5 = threading.Thread(target=subsample_referenceCTL_corr)
+    #t6 = threading.Thread(target=subsample_query_corr)
     t7 = threading.Thread(target=runProgressBar)
     t1.start() # start threads
     t2.start()
     t3.start() 
-    t4.start()
-    t5.start() 
-    t6.start()
+    #t4.start()
+    #t5.start() 
+    #t6.start()
     t7.start()
     t1.join()  # wait until threads are completely executed
     t2.join()
     t3.join() 
-    t4.join()
-    t5.join() 
-    t6.join()
+    #t4.join()
+    #t5.join() 
+    #t6.join()
     t7.join()
     
     print("subsampling of MD trajectories is completed") 
-    if(cpptraj_version == "old"):
-        matrix_maker_old()  # for older version of cpptraj
-        matrix_maker_batch_old() # for older version of cpptraj
-    if(cpptraj_version == "new"):
-        matrix_maker_new()
-        matrix_maker_batch_new()
+    #if(cpptraj_version == "old"):
+        #matrix_maker_old()  # for older version of cpptraj
+        #matrix_maker_batch_old() # for older version of cpptraj
+    #if(cpptraj_version == "new"):
+        #matrix_maker_new()
+        #matrix_maker_batch_new()
     copy_flux()
     resinfo()
     print("parsing of MD trajectories is completed")    
