@@ -11,7 +11,7 @@
 import getopt, sys # Allows for command line arguments
 import os
 import random as rnd
-import threading
+import multiprocessing
 import pingouin as pg
 import networkx as nx
 import matplotlib.pyplot as plt
@@ -154,11 +154,17 @@ print(n_features_flux)
 #print(n_features_comb)
 print('n bootstrap')
 print(n_bootstrap)
-
-            
+i=0
+ii=0
+iii=0
+iiii=0
+j=0
+jj=0
+jjj=0
+jjjj=0
     
 #####################################################
-def feature_anova():
+def feature_anova_1(): # thread 1
     print("parse subsample fluctuation data for mixed-model ANOVA")   
     if not os.path.exists('coordinatedDynamics_%s' % PDB_id_reference):
         os.mkdir('coordinatedDynamics_%s' % PDB_id_reference)
@@ -167,8 +173,8 @@ def feature_anova():
     if not os.path.exists('coordinatedDynamics_%s/data_files_reference' % PDB_id_reference):
         os.mkdir('coordinatedDynamics_%s/data_files_reference' % PDB_id_reference)
         
-    for i in range(length_prot):
-        for j in range(length_prot):
+    for i in range(0,length_prot,4):
+        for j in range(0,length_prot,1):
             print("collecting atom fluctuations across subsamples for sites %s and %s" % (i,j))
             myID = 0
             writePath1= "./coordinatedDynamics_%s/data_files_query/mixedmodelANOVA_%s_%s.csv" % (PDB_id_reference,i,j)
@@ -371,7 +377,648 @@ def feature_anova():
                     f_out2.write("%s\n" % myFluct5_df4)
                     f_out2.close
         
+#####################################################
+def feature_anova_2(): # thread 2
+    print("parse subsample fluctuation data for mixed-model ANOVA")   
+    if not os.path.exists('coordinatedDynamics_%s' % PDB_id_reference):
+        os.mkdir('coordinatedDynamics_%s' % PDB_id_reference)
+    if not os.path.exists('coordinatedDynamics_%s/data_files_query' % PDB_id_reference):
+        os.mkdir('coordinatedDynamics_%s/data_files_query' % PDB_id_reference)
+    if not os.path.exists('coordinatedDynamics_%s/data_files_reference' % PDB_id_reference):
+        os.mkdir('coordinatedDynamics_%s/data_files_reference' % PDB_id_reference)
         
+    for ii in range(1,length_prot,4):
+        for jj in range(0,length_prot,1):
+            print("collecting atom fluctuations across subsamples for sites %s and %s" % (ii,jj))
+            myID = 0
+            writePath1= "./coordinatedDynamics_%s/data_files_query/mixedmodelANOVA_%s_%s.csv" % (PDB_id_reference,ii,jj)
+            with open(writePath1, 'w') as f_out1:
+                f_out1.write("%s,%s,%s,%s\n" % ("id", "subsample", "siteI", "siteJ"))
+                f_out1.close
+            writePath2= "./coordinatedDynamics_%s/data_files_reference/mixedmodelANOVA_%s_%s.csv" % (PDB_id_reference,ii,jj)
+            with open(writePath2, 'w') as f_out2:
+                f_out2.write("%s,%s,%s,%s\n" % ("id", "subsample", "siteI", "siteJ"))
+                f_out2.close   
+            for k in range(subsamples):
+                if(k==0):
+                    continue
+                df1=pd.read_csv("./features/featureFLUX_sub_query/feature_%s_sub_query_%s.txt" %(PDB_id_query,k), sep="\s+", header=None)
+                df2=pd.read_csv("./features/featureFLUX_sub_ref/feature_%s_sub_ref_%s.txt" %(PDB_id_reference,k), sep="\s+", header=None)
+                df3=pd.read_csv("./features/featureFLUX_sub_query/feature_%s_sub_query_%s.txt" %(PDB_id_query,k), sep="\s+", header=None)
+                df4=pd.read_csv("./features/featureFLUX_sub_ref/feature_%s_sub_ref_%s.txt" %(PDB_id_reference,k), sep="\s+", header=None)
+                #print(df1)
+                #print(df2)
+                myRow_df1 = df1.iloc[ii]
+                myRow_df2 = df2.iloc[ii]
+                myRow_df3 = df3.iloc[jj]
+                myRow_df4 = df4.iloc[jj]
+                #print(myRow_df1)
+                #print(myRow_df3)
+                myFluct1_df1 = myRow_df1[1]
+                myFluct1_df2 = myRow_df2[1]
+                myFluct1_df3 = myRow_df3[1]
+                myFluct1_df4 = myRow_df4[1]
+                myFluct2_df1 = myRow_df1[2]
+                myFluct2_df2 = myRow_df2[2]
+                myFluct2_df3 = myRow_df3[2]
+                myFluct2_df4 = myRow_df4[2]
+                myFluct3_df1 = myRow_df1[3]
+                myFluct3_df2 = myRow_df2[3]
+                myFluct3_df3 = myRow_df3[3]
+                myFluct3_df4 = myRow_df4[3]
+                myFluct4_df1 = myRow_df1[4]
+                myFluct4_df2 = myRow_df2[4]
+                myFluct4_df3 = myRow_df3[4]
+                myFluct4_df4 = myRow_df4[4]
+                myFluct5_df1 = myRow_df1[5]
+                myFluct5_df2 = myRow_df2[5]
+                myFluct5_df3 = myRow_df3[5]
+                myFluct5_df4 = myRow_df4[5]
+                #if(myFluct2_df1 == 1.0):
+                #    myFluct2_df1 = 0.99
+                #myFluct2_df1 = round(myFluct2_df1, 2)
+                
+                #print("my_siteI")
+                #print(myFluct3_df1)
+                #print("my_siteJ")
+                #print(myFluct3_df3)
+                
+                # break subsamples into 26 groups
+                step = (subsamples/26)
+                step_array = []
+                for x in range(26):
+                    pos = int(x*step)
+                    step_array.append(pos)
+                #print(step_array)
+                
+                writePath1= "./coordinatedDynamics_%s/data_files_query/mixedmodelANOVA_%s_%s.csv" % (PDB_id_reference,ii,jj)
+                with open(writePath1, 'a') as f_out1:
+                    #myClass = "query"
+                    #mySite = "1st"
+                    myID = myID+1
+                       
+                    if(k<=step_array[1]):
+                        subsamp_grp = "A"
+                    if(k>step_array[1] and k<=step_array[2]):
+                        subsamp_grp = "B"
+                    if(k>step_array[2] and k<=step_array[3]):
+                        subsamp_grp = "C"    
+                    if(k>step_array[3] and k<=step_array[4]):
+                        subsamp_grp = "D"
+                    if(k>step_array[4] and k<=step_array[5]):
+                        subsamp_grp = "E"
+                    if(k>step_array[5] and k<=step_array[6]):
+                        subsamp_grp = "F"    
+                    if(k>step_array[6] and k<=step_array[7]):
+                        subsamp_grp = "G"
+                    if(k>step_array[7] and k<=step_array[8]):
+                        subsamp_grp = "H"
+                    if(k>step_array[8] and k<=step_array[9]):
+                        subsamp_grp = "I"    
+                    if(k>step_array[9] and k<=step_array[10]):
+                        subsamp_grp = "J"
+                    if(k>step_array[10] and k<=step_array[11]):
+                        subsamp_grp = "K"
+                    if(k>step_array[11] and k<=step_array[12]):
+                        subsamp_grp = "L"    
+                    if(k>step_array[12] and k<=step_array[13]):
+                        subsamp_grp = "M"
+                    if(k>step_array[13] and k<=step_array[14]):
+                        subsamp_grp = "N"
+                    if(k>step_array[14] and k<=step_array[15]):
+                        subsamp_grp = "O"    
+                    if(k>step_array[15] and k<=step_array[16]):
+                        subsamp_grp = "P"
+                    if(k>step_array[16] and k<=step_array[17]):
+                        subsamp_grp = "Q"
+                    if(k>step_array[17] and k<=step_array[18]):
+                        subsamp_grp = "R"    
+                    if(k>step_array[18] and k<=step_array[19]):
+                        subsamp_grp = "S"
+                    if(k>step_array[19] and k<=step_array[20]):
+                        subsamp_grp = "T"
+                    if(k>step_array[20] and k<=step_array[21]):
+                        subsamp_grp = "U"    
+                    if(k>step_array[21] and k<=step_array[22]):
+                        subsamp_grp = "V"
+                    if(k>step_array[22] and k<=step_array[23]):
+                        subsamp_grp = "W"
+                    if(k>step_array[23] and k<=step_array[24]):
+                        subsamp_grp = "X"    
+                    if(k>step_array[24] and k<=step_array[25]):
+                        subsamp_grp = "Y"
+                    if(k>step_array[25]):
+                        subsamp_grp = "Z"
+                    f_out1.write("%s,%s,%s," % (myID, subsamp_grp, myFluct1_df1))
+                    f_out1.write("%s\n" % myFluct1_df3)    
+                    f_out1.write("%s,%s,%s," % (myID, subsamp_grp, myFluct2_df1))
+                    f_out1.write("%s\n" % myFluct2_df3)
+                    f_out1.write("%s,%s,%s," % (myID, subsamp_grp, myFluct3_df1))
+                    f_out1.write("%s\n" % myFluct3_df3)
+                    f_out1.write("%s,%s,%s," % (myID, subsamp_grp, myFluct4_df1))
+                    f_out1.write("%s\n" % myFluct4_df3)
+                    f_out1.write("%s,%s,%s," % (myID, subsamp_grp, myFluct5_df1))
+                    f_out1.write("%s\n" % myFluct5_df3)
+                    f_out1.close
+                
+                writePath2= "./coordinatedDynamics_%s/data_files_reference/mixedmodelANOVA_%s_%s.csv" % (PDB_id_reference,ii,jj)
+                with open(writePath2, 'a') as f_out2:
+                    #myClass = "query"
+                    #mySite = "1st"
+                    myID = myID+1
+                       
+                    if(k<=step_array[1]):
+                        subsamp_grp = "A"
+                    if(k>step_array[1] and k<=step_array[2]):
+                        subsamp_grp = "B"
+                    if(k>step_array[2] and k<=step_array[3]):
+                        subsamp_grp = "C"    
+                    if(k>step_array[3] and k<=step_array[4]):
+                        subsamp_grp = "D"
+                    if(k>step_array[4] and k<=step_array[5]):
+                        subsamp_grp = "E"
+                    if(k>step_array[5] and k<=step_array[6]):
+                        subsamp_grp = "F"    
+                    if(k>step_array[6] and k<=step_array[7]):
+                        subsamp_grp = "G"
+                    if(k>step_array[7] and k<=step_array[8]):
+                        subsamp_grp = "H"
+                    if(k>step_array[8] and k<=step_array[9]):
+                        subsamp_grp = "I"    
+                    if(k>step_array[9] and k<=step_array[10]):
+                        subsamp_grp = "J"
+                    if(k>step_array[10] and k<=step_array[11]):
+                        subsamp_grp = "K"
+                    if(k>step_array[11] and k<=step_array[12]):
+                        subsamp_grp = "L"    
+                    if(k>step_array[12] and k<=step_array[13]):
+                        subsamp_grp = "M"
+                    if(k>step_array[13] and k<=step_array[14]):
+                        subsamp_grp = "N"
+                    if(k>step_array[14] and k<=step_array[15]):
+                        subsamp_grp = "O"    
+                    if(k>step_array[15] and k<=step_array[16]):
+                        subsamp_grp = "P"
+                    if(k>step_array[16] and k<=step_array[17]):
+                        subsamp_grp = "Q"
+                    if(k>step_array[17] and k<=step_array[18]):
+                        subsamp_grp = "R"    
+                    if(k>step_array[18] and k<=step_array[19]):
+                        subsamp_grp = "S"
+                    if(k>step_array[19] and k<=step_array[20]):
+                        subsamp_grp = "T"
+                    if(k>step_array[20] and k<=step_array[21]):
+                        subsamp_grp = "U"    
+                    if(k>step_array[21] and k<=step_array[22]):
+                        subsamp_grp = "V"
+                    if(k>step_array[22] and k<=step_array[23]):
+                        subsamp_grp = "W"
+                    if(k>step_array[23] and k<=step_array[24]):
+                        subsamp_grp = "X"    
+                    if(k>step_array[24] and k<=step_array[25]):
+                        subsamp_grp = "Y"
+                    if(k>step_array[25]):
+                        subsamp_grp = "Z"
+                    f_out2.write("%s,%s,%s," % (myID, subsamp_grp, myFluct1_df2))
+                    f_out2.write("%s\n" % myFluct1_df4)    
+                    f_out2.write("%s,%s,%s," % (myID, subsamp_grp, myFluct2_df2))
+                    f_out2.write("%s\n" % myFluct2_df4)
+                    f_out2.write("%s,%s,%s," % (myID, subsamp_grp, myFluct3_df2))
+                    f_out2.write("%s\n" % myFluct3_df4)
+                    f_out2.write("%s,%s,%s," % (myID, subsamp_grp, myFluct4_df2))
+                    f_out2.write("%s\n" % myFluct4_df4)
+                    f_out2.write("%s,%s,%s," % (myID, subsamp_grp, myFluct5_df2))
+                    f_out2.write("%s\n" % myFluct5_df4)
+                    f_out2.close
+
+#####################################################
+def feature_anova_3(): # thread 3
+    print("parse subsample fluctuation data for mixed-model ANOVA")   
+    if not os.path.exists('coordinatedDynamics_%s' % PDB_id_reference):
+        os.mkdir('coordinatedDynamics_%s' % PDB_id_reference)
+    if not os.path.exists('coordinatedDynamics_%s/data_files_query' % PDB_id_reference):
+        os.mkdir('coordinatedDynamics_%s/data_files_query' % PDB_id_reference)
+    if not os.path.exists('coordinatedDynamics_%s/data_files_reference' % PDB_id_reference):
+        os.mkdir('coordinatedDynamics_%s/data_files_reference' % PDB_id_reference)
+        
+    for iii in range(2,length_prot,4):
+        for jjj in range(0,length_prot,1):
+            print("collecting atom fluctuations across subsamples for sites %s and %s" % (iii,jjj))
+            myID = 0
+            writePath1= "./coordinatedDynamics_%s/data_files_query/mixedmodelANOVA_%s_%s.csv" % (PDB_id_reference,iii,jjj)
+            with open(writePath1, 'w') as f_out1:
+                f_out1.write("%s,%s,%s,%s\n" % ("id", "subsample", "siteI", "siteJ"))
+                f_out1.close
+            writePath2= "./coordinatedDynamics_%s/data_files_reference/mixedmodelANOVA_%s_%s.csv" % (PDB_id_reference,iii,jjj)
+            with open(writePath2, 'w') as f_out2:
+                f_out2.write("%s,%s,%s,%s\n" % ("id", "subsample", "siteI", "siteJ"))
+                f_out2.close   
+            for k in range(subsamples):
+                if(k==0):
+                    continue
+                df1=pd.read_csv("./features/featureFLUX_sub_query/feature_%s_sub_query_%s.txt" %(PDB_id_query,k), sep="\s+", header=None)
+                df2=pd.read_csv("./features/featureFLUX_sub_ref/feature_%s_sub_ref_%s.txt" %(PDB_id_reference,k), sep="\s+", header=None)
+                df3=pd.read_csv("./features/featureFLUX_sub_query/feature_%s_sub_query_%s.txt" %(PDB_id_query,k), sep="\s+", header=None)
+                df4=pd.read_csv("./features/featureFLUX_sub_ref/feature_%s_sub_ref_%s.txt" %(PDB_id_reference,k), sep="\s+", header=None)
+                #print(df1)
+                #print(df2)
+                myRow_df1 = df1.iloc[iii]
+                myRow_df2 = df2.iloc[iii]
+                myRow_df3 = df3.iloc[jjj]
+                myRow_df4 = df4.iloc[jjj]
+                #print(myRow_df1)
+                #print(myRow_df3)
+                myFluct1_df1 = myRow_df1[1]
+                myFluct1_df2 = myRow_df2[1]
+                myFluct1_df3 = myRow_df3[1]
+                myFluct1_df4 = myRow_df4[1]
+                myFluct2_df1 = myRow_df1[2]
+                myFluct2_df2 = myRow_df2[2]
+                myFluct2_df3 = myRow_df3[2]
+                myFluct2_df4 = myRow_df4[2]
+                myFluct3_df1 = myRow_df1[3]
+                myFluct3_df2 = myRow_df2[3]
+                myFluct3_df3 = myRow_df3[3]
+                myFluct3_df4 = myRow_df4[3]
+                myFluct4_df1 = myRow_df1[4]
+                myFluct4_df2 = myRow_df2[4]
+                myFluct4_df3 = myRow_df3[4]
+                myFluct4_df4 = myRow_df4[4]
+                myFluct5_df1 = myRow_df1[5]
+                myFluct5_df2 = myRow_df2[5]
+                myFluct5_df3 = myRow_df3[5]
+                myFluct5_df4 = myRow_df4[5]
+                #if(myFluct2_df1 == 1.0):
+                #    myFluct2_df1 = 0.99
+                #myFluct2_df1 = round(myFluct2_df1, 2)
+                
+                #print("my_siteI")
+                #print(myFluct3_df1)
+                #print("my_siteJ")
+                #print(myFluct3_df3)
+                
+                # break subsamples into 26 groups
+                step = (subsamples/26)
+                step_array = []
+                for x in range(26):
+                    pos = int(x*step)
+                    step_array.append(pos)
+                #print(step_array)
+                
+                writePath1= "./coordinatedDynamics_%s/data_files_query/mixedmodelANOVA_%s_%s.csv" % (PDB_id_reference,iii,jjj)
+                with open(writePath1, 'a') as f_out1:
+                    #myClass = "query"
+                    #mySite = "1st"
+                    myID = myID+1
+                       
+                    if(k<=step_array[1]):
+                        subsamp_grp = "A"
+                    if(k>step_array[1] and k<=step_array[2]):
+                        subsamp_grp = "B"
+                    if(k>step_array[2] and k<=step_array[3]):
+                        subsamp_grp = "C"    
+                    if(k>step_array[3] and k<=step_array[4]):
+                        subsamp_grp = "D"
+                    if(k>step_array[4] and k<=step_array[5]):
+                        subsamp_grp = "E"
+                    if(k>step_array[5] and k<=step_array[6]):
+                        subsamp_grp = "F"    
+                    if(k>step_array[6] and k<=step_array[7]):
+                        subsamp_grp = "G"
+                    if(k>step_array[7] and k<=step_array[8]):
+                        subsamp_grp = "H"
+                    if(k>step_array[8] and k<=step_array[9]):
+                        subsamp_grp = "I"    
+                    if(k>step_array[9] and k<=step_array[10]):
+                        subsamp_grp = "J"
+                    if(k>step_array[10] and k<=step_array[11]):
+                        subsamp_grp = "K"
+                    if(k>step_array[11] and k<=step_array[12]):
+                        subsamp_grp = "L"    
+                    if(k>step_array[12] and k<=step_array[13]):
+                        subsamp_grp = "M"
+                    if(k>step_array[13] and k<=step_array[14]):
+                        subsamp_grp = "N"
+                    if(k>step_array[14] and k<=step_array[15]):
+                        subsamp_grp = "O"    
+                    if(k>step_array[15] and k<=step_array[16]):
+                        subsamp_grp = "P"
+                    if(k>step_array[16] and k<=step_array[17]):
+                        subsamp_grp = "Q"
+                    if(k>step_array[17] and k<=step_array[18]):
+                        subsamp_grp = "R"    
+                    if(k>step_array[18] and k<=step_array[19]):
+                        subsamp_grp = "S"
+                    if(k>step_array[19] and k<=step_array[20]):
+                        subsamp_grp = "T"
+                    if(k>step_array[20] and k<=step_array[21]):
+                        subsamp_grp = "U"    
+                    if(k>step_array[21] and k<=step_array[22]):
+                        subsamp_grp = "V"
+                    if(k>step_array[22] and k<=step_array[23]):
+                        subsamp_grp = "W"
+                    if(k>step_array[23] and k<=step_array[24]):
+                        subsamp_grp = "X"    
+                    if(k>step_array[24] and k<=step_array[25]):
+                        subsamp_grp = "Y"
+                    if(k>step_array[25]):
+                        subsamp_grp = "Z"
+                    f_out1.write("%s,%s,%s," % (myID, subsamp_grp, myFluct1_df1))
+                    f_out1.write("%s\n" % myFluct1_df3)    
+                    f_out1.write("%s,%s,%s," % (myID, subsamp_grp, myFluct2_df1))
+                    f_out1.write("%s\n" % myFluct2_df3)
+                    f_out1.write("%s,%s,%s," % (myID, subsamp_grp, myFluct3_df1))
+                    f_out1.write("%s\n" % myFluct3_df3)
+                    f_out1.write("%s,%s,%s," % (myID, subsamp_grp, myFluct4_df1))
+                    f_out1.write("%s\n" % myFluct4_df3)
+                    f_out1.write("%s,%s,%s," % (myID, subsamp_grp, myFluct5_df1))
+                    f_out1.write("%s\n" % myFluct5_df3)
+                    f_out1.close
+                
+                writePath2= "./coordinatedDynamics_%s/data_files_reference/mixedmodelANOVA_%s_%s.csv" % (PDB_id_reference,iii,jjj)
+                with open(writePath2, 'a') as f_out2:
+                    #myClass = "query"
+                    #mySite = "1st"
+                    myID = myID+1
+                       
+                    if(k<=step_array[1]):
+                        subsamp_grp = "A"
+                    if(k>step_array[1] and k<=step_array[2]):
+                        subsamp_grp = "B"
+                    if(k>step_array[2] and k<=step_array[3]):
+                        subsamp_grp = "C"    
+                    if(k>step_array[3] and k<=step_array[4]):
+                        subsamp_grp = "D"
+                    if(k>step_array[4] and k<=step_array[5]):
+                        subsamp_grp = "E"
+                    if(k>step_array[5] and k<=step_array[6]):
+                        subsamp_grp = "F"    
+                    if(k>step_array[6] and k<=step_array[7]):
+                        subsamp_grp = "G"
+                    if(k>step_array[7] and k<=step_array[8]):
+                        subsamp_grp = "H"
+                    if(k>step_array[8] and k<=step_array[9]):
+                        subsamp_grp = "I"    
+                    if(k>step_array[9] and k<=step_array[10]):
+                        subsamp_grp = "J"
+                    if(k>step_array[10] and k<=step_array[11]):
+                        subsamp_grp = "K"
+                    if(k>step_array[11] and k<=step_array[12]):
+                        subsamp_grp = "L"    
+                    if(k>step_array[12] and k<=step_array[13]):
+                        subsamp_grp = "M"
+                    if(k>step_array[13] and k<=step_array[14]):
+                        subsamp_grp = "N"
+                    if(k>step_array[14] and k<=step_array[15]):
+                        subsamp_grp = "O"    
+                    if(k>step_array[15] and k<=step_array[16]):
+                        subsamp_grp = "P"
+                    if(k>step_array[16] and k<=step_array[17]):
+                        subsamp_grp = "Q"
+                    if(k>step_array[17] and k<=step_array[18]):
+                        subsamp_grp = "R"    
+                    if(k>step_array[18] and k<=step_array[19]):
+                        subsamp_grp = "S"
+                    if(k>step_array[19] and k<=step_array[20]):
+                        subsamp_grp = "T"
+                    if(k>step_array[20] and k<=step_array[21]):
+                        subsamp_grp = "U"    
+                    if(k>step_array[21] and k<=step_array[22]):
+                        subsamp_grp = "V"
+                    if(k>step_array[22] and k<=step_array[23]):
+                        subsamp_grp = "W"
+                    if(k>step_array[23] and k<=step_array[24]):
+                        subsamp_grp = "X"    
+                    if(k>step_array[24] and k<=step_array[25]):
+                        subsamp_grp = "Y"
+                    if(k>step_array[25]):
+                        subsamp_grp = "Z"
+                    f_out2.write("%s,%s,%s," % (myID, subsamp_grp, myFluct1_df2))
+                    f_out2.write("%s\n" % myFluct1_df4)    
+                    f_out2.write("%s,%s,%s," % (myID, subsamp_grp, myFluct2_df2))
+                    f_out2.write("%s\n" % myFluct2_df4)
+                    f_out2.write("%s,%s,%s," % (myID, subsamp_grp, myFluct3_df2))
+                    f_out2.write("%s\n" % myFluct3_df4)
+                    f_out2.write("%s,%s,%s," % (myID, subsamp_grp, myFluct4_df2))
+                    f_out2.write("%s\n" % myFluct4_df4)
+                    f_out2.write("%s,%s,%s," % (myID, subsamp_grp, myFluct5_df2))
+                    f_out2.write("%s\n" % myFluct5_df4)
+                    f_out2.close
+
+#####################################################
+def feature_anova_4(): # thread 4
+    print("parse subsample fluctuation data for mixed-model ANOVA")   
+    if not os.path.exists('coordinatedDynamics_%s' % PDB_id_reference):
+        os.mkdir('coordinatedDynamics_%s' % PDB_id_reference)
+    if not os.path.exists('coordinatedDynamics_%s/data_files_query' % PDB_id_reference):
+        os.mkdir('coordinatedDynamics_%s/data_files_query' % PDB_id_reference)
+    if not os.path.exists('coordinatedDynamics_%s/data_files_reference' % PDB_id_reference):
+        os.mkdir('coordinatedDynamics_%s/data_files_reference' % PDB_id_reference)
+        
+    for iiii in range(3,length_prot,4):
+        for jjjj in range(0,length_prot,1):
+            print("collecting atom fluctuations across subsamples for sites %s and %s" % (iiii,jjjj))
+            myID = 0
+            writePath1= "./coordinatedDynamics_%s/data_files_query/mixedmodelANOVA_%s_%s.csv" % (PDB_id_reference,iiii,jjjj)
+            with open(writePath1, 'w') as f_out1:
+                f_out1.write("%s,%s,%s,%s\n" % ("id", "subsample", "siteI", "siteJ"))
+                f_out1.close
+            writePath2= "./coordinatedDynamics_%s/data_files_reference/mixedmodelANOVA_%s_%s.csv" % (PDB_id_reference,iiii,jjjj)
+            with open(writePath2, 'w') as f_out2:
+                f_out2.write("%s,%s,%s,%s\n" % ("id", "subsample", "siteI", "siteJ"))
+                f_out2.close   
+            for k in range(subsamples):
+                if(k==0):
+                    continue
+                df1=pd.read_csv("./features/featureFLUX_sub_query/feature_%s_sub_query_%s.txt" %(PDB_id_query,k), sep="\s+", header=None)
+                df2=pd.read_csv("./features/featureFLUX_sub_ref/feature_%s_sub_ref_%s.txt" %(PDB_id_reference,k), sep="\s+", header=None)
+                df3=pd.read_csv("./features/featureFLUX_sub_query/feature_%s_sub_query_%s.txt" %(PDB_id_query,k), sep="\s+", header=None)
+                df4=pd.read_csv("./features/featureFLUX_sub_ref/feature_%s_sub_ref_%s.txt" %(PDB_id_reference,k), sep="\s+", header=None)
+                #print(df1)
+                #print(df2)
+                myRow_df1 = df1.iloc[iiii]
+                myRow_df2 = df2.iloc[iiii]
+                myRow_df3 = df3.iloc[jjjj]
+                myRow_df4 = df4.iloc[jjjj]
+                #print(myRow_df1)
+                #print(myRow_df3)
+                myFluct1_df1 = myRow_df1[1]
+                myFluct1_df2 = myRow_df2[1]
+                myFluct1_df3 = myRow_df3[1]
+                myFluct1_df4 = myRow_df4[1]
+                myFluct2_df1 = myRow_df1[2]
+                myFluct2_df2 = myRow_df2[2]
+                myFluct2_df3 = myRow_df3[2]
+                myFluct2_df4 = myRow_df4[2]
+                myFluct3_df1 = myRow_df1[3]
+                myFluct3_df2 = myRow_df2[3]
+                myFluct3_df3 = myRow_df3[3]
+                myFluct3_df4 = myRow_df4[3]
+                myFluct4_df1 = myRow_df1[4]
+                myFluct4_df2 = myRow_df2[4]
+                myFluct4_df3 = myRow_df3[4]
+                myFluct4_df4 = myRow_df4[4]
+                myFluct5_df1 = myRow_df1[5]
+                myFluct5_df2 = myRow_df2[5]
+                myFluct5_df3 = myRow_df3[5]
+                myFluct5_df4 = myRow_df4[5]
+                #if(myFluct2_df1 == 1.0):
+                #    myFluct2_df1 = 0.99
+                #myFluct2_df1 = round(myFluct2_df1, 2)
+                
+                #print("my_siteI")
+                #print(myFluct3_df1)
+                #print("my_siteJ")
+                #print(myFluct3_df3)
+                
+                # break subsamples into 26 groups
+                step = (subsamples/26)
+                step_array = []
+                for x in range(26):
+                    pos = int(x*step)
+                    step_array.append(pos)
+                #print(step_array)
+                
+                writePath1= "./coordinatedDynamics_%s/data_files_query/mixedmodelANOVA_%s_%s.csv" % (PDB_id_reference,iiii,jjjj)
+                with open(writePath1, 'a') as f_out1:
+                    #myClass = "query"
+                    #mySite = "1st"
+                    myID = myID+1
+                       
+                    if(k<=step_array[1]):
+                        subsamp_grp = "A"
+                    if(k>step_array[1] and k<=step_array[2]):
+                        subsamp_grp = "B"
+                    if(k>step_array[2] and k<=step_array[3]):
+                        subsamp_grp = "C"    
+                    if(k>step_array[3] and k<=step_array[4]):
+                        subsamp_grp = "D"
+                    if(k>step_array[4] and k<=step_array[5]):
+                        subsamp_grp = "E"
+                    if(k>step_array[5] and k<=step_array[6]):
+                        subsamp_grp = "F"    
+                    if(k>step_array[6] and k<=step_array[7]):
+                        subsamp_grp = "G"
+                    if(k>step_array[7] and k<=step_array[8]):
+                        subsamp_grp = "H"
+                    if(k>step_array[8] and k<=step_array[9]):
+                        subsamp_grp = "I"    
+                    if(k>step_array[9] and k<=step_array[10]):
+                        subsamp_grp = "J"
+                    if(k>step_array[10] and k<=step_array[11]):
+                        subsamp_grp = "K"
+                    if(k>step_array[11] and k<=step_array[12]):
+                        subsamp_grp = "L"    
+                    if(k>step_array[12] and k<=step_array[13]):
+                        subsamp_grp = "M"
+                    if(k>step_array[13] and k<=step_array[14]):
+                        subsamp_grp = "N"
+                    if(k>step_array[14] and k<=step_array[15]):
+                        subsamp_grp = "O"    
+                    if(k>step_array[15] and k<=step_array[16]):
+                        subsamp_grp = "P"
+                    if(k>step_array[16] and k<=step_array[17]):
+                        subsamp_grp = "Q"
+                    if(k>step_array[17] and k<=step_array[18]):
+                        subsamp_grp = "R"    
+                    if(k>step_array[18] and k<=step_array[19]):
+                        subsamp_grp = "S"
+                    if(k>step_array[19] and k<=step_array[20]):
+                        subsamp_grp = "T"
+                    if(k>step_array[20] and k<=step_array[21]):
+                        subsamp_grp = "U"    
+                    if(k>step_array[21] and k<=step_array[22]):
+                        subsamp_grp = "V"
+                    if(k>step_array[22] and k<=step_array[23]):
+                        subsamp_grp = "W"
+                    if(k>step_array[23] and k<=step_array[24]):
+                        subsamp_grp = "X"    
+                    if(k>step_array[24] and k<=step_array[25]):
+                        subsamp_grp = "Y"
+                    if(k>step_array[25]):
+                        subsamp_grp = "Z"
+                    f_out1.write("%s,%s,%s," % (myID, subsamp_grp, myFluct1_df1))
+                    f_out1.write("%s\n" % myFluct1_df3)    
+                    f_out1.write("%s,%s,%s," % (myID, subsamp_grp, myFluct2_df1))
+                    f_out1.write("%s\n" % myFluct2_df3)
+                    f_out1.write("%s,%s,%s," % (myID, subsamp_grp, myFluct3_df1))
+                    f_out1.write("%s\n" % myFluct3_df3)
+                    f_out1.write("%s,%s,%s," % (myID, subsamp_grp, myFluct4_df1))
+                    f_out1.write("%s\n" % myFluct4_df3)
+                    f_out1.write("%s,%s,%s," % (myID, subsamp_grp, myFluct5_df1))
+                    f_out1.write("%s\n" % myFluct5_df3)
+                    f_out1.close
+                
+                writePath2= "./coordinatedDynamics_%s/data_files_reference/mixedmodelANOVA_%s_%s.csv" % (PDB_id_reference,iiii,jjjj)
+                with open(writePath2, 'a') as f_out2:
+                    #myClass = "query"
+                    #mySite = "1st"
+                    myID = myID+1
+                       
+                    if(k<=step_array[1]):
+                        subsamp_grp = "A"
+                    if(k>step_array[1] and k<=step_array[2]):
+                        subsamp_grp = "B"
+                    if(k>step_array[2] and k<=step_array[3]):
+                        subsamp_grp = "C"    
+                    if(k>step_array[3] and k<=step_array[4]):
+                        subsamp_grp = "D"
+                    if(k>step_array[4] and k<=step_array[5]):
+                        subsamp_grp = "E"
+                    if(k>step_array[5] and k<=step_array[6]):
+                        subsamp_grp = "F"    
+                    if(k>step_array[6] and k<=step_array[7]):
+                        subsamp_grp = "G"
+                    if(k>step_array[7] and k<=step_array[8]):
+                        subsamp_grp = "H"
+                    if(k>step_array[8] and k<=step_array[9]):
+                        subsamp_grp = "I"    
+                    if(k>step_array[9] and k<=step_array[10]):
+                        subsamp_grp = "J"
+                    if(k>step_array[10] and k<=step_array[11]):
+                        subsamp_grp = "K"
+                    if(k>step_array[11] and k<=step_array[12]):
+                        subsamp_grp = "L"    
+                    if(k>step_array[12] and k<=step_array[13]):
+                        subsamp_grp = "M"
+                    if(k>step_array[13] and k<=step_array[14]):
+                        subsamp_grp = "N"
+                    if(k>step_array[14] and k<=step_array[15]):
+                        subsamp_grp = "O"    
+                    if(k>step_array[15] and k<=step_array[16]):
+                        subsamp_grp = "P"
+                    if(k>step_array[16] and k<=step_array[17]):
+                        subsamp_grp = "Q"
+                    if(k>step_array[17] and k<=step_array[18]):
+                        subsamp_grp = "R"    
+                    if(k>step_array[18] and k<=step_array[19]):
+                        subsamp_grp = "S"
+                    if(k>step_array[19] and k<=step_array[20]):
+                        subsamp_grp = "T"
+                    if(k>step_array[20] and k<=step_array[21]):
+                        subsamp_grp = "U"    
+                    if(k>step_array[21] and k<=step_array[22]):
+                        subsamp_grp = "V"
+                    if(k>step_array[22] and k<=step_array[23]):
+                        subsamp_grp = "W"
+                    if(k>step_array[23] and k<=step_array[24]):
+                        subsamp_grp = "X"    
+                    if(k>step_array[24] and k<=step_array[25]):
+                        subsamp_grp = "Y"
+                    if(k>step_array[25]):
+                        subsamp_grp = "Z"
+                    f_out2.write("%s,%s,%s," % (myID, subsamp_grp, myFluct1_df2))
+                    f_out2.write("%s\n" % myFluct1_df4)    
+                    f_out2.write("%s,%s,%s," % (myID, subsamp_grp, myFluct2_df2))
+                    f_out2.write("%s\n" % myFluct2_df4)
+                    f_out2.write("%s,%s,%s," % (myID, subsamp_grp, myFluct3_df2))
+                    f_out2.write("%s\n" % myFluct3_df4)
+                    f_out2.write("%s,%s,%s," % (myID, subsamp_grp, myFluct4_df2))
+                    f_out2.write("%s\n" % myFluct4_df4)
+                    f_out2.write("%s,%s,%s," % (myID, subsamp_grp, myFluct5_df2))
+                    f_out2.write("%s\n" % myFluct5_df4)
+                    f_out2.close
+                    
 ###############################################################
 def coordinated_dynamics_fdr():
     print("making FDR corrected p-value matrix for coordinated dynamics")
@@ -412,12 +1059,102 @@ def coordinated_dynamics_fdr():
             f_out2.write(dfAsString)
     
         
-        
+ ############################################################### 
+
+def coordinated_dynamics_reference():
+    print("identifying coordinated dynamics")
+    if not os.path.exists('coordinatedDynamics_%s' % PDB_id_reference):
+        os.mkdir('coordinatedDynamics_%s' % PDB_id_reference)
+    
+    writePath3= "./coordinatedDynamics_%s/coordinatedDynamics_reference.txt" % PDB_id_reference
+    with open(writePath3, 'w') as f_out3:
+            f_out3.write('%s\t%s\t%s\n' % ("i", "j", "p-val"))
+            f_out3.close
+    writePath4= "./coordinatedDynamics_%s/siteNSdynamics_reference.txt" % PDB_id_reference
+    with open(writePath4, 'w') as f_out4:
+            f_out4.write('%s\t%s\t%s\n' % ("i", "j", "p-val"))
+            f_out4.close
+    
+    for i in range(length_prot):
+        for j in range(length_prot):
+            print("comparing site %s to site %s in reference" %(i,j))
+            #df=pd.read_csv("/home/gabsbi/Desktop/mixedanova.csv")
+            #print(df)
+            ## reshape the dataframe in long-format dataframe
+            #df_melt = pd.melt(df.reset_index(), id_vars=['id', 'genotype'], value_vars=['before', 'after'])
+            #df_melt.rename(columns={"variable": "fertilizer", "value": "yield"}, inplace=True)
+            #print(df_melt)
+            ##df_melt = df_melt.dropna()
+            #myMix = pg.mixed_anova(dv='yield', between='genotype', within='fertilizer', subject='id', data=df_melt)
+            #print(myMix)
+            #print(df_melt['yield'].dtype)
+            #print(df_melt['genotype'].dtype)
+            #print(df_melt['fertilizer'].dtype)
+            #print(df_melt['id'].dtype)
+            #i = 0
+            #j = 3
+            df=pd.read_csv("./coordinatedDynamics_%s/data_files_reference/mixedmodelANOVA_%s_%s.csv" % (PDB_id_reference, i, j))
+            #print(df)
+            #print(df[df['subsample'].isnull()])
+            #df = df.fillna(0)
+            
+            
+            #myMix = pg.mixed_anova(dv='atomfluct', between='classQR', within='subsample', subject='id', data=df)
+            #print(myMix)
+            df_melt = pd.melt(df.reset_index(), id_vars=['id', 'subsample'], value_vars=['siteI', 'siteJ'])
+            df_melt.rename(columns={"variable": "site", "value": "atomfluct"}, inplace=True)
+            #print(df_melt)
+            #print(df_melt['atomfluct'].dtype)
+            #print(df_melt['site'].dtype)
+            #print(df_melt['subsample'].dtype)
+            #print(df_melt['id'].dtype)
+            
+            myMix = pg.mixed_anova(dv='atomfluct', between='subsample', within='site', subject='id', data=df_melt)
+            #print(myMix)
+            #print(myStop)
+            #mySphere = pg.sphericity(data=df_melt, dv='yield', subject='id', within='fertilizer')[-1]
+            #df_melt['factor_comb']=df_melt["genotype"] + '-'+df_melt["fertilizer"]
+            #myNorm = pg.normality(df_melt, dv='yield', group='factor_comb')
+            #df_melt_before = pd.melt(df.reset_index(), id_vars=['id', 'genotype'], value_vars=['before'])
+            #df_melt_after = pd.melt(df.reset_index(), id_vars=['id', 'genotype'], value_vars=['after'])
+            #myHomo = pg.homoscedasticity(df_melt_before, dv='value', group='genotype')
+            subsample_label = myMix.at[0, "Source"]
+            subsample_Fval = myMix.at[0, "F"]
+            subsample_pval = myMix.at[0, "p-unc"]
+            site_label = myMix.at[1, "Source"]
+            site_Fval = myMix.at[1, "F"]
+            site_pval = myMix.at[1, "p-unc"]
+            interaction_label = myMix.at[2, "Source"]
+            interaction_Fval = myMix.at[2, "F"]
+            interaction_pval = myMix.at[2, "p-unc"]
+            if(interaction_Fval=="inf"):
+                interaction_Fval = 0.0
+            if(interaction_pval=="nan"):
+                interaction_pval = 1.0
+            if(site_Fval=="inf"):
+                site_Fval = 0.0
+            if(site_pval=="nan"):
+                site_pval = 1.0    
+            #print(interaction_label)
+            #print(interaction_Fval)
+            #print(interaction_pval)
+            with open(writePath3, 'a') as f_out3:
+                interaction_pval = str(interaction_pval)
+                f_out3.write('%s\t%s\t%s\n' % (i, j, interaction_pval))
+                f_out3.close
+            with open(writePath4, 'a') as f_out4:
+                site_pval = str(site_pval)
+                f_out4.write('%s\t%s\t%s\n' % (i, j, site_pval))
+                f_out4.close
+            #print(mySphere)
+            #print(myNorm)
+            #print(myHomo)
+            #print(myStop)       
         
         
 ############################################################### 
 
-def coordinated_dynamics():
+def coordinated_dynamics_query():
     print("identifying coordinated dynamics")
     if not os.path.exists('coordinatedDynamics_%s' % PDB_id_reference):
         os.mkdir('coordinatedDynamics_%s' % PDB_id_reference)
@@ -429,14 +1166,6 @@ def coordinated_dynamics():
     with open(writePath2, 'w') as f_out2:
             f_out2.write('%s\t%s\t%s\n' % ("i", "j", "p-val"))
             f_out2.close
-    writePath3= "./coordinatedDynamics_%s/coordinatedDynamics_reference.txt" % PDB_id_reference
-    with open(writePath3, 'w') as f_out3:
-            f_out3.write('%s\t%s\t%s\n' % ("i", "j", "p-val"))
-            f_out3.close
-    writePath4= "./coordinatedDynamics_%s/siteNSdynamics_reference.txt" % PDB_id_reference
-    with open(writePath4, 'w') as f_out4:
-            f_out4.write('%s\t%s\t%s\n' % ("i", "j", "p-val"))
-            f_out4.close
     for i in range(length_prot):
         for j in range(length_prot):
             print("comparing site %s to site %s in query" %(i,j))
@@ -512,81 +1241,7 @@ def coordinated_dynamics():
             #print(myNorm)
             #print(myHomo)
             #print(myStop)
-    for i in range(length_prot):
-        for j in range(length_prot):
-            print("comparing site %s to site %s in reference" %(i,j))
-            #df=pd.read_csv("/home/gabsbi/Desktop/mixedanova.csv")
-            #print(df)
-            ## reshape the dataframe in long-format dataframe
-            #df_melt = pd.melt(df.reset_index(), id_vars=['id', 'genotype'], value_vars=['before', 'after'])
-            #df_melt.rename(columns={"variable": "fertilizer", "value": "yield"}, inplace=True)
-            #print(df_melt)
-            ##df_melt = df_melt.dropna()
-            #myMix = pg.mixed_anova(dv='yield', between='genotype', within='fertilizer', subject='id', data=df_melt)
-            #print(myMix)
-            #print(df_melt['yield'].dtype)
-            #print(df_melt['genotype'].dtype)
-            #print(df_melt['fertilizer'].dtype)
-            #print(df_melt['id'].dtype)
-            #i = 0
-            #j = 3
-            df=pd.read_csv("./coordinatedDynamics_%s/data_files_reference/mixedmodelANOVA_%s_%s.csv" % (PDB_id_reference, i, j))
-            #print(df)
-            #print(df[df['subsample'].isnull()])
-            #df = df.fillna(0)
-            
-            
-            #myMix = pg.mixed_anova(dv='atomfluct', between='classQR', within='subsample', subject='id', data=df)
-            #print(myMix)
-            df_melt = pd.melt(df.reset_index(), id_vars=['id', 'subsample'], value_vars=['siteI', 'siteJ'])
-            df_melt.rename(columns={"variable": "site", "value": "atomfluct"}, inplace=True)
-            #print(df_melt)
-            #print(df_melt['atomfluct'].dtype)
-            #print(df_melt['site'].dtype)
-            #print(df_melt['subsample'].dtype)
-            #print(df_melt['id'].dtype)
-            
-            myMix = pg.mixed_anova(dv='atomfluct', between='subsample', within='site', subject='id', data=df_melt)
-            #print(myMix)
-            #print(myStop)
-            #mySphere = pg.sphericity(data=df_melt, dv='yield', subject='id', within='fertilizer')[-1]
-            #df_melt['factor_comb']=df_melt["genotype"] + '-'+df_melt["fertilizer"]
-            #myNorm = pg.normality(df_melt, dv='yield', group='factor_comb')
-            #df_melt_before = pd.melt(df.reset_index(), id_vars=['id', 'genotype'], value_vars=['before'])
-            #df_melt_after = pd.melt(df.reset_index(), id_vars=['id', 'genotype'], value_vars=['after'])
-            #myHomo = pg.homoscedasticity(df_melt_before, dv='value', group='genotype')
-            subsample_label = myMix.at[0, "Source"]
-            subsample_Fval = myMix.at[0, "F"]
-            subsample_pval = myMix.at[0, "p-unc"]
-            site_label = myMix.at[1, "Source"]
-            site_Fval = myMix.at[1, "F"]
-            site_pval = myMix.at[1, "p-unc"]
-            interaction_label = myMix.at[2, "Source"]
-            interaction_Fval = myMix.at[2, "F"]
-            interaction_pval = myMix.at[2, "p-unc"]
-            if(interaction_Fval=="inf"):
-                interaction_Fval = 0.0
-            if(interaction_pval=="nan"):
-                interaction_pval = 1.0
-            if(site_Fval=="inf"):
-                site_Fval = 0.0
-            if(site_pval=="nan"):
-                site_pval = 1.0    
-            #print(interaction_label)
-            #print(interaction_Fval)
-            #print(interaction_pval)
-            with open(writePath3, 'a') as f_out3:
-                interaction_pval = str(interaction_pval)
-                f_out3.write('%s\t%s\t%s\n' % (i, j, interaction_pval))
-                f_out3.close
-            with open(writePath4, 'a') as f_out4:
-                site_pval = str(site_pval)
-                f_out4.write('%s\t%s\t%s\n' % (i, j, site_pval))
-                f_out4.close
-            #print(mySphere)
-            #print(myNorm)
-            #print(myHomo)
-            #print(myStop)
+    
     
     
 def matrix_plot_int():   
@@ -1584,8 +2239,31 @@ def resonance_gain_bootstrap():
 ###############################################################
 
 def main():
-    feature_anova()
-    coordinated_dynamics()
+    # use multiprocessing module here instead of threading module to avoid inconsistency
+    # caused by the python Global Interpreter Lock (GIL) that forces threads to act sequentially
+    # on the CPU.  NOTE: parentheses in 'target' forces sequential too (e.g. target=feature_anova_1()) 
+    # NOTE: threading module seems fine for system calls to C++ (e.g. cpptraj_sampler.py)
+    
+    t1 = multiprocessing.Process(target=feature_anova_1)
+    t2 = multiprocessing.Process(target=feature_anova_2)
+    t3 = multiprocessing.Process(target=feature_anova_3)
+    t4 = multiprocessing.Process(target=feature_anova_4)
+    t1.start()
+    t2.start()
+    t3.start()
+    t4.start()
+    t1.join()
+    t2.join()
+    t3.join()
+    t4.join()
+    
+    t5 = multiprocessing.Process(target=coordinated_dynamics_reference)
+    t6 = multiprocessing.Process(target=coordinated_dynamics_query)
+    t5.start()
+    t6.start()
+    t5.join()
+    t6.join()
+    
     coordinated_dynamics_fdr()
     #matrix_plot_corr()
     matrix_plot_site()
@@ -1598,8 +2276,8 @@ def main():
     network_plot_int_reference(inp1, inp2)
     inp3 = input("\nDo you want to calculate bootstrap comparisons for network calculations? (y or n)      ...time consuming\n" )
     if(inp3 == "y" or inp3 == "yes" or inp3 == "Y" or inp3 == "YES"):
-        network_plot_int_query_bootstrap(inp1, inp2)
         network_plot_int_reference_bootstrap(inp1, inp2)
+        network_plot_int_query_bootstrap(inp1, inp2)
         resonance_gain_bootstrap()
         
     print("comparative analyses of molecular dynamics is completed")
