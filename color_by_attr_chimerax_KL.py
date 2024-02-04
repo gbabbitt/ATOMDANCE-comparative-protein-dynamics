@@ -6,6 +6,40 @@ import getopt, sys # Allows for command line arguments
 import os
 from chimerax.core.commands import run 
 ################################################
+print("set symmetric color range\n")
+infile = open("./ChimeraXvis/attributeKL.dat", "r")
+infile_lines = infile.readlines()
+values=[]
+for x in range(len(infile_lines)):
+    if(x<=4):
+        continue
+    infile_line = infile_lines[x]
+    #print(infile_line)
+    infile_line_array = str.split(infile_line, "\t")
+    value = infile_line_array[2]
+    value = value[0:10]
+    value = float(value)
+    values.append(value)
+#print(values)
+maxValue = max(values)
+minValue = min(values)
+if(abs(maxValue)>abs(minValue)):
+    rangeUpper = abs(maxValue)
+    rangeLower = -maxValue
+if(abs(maxValue)<abs(minValue)):
+    rangeUpper = abs(minValue)
+    rangeLower = minValue
+print("max value is \n")
+print(maxValue)
+print("min value is \n")
+print(minValue)
+print("set upper range \n")
+print(rangeUpper)
+print("set lower range \n")
+print(rangeLower)
+inp1=str(rangeUpper)
+inp2=str(rangeLower)
+################################################
 ################################################
 # read ChimeraX visualization ctl file
 infile = open("ChimeraXvis_KL.ctl", "r")
@@ -79,7 +113,7 @@ run(session, "lighting "+light_setting+"")
 run(session, "surface")
 run(session, "defattr :1-"+length+" "+attr_file+"")
 #run(session, "color byattribute "+attr+" range "+minval+", "+maxval+" palette "+palette+"")
-run(session, "color byattribute "+attr+" palette "+palette+"")
+run(session, "color byattribute "+attr+" palette "+palette+" range "+inp2+","+inp1+"")
 run(session, "transparency "+trans_setting+"")
 run(session, "graphics silhouettes true")
 run(session, "set bgcolor "+bgcolor+"")
