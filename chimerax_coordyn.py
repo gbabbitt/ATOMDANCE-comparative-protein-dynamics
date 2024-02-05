@@ -1425,8 +1425,8 @@ def network_plot_int_query(inp1, inp2):
         f6.write("\t:%s\t%s\n" % (sitepos,NETpos))
     
 
-def network_plot_int_query_bootstrap(inp1, inp2):   
-    for x in range(100):
+def network_plot_int_query_bootstrap(inp1, inp2, inp4):   
+    for x in range(inp4):
         print("\nbootstrapping network-query state %s out of 100\n" % x)   
         #inp1 = input("\nUse multiple test corrected p-values? (y or n)\n" )
         if(inp1 == "N" or inp1 == "n" or inp1 == "NO" or inp1 == "no"):
@@ -1690,8 +1690,8 @@ def network_plot_int_reference(inp1, inp2):
         f6.write("\t:%s\t%s\n" % (sitepos,NETpos))
     
 
-def network_plot_int_reference_bootstrap(inp1, inp2):   
-    for x in range(100):
+def network_plot_int_reference_bootstrap(inp1, inp2, inp4):   
+    for x in range(inp4):
         print("\nbootstrapping network-reference state %s out of 100\n" % x)   
         #inp1 = input("\nUse multiple test corrected p-values? (y or n)\n" )
         if(inp1 == "N" or inp1 == "n" or inp1 == "NO" or inp1 == "no"):
@@ -2276,8 +2276,10 @@ def main():
     network_plot_int_reference(inp1, inp2)
     inp3 = input("\nDo you want to calculate bootstrap comparisons for network calculations? (y or n)      ...time consuming\n" )
     if(inp3 == "y" or inp3 == "yes" or inp3 == "Y" or inp3 == "YES"):
-        network_plot_int_reference_bootstrap(inp1, inp2)
-        network_plot_int_query_bootstrap(inp1, inp2)
+        inp4 = input("\nEnter number of bootstraps (e.g. 100)\n") 
+        inp4 = int(inp4)
+        network_plot_int_reference_bootstrap(inp1, inp2, inp4)
+        network_plot_int_query_bootstrap(inp1, inp2, inp4)
         resonance_gain_bootstrap()
         
     print("comparative analyses of molecular dynamics is completed")
