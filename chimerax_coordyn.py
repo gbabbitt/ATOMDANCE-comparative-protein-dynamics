@@ -1427,7 +1427,7 @@ def network_plot_int_query(inp1, inp2):
 
 def network_plot_int_query_bootstrap(inp1, inp2, inp4):   
     for x in range(inp4):
-        print("\nbootstrapping network-query state %s out of 100\n" % x)   
+        print("\nbootstrapping network-query state %s out of %s\n" % (x, inp4))   
         #inp1 = input("\nUse multiple test corrected p-values? (y or n)\n" )
         if(inp1 == "N" or inp1 == "n" or inp1 == "NO" or inp1 == "no"):
             myNET=pd.read_csv("./coordinatedDynamics_%s/coordinatedDynamics_query.txt" % PDB_id_reference, sep="\s+")
@@ -1692,7 +1692,7 @@ def network_plot_int_reference(inp1, inp2):
 
 def network_plot_int_reference_bootstrap(inp1, inp2, inp4):   
     for x in range(inp4):
-        print("\nbootstrapping network-reference state %s out of 100\n" % x)   
+        print("\nbootstrapping network-reference state %s out of %s\n" % (x, inp4))  
         #inp1 = input("\nUse multiple test corrected p-values? (y or n)\n" )
         if(inp1 == "N" or inp1 == "n" or inp1 == "NO" or inp1 == "no"):
             myNET=pd.read_csv("./coordinatedDynamics_%s/coordinatedDynamics_reference.txt" % PDB_id_reference, sep="\s+")
