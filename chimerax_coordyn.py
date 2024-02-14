@@ -21,6 +21,7 @@ import pandas as pd
 import numpy as np
 import scipy as sp
 from pandas.api.types import CategoricalDtype
+import patchworklib as pw
 from plotnine import *
 #from pyvis.network import Network
 #from plotnine.data import mpg
@@ -2141,100 +2142,37 @@ def resonance_gain_bootstrap():
             f_out.write(myT_str)
             f_out.close
     
-    
-    """
-    print("bootstrapping resonance gain/loss for query state compared to reference state")
-    myREF=pd.read_csv("./coordinatedDynamics_%s/coordinatedDynamics_reference_communities_bootstrap_nonrandomness.txt" % PDB_id_reference, sep="\s+")
-    print("resonance-reference state")
-    #print(myREF)
-    myQRY=pd.read_csv("./coordinatedDynamics_%s/coordinatedDynamics_query_communities_bootstrap_nonrandomness.txt" % PDB_id_reference, sep="\s+")
-    print("resonance-query state")
-    #print(myQRY)
-    print("resonance gain from reference to query state")
-    frames = [myREF, myQRY]
-    dfRES = pd.concat(frames, axis=1, join="inner")
-    #print(dfRES)
-    nr1REF = dfRES.iloc[:,:1]
-    nr1QRY = dfRES.iloc[:,2:3]
-    nr2REF = dfRES.iloc[:,1:2]
-    nr2QRY = dfRES.iloc[:,3:4]
-    frames_nr1 = [nr1REF, nr1QRY]
-    dfRES_nr1 = pd.concat(frames_nr1, axis=1, join="inner")
-    frames_nr2 = [nr2REF, nr2QRY]
-    dfRES_nr2 = pd.concat(frames_nr2, axis=1, join="inner")
-    
-    res_gain1 = (abs(dfRES.nr1_qry)-abs(dfRES.nr1_ref))
-    #print(res_gain1)
-    avg_res_gain1 = res_gain1.mean()
-    std_res_gain1 = res_gain1.std()
-    print("\nmean gain - nr method 1")
-    print(avg_res_gain1)
-    print("+- std")
-    print(std_res_gain1)
-    myT1 = ttest_ind(abs(dfRES.nr1_qry), abs(dfRES.nr1_ref), equal_var=False)
-    print("significance - nr method 1")
-    print(myT1)
-    print("\n")
-    #print(dfRES.nr2_qry)
-    #print(abs(dfRES.nr2_qry))
-    res_gain2 = (abs(dfRES.nr2_qry)-abs(dfRES.nr2_ref))
-    #print(res_gain2)
-    avg_res_gain2 = res_gain2.mean()
-    std_res_gain2 = res_gain2.std()
-    print("\nmean gain - nr method 2")
-    print(avg_res_gain2)
-    print("+- std")
-    print(std_res_gain2)
-    myT2 = ttest_ind(abs(dfRES.nr2_qry), abs(dfRES.nr2_ref), equal_var=False)
-    print("significance - nr method 2")
-    print(myT2)
-    print("\n")
-    # plot
-    dfRES_graph=dfRES.melt()
-    dfRES_graph['value'] = dfRES_graph['value'].map(lambda x: abs(x))
-    print(dfRES_graph)
-    
-    dfRES_graph_nr1=dfRES_nr1.melt()
-    dfRES_graph_nr1['value'] = dfRES_graph_nr1['value'].map(lambda x: abs(x))
-    #print(dfRES_graph_nr1)
-    
-    dfRES_graph_nr2=dfRES_nr2.melt()
-    dfRES_graph_nr2['value'] = dfRES_graph_nr2['value'].map(lambda x: abs(x))
-    #print(dfRES_graph_nr2)
-          
-    myplot = (ggplot(data = dfRES_graph) + geom_boxplot(aes(x='variable', y='value', color='variable'))+ labs(title=myT1, subtitle=myT2, x='two measures of non-randomness (from NetworkX)', y='value') + theme(panel_background=element_rect(fill='black', alpha=.1)))
-    myplot.save("./coordinatedDynamics_%s/nonrandomness_boxplot_both.png" % PDB_id_reference, width=10, height=5, dpi=300)
-    myplot1 = (ggplot(data = dfRES_graph_nr1) + geom_boxplot(aes(x='variable', y='value', color='variable'))+ labs(title=myT1, x='non-randomness (probability - 2 sites = same community)', y='value') + theme(panel_background=element_rect(fill='black', alpha=.1)))
-    myplot1.save("./coordinatedDynamics_%s/nonrandomness_boxplot_nr1.png" % PDB_id_reference, width=10, height=5, dpi=300)
-    myplot2 = (ggplot(data = dfRES_graph_nr2) + geom_boxplot(aes(x='variable', y='value', color='variable'))+ labs(title=myT2, x='non-randomness (distance from Erdos-Renyi random graph)', y='value') + theme(panel_background=element_rect(fill='black', alpha=.1)))
-    myplot2.save("./coordinatedDynamics_%s/nonrandomness_boxplot_nr2.png" % PDB_id_reference, width=10, height=5, dpi=300)
-   
-    writePath= "./coordinatedDynamics_%s/coordinateddynamics_resonance_gain_bootstrap.txt" % PDB_id_reference
-    with open(writePath, 'w') as f_out:
-            f_out.write("resonance gain from reference to query state - method 1")
-            res_gain1_avg_str = str(avg_res_gain1)
-            res_gain1_std_str = str(std_res_gain1)
-            myT1_str = str(myT1)
-            f_out.write("\naverage resonance gain\n")
-            f_out.write(res_gain1_avg_str)
-            f_out.write("\nstd resonance gain\n")
-            f_out.write(res_gain1_std_str)
-            f_out.write("\nsignificance - Welch's T test\n")
-            f_out.write(myT1_str)
-            f_out.close
-            f_out.write("\nresonance gain from reference to query state - method 2")
-            res_gain2_avg_str = str(avg_res_gain2)
-            res_gain2_std_str = str(std_res_gain2)
-            myT2_str = str(myT2)
-            f_out.write("\naverage resonance gain\n")
-            f_out.write(res_gain2_avg_str)
-            f_out.write("\nstd resonance gain\n")
-            f_out.write(res_gain2_std_str)
-            f_out.write("\nsignificance - Welch's T test\n")
-            f_out.write(myT2_str)
-            f_out.close
-    """
-    
+def complot_disc():
+    print("plotting choreographic communities on MMD plot")
+    myMMD=pd.read_csv("./maxMeanDiscrepancy_%s/maxMeanDiscrepancy_flux.txt" % PDB_id_reference, sep="\s+")
+    myCOMq=pd.read_csv("./ChimeraXvis/attributeNET_intQ.dat", sep="\s+", header = 1)
+    myCOMr=pd.read_csv("./ChimeraXvis/attributeNET_intR.dat", sep="\s+", header = 1)
+    myDFq = pd.concat([myMMD.pos, myMMD.MMD, myCOMq.NET], axis = 1)
+    myDFq = myDFq.rename(columns={'NET': 'community'})
+    print(myDFq)
+    myONES = np.ones(length_prot)
+    myONES = pd.DataFrame(myONES)
+    myONES.columns = ["ones"]
+    myDFr = pd.concat([myMMD.pos, myONES, myCOMr.NET], axis = 1)
+    myDFr = myDFr.rename(columns={'NET': 'community'})
+    print(myDFr)
+    myplot1 = (ggplot(myDFq) + aes(x='pos', y='MMD', color='community', fill='community') + geom_bar(stat='identity') + labs(title='site-wise MMD of learned features upon binding', x='amino acid site - query', y='MMD (+ amplified / - dampened)') + theme(panel_background=element_rect(fill='black', alpha=.6)))
+    myplot1.save("coordinatedDynamics_%s/NETWORKcommunities_dark_query_MMD.png" % PDB_id_reference, width=10, height=5, dpi=300)
+    myplot2 = (ggplot(myDFq) + aes(x='pos', y='MMD', color='community', fill='community') + geom_bar(stat='identity') + labs(title='site-wise MMD of learned features upon binding', x='amino acid site - query', y='MMD (+ amplified / - dampened)') + theme(panel_background=element_rect(fill='black', alpha=.1)))
+    myplot2.save("coordinatedDynamics_%s/NETWORKcommunities_light_query_MMD.png" % PDB_id_reference, width=10, height=5, dpi=300)
+    myplot3 = (ggplot(myDFr) + aes(x='pos', y='ones', color='community', fill='community') + geom_bar(stat='identity') + labs(x='amino acid site - reference', y='') + theme(panel_background=element_rect(fill='black', alpha=.6)))
+    myplot3.save("coordinatedDynamics_%s/NETWORKcommunities_dark_reference.png" % PDB_id_reference, width=10, height=5, dpi=300)
+    myplot4 = (ggplot(myDFr) + aes(x='pos', y='ones', color='community', fill='community') + geom_bar(stat='identity') + labs(x='amino acid site - reference', y='') + theme(panel_background=element_rect(fill='black', alpha=.1)))
+    myplot4.save("coordinatedDynamics_%s/NETWORKcommunities_light_reference.png" % PDB_id_reference, width=10, height=5, dpi=300)
+    # grid plot
+    g1 = pw.load_ggplot(myplot1, figsize=(3,2))
+    g2 = pw.load_ggplot(myplot2, figsize=(3,2))
+    g3 = pw.load_ggplot(myplot3, figsize=(5,2))
+    g4 = pw.load_ggplot(myplot4, figsize=(5,2))
+    g42 = (g4)/g2
+    g42.savefig("coordinatedDynamics_%s/NETWORKcommunities_light.png" % PDB_id_reference)
+    g31 = (g3)/g1
+    g31.savefig("coordinatedDynamics_%s/NETWORKcommunities_dark.png" % PDB_id_reference)
 ###############################################################
 ###############################################################
 
@@ -2274,6 +2212,10 @@ def main():
     inp2 = input("\nEnter fixed or autotuned p-value threshold? (e.g. 0.05 or auto (default))\n")
     network_plot_int_query(inp1, inp2)
     network_plot_int_reference(inp1, inp2)
+    
+    if(disc_anal == "yes"):
+        complot_disc()   
+    
     inp3 = input("\nDo you want to calculate bootstrap comparisons for network calculations? (y or n)      ...time consuming\n" )
     if(inp3 == "y" or inp3 == "yes" or inp3 == "Y" or inp3 == "YES"):
         inp4 = input("\nEnter number of bootstraps (e.g. 100)\n") 
