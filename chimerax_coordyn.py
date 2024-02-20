@@ -2097,7 +2097,7 @@ def network_plot_site_reference():
         f6.write("\t:%s\t%s\n" % (sitepos,NETpos))
 
 
-def resonance_gain_bootstrap():
+def connect_gain_bootstrap():
     print("bootstrapping connectivity gain/loss for query state compared to reference state")
     myREF=pd.read_csv("./coordinatedDynamics_%s/coordinatedDynamics_reference_communities_bootstrap_connectivity.txt" % PDB_id_reference, sep="\s+")
     print("connectivity-reference state")
@@ -2208,6 +2208,7 @@ def main():
     network_plot_site_query()
     network_plot_site_reference()
     matrix_plot_int()
+    
     inp1 = input("\nUse multiple test corrected p-values? (y or n)\n")   
     inp2 = input("\nEnter fixed or autotuned p-value threshold? (e.g. 0.05 or auto (default))\n")
     network_plot_int_query(inp1, inp2)
@@ -2220,9 +2221,13 @@ def main():
     if(inp3 == "y" or inp3 == "yes" or inp3 == "Y" or inp3 == "YES"):
         inp4 = input("\nEnter number of bootstraps (e.g. 100)\n") 
         inp4 = int(inp4)
-        network_plot_int_reference_bootstrap(inp1, inp2, inp4)
-        network_plot_int_query_bootstrap(inp1, inp2, inp4)
-        resonance_gain_bootstrap()
+        t7 = multiprocessing.Process(target=network_plot_int_reference_bootstrap, args=(inp1, inp2, inp4))
+        t8 = multiprocessing.Process(target=network_plot_int_query_bootstrap, args=(inp1, inp2, inp4))
+        t7.start()
+        t8.start()
+        t7.join()
+        t8.join()
+        connect_gain_bootstrap()
         
     print("comparative analyses of molecular dynamics is completed")
     
