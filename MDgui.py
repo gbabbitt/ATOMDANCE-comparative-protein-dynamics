@@ -65,7 +65,7 @@ class Ui_Dialog(object):
         self.lineEdit_4 = QtWidgets.QLineEdit(self.frame_3)
         self.lineEdit_4.setGeometry(QtCore.QRect(20, 140, 113, 28))
         self.lineEdit_4.setObjectName("lineEdit_4")
-        self.lineEdit_4.setText("1")
+        self.lineEdit_4.setText("Langevin")
         self.label_9 = QtWidgets.QLabel(self.frame_3)
         self.label_9.setGeometry(QtCore.QRect(20, 110, 261, 21))
         self.label_9.setObjectName("label_9")
@@ -204,7 +204,7 @@ class Ui_Dialog(object):
         self.label_15.setText(_translate("Dialog", "<html><head/><body><p>e.g. leaprc.protein.ff14SB</p></body></html>"))
         self.label_2.setText(_translate("Dialog", "<html><head/><body><p><span style=\" font-weight:600;\">force field list (up to 5)</span></p></body></html>"))
         self.label_8.setText(_translate("Dialog", "<html><head/><body><p>size of water box (nm-octrahedral)</p></body></html>"))
-        self.label_9.setText(_translate("Dialog", "<html><head/><body><p>length of MD heating (ns)</p></body></html>"))
+        self.label_9.setText(_translate("Dialog", "<html><head/><body><p>integrator (Langevin, aMD, Verlet)</p></body></html>"))
         self.label_10.setText(_translate("Dialog", "<html><head/><body><p>length of MD equilibration (ns)</p></body></html>"))
         self.label_11.setText(_translate("Dialog", "<html><head/><body><p>length of MD production run (ns)</p></body></html>"))
         self.label_12.setText(_translate("Dialog", "<html><head/><body><p>path to force field folder</p></body></html>"))
@@ -268,10 +268,12 @@ class Ui_Dialog(object):
         box_size = self.lineEdit_3.text()
         box_size = int(box_size)
         #print(box_size)
-        heat_len = self.lineEdit_4.text()
-        heat_len = int(heat_len)
-        heat_len = heat_len*1000000
+        #heat_len = self.lineEdit_4.text()
+        #heat_len = int(heat_len)
+        #heat_len = heat_len*1000000
         #print(heat_len)
+        integrator = self.lineEdit_4.text()
+        integrator = str(integrator)
         eq_len = self.lineEdit_5.text()
         eq_len = int(eq_len)
         eq_len = eq_len*1000000
@@ -355,7 +357,8 @@ class Ui_Dialog(object):
         if(n_ff == 5):
             out.write("fifthFF,%s,#pdb id for fifth force field\n" % fifth_ff)
         out.write("box_size,%s,#water box size\n" % box_size)
-        out.write("heat_len,%s,#length of heating\n" % heat_len)
+        #out.write("heat_len,%s,#length of heating\n" % heat_len)
+        out.write("integrator,%s,#integrator\n" % integrator)
         out.write("eq_len,%s,#length of equilibration\n" % eq_len)
         out.write("prod_len,%s,#length of production\n" % prod_len)
         out.write("pdb4amber,%s,#run pdb4amber\n" % pdb4amber)

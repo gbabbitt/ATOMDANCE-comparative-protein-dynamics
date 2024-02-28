@@ -63,10 +63,14 @@ for x in range(len(infile_lines)):
     if(header == "fifthFF"):
         FFid5 = value
         print("my protein force field is",FFid5)    
-    if(header == "heat_len"):
-        TIMEheat = value
-        TIMEheat = int(TIMEheat)
-        print("my length of heating run is",TIMEheat)
+    #if(header == "heat_len"):
+    #    TIMEheat = value
+    #    TIMEheat = int(TIMEheat)
+    #    print("my length of heating run is",TIMEheat)
+    if(header == "integrator"):
+        integrator_type = value
+        integrator_type = str(integrator_type)
+        print("my integrator is",integrator_type)
     if(header == "eq_len"):
         TIMEeq = value
         TIMEeq = int(TIMEeq)
@@ -108,10 +112,24 @@ if(antechamber == "yes"):
 PDBid = PDBid1_lab
 # prepare system and integrator
 system = prmtop.createSystem(nonbondedMethod=app.PME, nonbondedCutoff=1.0*unit.nanometers, constraints=app.HBonds, rigidWater=True, ewaldErrorTolerance=0.0005)
-integrator = mm.LangevinIntegrator(TEMPid*unit.kelvin, 1.0/unit.picoseconds, 2.0*unit.femtoseconds)
-integrator.setConstraintTolerance(0.00001)
-thermostat = mm.AndersenThermostat(TEMPid*unit.kelvin, 1/unit.picosecond)
-system.addForce(thermostat)
+if(integrator_type == "Langevin"):
+    integrator = mm.LangevinIntegrator(TEMPid*unit.kelvin, 1.0/unit.picoseconds, 2.0*unit.femtoseconds)
+    integrator.setConstraintTolerance(0.00001)
+    thermostat = mm.AndersenThermostat(TEMPid*unit.kelvin, 1/unit.picosecond)
+if(integrator_type == "Verlet"):
+    integrator = mm.VerletIntegrator(2.0*unit.femtoseconds)
+    integrator.setConstraintTolerance(0.00001)
+    thermostat = mm.AndersenThermostat(TEMPid*unit.kelvin, 1/unit.picosecond)
+    system.addForce(thermostat)
+if(integrator_type == "aMD"):
+    inp1 = input("\nEnter energy boost (alpha) (e.g. -180000)\n") 
+    inp1 = float(inp1)
+    inp2 = input("\nEnter energy cutoff (E) (e.g. 2700)\n") 
+    inp2 = float(inp2)
+    integrator = mm.amd.AMDIntegrator(2.0*unit.femtoseconds,inp1,inp2)
+    integrator.setConstraintTolerance(0.00001)
+    thermostat = mm.AndersenThermostat(TEMPid*unit.kelvin, 1/unit.picosecond)
+# add constant pressure 1 atmosphere
 barostat = mm.MonteCarloBarostat(1.0*unit.bar, TEMPid*unit.kelvin, 25)
 system.addForce(barostat)
  
@@ -134,13 +152,14 @@ if(antechamber == "no"):
     simulation.step(TIMEeq) # no separate heating step and fixed equilibration time of 0.1ns
     #simulation.step(1000) # for testing
     print('eq_'+PDBid+'.nc is done')
-  
+    fin_pos = simulation.context.getState(getPositions=True).getPositions() 
     # append reporters
     print ('MD production run for', 'prod_'+PDBid+'.nc')
     simulation.reporters.append(pmd.openmm.NetCDFReporter('prod_'+PDBid+'.nc', 200))
-    simulation.reporters.append(app.StateDataReporter(stdout, 10000, step=True, potentialEnergy=True, temperature=True, progress=True, remainingTime=False, speed=False, totalSteps=TIMEprod, separator='\t'))
+    #simulation.reporters.append(app.StateDataReporter(stdout, 10000, step=True, potentialEnergy=True, temperature=True, progress=True, remainingTime=False, speed=False, totalSteps=TIMEprod, separator='\t'))
     # run production simulation
     print('Running Production...')
+    simulation.context.setPositions(fin_pos)
     simulation.step(TIMEprod)
     print('prod_'+PDBid+'.nc is done')
 if(antechamber == "yes"): 
@@ -151,13 +170,14 @@ if(antechamber == "yes"):
     simulation.step(TIMEeq) # no separate heating step and fixed equilibration time of 0.1ns
     #simulation.step(1000) # for testing
     print('eq_'+PDBid+'_complex.nc is done')
-  
+    fin_pos = simulation.context.getState(getPositions=True).getPositions()
     # append reporters
     print ('MD production run for', 'prod_'+PDBid+'_complex.nc')
     simulation.reporters.append(pmd.openmm.NetCDFReporter('prod_'+PDBid+'_complex.nc', 200))
-    simulation.reporters.append(app.StateDataReporter(stdout, 10000, step=True, potentialEnergy=True, temperature=True, progress=True, remainingTime=False, speed=False, totalSteps=TIMEprod, separator='\t'))
+    #simulation.reporters.append(app.StateDataReporter(stdout, 10000, step=True, potentialEnergy=True, temperature=True, progress=True, remainingTime=False, speed=False, totalSteps=TIMEprod, separator='\t'))
     # run production simulation
     print('Running Production...')
+    simulation.context.setPositions(fin_pos)
     simulation.step(TIMEprod)
     print('prod_'+PDBid+'_complex.nc is done')
 ##############################################
@@ -172,12 +192,27 @@ if(RUNSid >= 2):
     PDBid = PDBid2_lab
     # prepare system and integrator
     system = prmtop.createSystem(nonbondedMethod=app.PME, nonbondedCutoff=1.0*unit.nanometers, constraints=app.HBonds, rigidWater=True, ewaldErrorTolerance=0.0005)
-    integrator = mm.LangevinIntegrator(TEMPid*unit.kelvin, 1.0/unit.picoseconds, 2.0*unit.femtoseconds)
-    integrator.setConstraintTolerance(0.00001)
-    thermostat = mm.AndersenThermostat(TEMPid*unit.kelvin, 1/unit.picosecond)
-    system.addForce(thermostat)
+    if(integrator_type == "Langevin"):
+        integrator = mm.LangevinIntegrator(TEMPid*unit.kelvin, 1.0/unit.picoseconds, 2.0*unit.femtoseconds)
+        integrator.setConstraintTolerance(0.00001)
+        thermostat = mm.AndersenThermostat(TEMPid*unit.kelvin, 1/unit.picosecond)
+    if(integrator_type == "Verlet"):
+        integrator = mm.VerletIntegrator(2.0*unit.femtoseconds)
+        integrator.setConstraintTolerance(0.00001)
+        thermostat = mm.AndersenThermostat(TEMPid*unit.kelvin, 1/unit.picosecond)
+        system.addForce(thermostat)
+    if(integrator_type == "aMD"):
+        inp1 = input("\nEnter energy boost (alpha) (e.g. -180000)\n") 
+        inp1 = float(inp1)
+        inp2 = input("\nEnter energy cutoff (E) (e.g. 2700)\n") 
+        inp2 = float(inp2)
+        integrator = mm.amd.AMDIntegrator(2.0*unit.femtoseconds,inp1,inp2)
+        integrator.setConstraintTolerance(0.00001)
+        thermostat = mm.AndersenThermostat(TEMPid*unit.kelvin, 1/unit.picosecond)
+    # add constant pressure 1 atmosphere
     barostat = mm.MonteCarloBarostat(1.0*unit.bar, TEMPid*unit.kelvin, 25)
     system.addForce(barostat)
+    
     # prepare simulation
     platform = mm.Platform.getPlatformByName('CUDA')
     properties = {'CudaPrecision': 'mixed', 'DeviceIndex': '0'}
@@ -199,13 +234,14 @@ if(RUNSid >= 2):
         simulation.step(TIMEeq) # no separate heating step and fixed equilibration time of 0.1ns
         #simulation.step(1000) # for testing
         print('eq_'+PDBid+'.nc is done')
-  
+        fin_pos = simulation.context.getState(getPositions=True).getPositions()
         # append reporters
         print ('MD production run for', 'prod_'+PDBid+'.nc')
         simulation.reporters.append(pmd.openmm.NetCDFReporter('prod_'+PDBid+'.nc', 200))
-        simulation.reporters.append(app.StateDataReporter(stdout, 10000, step=True, potentialEnergy=True, temperature=True, progress=True, remainingTime=False, speed=False, totalSteps=TIMEprod, separator='\t'))
+        #simulation.reporters.append(app.StateDataReporter(stdout, 10000, step=True, potentialEnergy=True, temperature=True, progress=True, remainingTime=False, speed=False, totalSteps=TIMEprod, separator='\t'))
         # run production simulation
         print('Running Production...')
+        simulation.context.setPositions(fin_pos)
         simulation.step(TIMEprod)
         print('prod_'+PDBid+'.nc is done')
     if(antechamber == "yes"): 
@@ -216,13 +252,14 @@ if(RUNSid >= 2):
         simulation.step(TIMEeq) # no separate heating step and fixed equilibration time of 0.1ns
         #simulation.step(1000) # for testing
         print('eq_'+PDBid+'_complex.nc is done')
-  
+        fin_pos = simulation.context.getState(getPositions=True).getPositions()
         # append reporters
         print ('MD production run for', 'prod_'+PDBid+'_complex.nc')
         simulation.reporters.append(pmd.openmm.NetCDFReporter('prod_'+PDBid+'_complex.nc', 200))
-        simulation.reporters.append(app.StateDataReporter(stdout, 10000, step=True, potentialEnergy=True, temperature=True, progress=True, remainingTime=False, speed=False, totalSteps=TIMEprod, separator='\t'))
+        #simulation.reporters.append(app.StateDataReporter(stdout, 10000, step=True, potentialEnergy=True, temperature=True, progress=True, remainingTime=False, speed=False, totalSteps=TIMEprod, separator='\t'))
         # run production simulation
         print('Running Production...')
+        simulation.context.setPositions(fin_pos)
         simulation.step(TIMEprod)
         print('prod_'+PDBid+'_complex.nc is done')
         
@@ -237,10 +274,24 @@ if(RUNSid >= 3):
     PDBid = PDBid3_lab
     # prepare system and integrator
     system = prmtop.createSystem(nonbondedMethod=app.PME, nonbondedCutoff=1.0*unit.nanometers, constraints=app.HBonds, rigidWater=True, ewaldErrorTolerance=0.0005)
-    integrator = mm.LangevinIntegrator(TEMPid*unit.kelvin, 1.0/unit.picoseconds, 2.0*unit.femtoseconds)
-    integrator.setConstraintTolerance(0.00001)
-    thermostat = mm.AndersenThermostat(TEMPid*unit.kelvin, 1/unit.picosecond)
-    system.addForce(thermostat)
+    if(integrator_type == "Langevin"):
+        integrator = mm.LangevinIntegrator(TEMPid*unit.kelvin, 1.0/unit.picoseconds, 2.0*unit.femtoseconds)
+        integrator.setConstraintTolerance(0.00001)
+        thermostat = mm.AndersenThermostat(TEMPid*unit.kelvin, 1/unit.picosecond)
+    if(integrator_type == "Verlet"):
+        integrator = mm.VerletIntegrator(2.0*unit.femtoseconds)
+        integrator.setConstraintTolerance(0.00001)
+        thermostat = mm.AndersenThermostat(TEMPid*unit.kelvin, 1/unit.picosecond)
+        system.addForce(thermostat)
+    if(integrator_type == "aMD"):
+        inp1 = input("\nEnter energy boost (alpha) (e.g. -180000)\n") 
+        inp1 = float(inp1)
+        inp2 = input("\nEnter energy cutoff (E) (e.g. 2700)\n") 
+        inp2 = float(inp2)
+        integrator = mm.amd.AMDIntegrator(2.0*unit.femtoseconds,inp1,inp2)
+        integrator.setConstraintTolerance(0.00001)
+        thermostat = mm.AndersenThermostat(TEMPid*unit.kelvin, 1/unit.picosecond)
+    # add constant pressure 1 atmosphere
     barostat = mm.MonteCarloBarostat(1.0*unit.bar, TEMPid*unit.kelvin, 25)
     system.addForce(barostat)
     
@@ -265,13 +316,14 @@ if(RUNSid >= 3):
         simulation.step(TIMEeq) # no separate heating step and fixed equilibration time of 0.1ns
         #simulation.step(1000) # for testing
         print('eq_'+PDBid+'.nc is done')
-  
+        fin_pos = simulation.context.getState(getPositions=True).getPositions()
         # append reporters
         print ('MD production run for', 'prod_'+PDBid+'.nc')
         simulation.reporters.append(pmd.openmm.NetCDFReporter('prod_'+PDBid+'.nc', 200))
-        simulation.reporters.append(app.StateDataReporter(stdout, 10000, step=True, potentialEnergy=True, temperature=True, progress=True, remainingTime=False, speed=False, totalSteps=TIMEprod, separator='\t'))
+        #simulation.reporters.append(app.StateDataReporter(stdout, 10000, step=True, potentialEnergy=True, temperature=True, progress=True, remainingTime=False, speed=False, totalSteps=TIMEprod, separator='\t'))
         # run production simulation
         print('Running Production...')
+        simulation.context.setPositions(fin_pos)
         simulation.step(TIMEprod)
         print('prod_'+PDBid+'.nc is done')
     if(antechamber == "yes"): 
@@ -282,13 +334,14 @@ if(RUNSid >= 3):
         simulation.step(TIMEeq) # no separate heating step and fixed equilibration time of 0.1ns
         #simulation.step(1000) # for testing
         print('eq_'+PDBid+'_complex.nc is done')
-  
+        fin_pos = simulation.context.getState(getPositions=True).getPositions()
         # append reporters
         print ('MD production run for', 'prod_'+PDBid+'_complex.nc')
         simulation.reporters.append(pmd.openmm.NetCDFReporter('prod_'+PDBid+'_complex.nc', 200))
-        simulation.reporters.append(app.StateDataReporter(stdout, 10000, step=True, potentialEnergy=True, temperature=True, progress=True, remainingTime=False, speed=False, totalSteps=TIMEprod, separator='\t'))
+        #simulation.reporters.append(app.StateDataReporter(stdout, 10000, step=True, potentialEnergy=True, temperature=True, progress=True, remainingTime=False, speed=False, totalSteps=TIMEprod, separator='\t'))
         # run production simulation
         print('Running Production...')
+        simulation.context.setPositions(fin_pos)
         simulation.step(TIMEprod)
         print('prod_'+PDBid+'_complex.nc is done')
         
@@ -303,10 +356,24 @@ if(RUNSid >= 4):
     PDBid = PDBid4_lab
     # prepare system and integrator
     system = prmtop.createSystem(nonbondedMethod=app.PME, nonbondedCutoff=1.0*unit.nanometers, constraints=app.HBonds, rigidWater=True, ewaldErrorTolerance=0.0005)
-    integrator = mm.LangevinIntegrator(TEMPid*unit.kelvin, 1.0/unit.picoseconds, 2.0*unit.femtoseconds)
-    integrator.setConstraintTolerance(0.00001)
-    thermostat = mm.AndersenThermostat(TEMPid*unit.kelvin, 1/unit.picosecond)
-    system.addForce(thermostat)
+    if(integrator_type == "Langevin"):
+        integrator = mm.LangevinIntegrator(TEMPid*unit.kelvin, 1.0/unit.picoseconds, 2.0*unit.femtoseconds)
+        integrator.setConstraintTolerance(0.00001)
+        thermostat = mm.AndersenThermostat(TEMPid*unit.kelvin, 1/unit.picosecond)
+    if(integrator_type == "Verlet"):
+        integrator = mm.VerletIntegrator(2.0*unit.femtoseconds)
+        integrator.setConstraintTolerance(0.00001)
+        thermostat = mm.AndersenThermostat(TEMPid*unit.kelvin, 1/unit.picosecond)
+        system.addForce(thermostat)
+    if(integrator_type == "aMD"):
+        inp1 = input("\nEnter energy boost (alpha) (e.g. -180000)\n") 
+        inp1 = float(inp1)
+        inp2 = input("\nEnter energy cutoff (E) (e.g. 2700)\n") 
+        inp2 = float(inp2)
+        integrator = mm.amd.AMDIntegrator(2.0*unit.femtoseconds,inp1,inp2)
+        integrator.setConstraintTolerance(0.00001)
+        thermostat = mm.AndersenThermostat(TEMPid*unit.kelvin, 1/unit.picosecond)
+    # add constant pressure 1 atmosphere
     barostat = mm.MonteCarloBarostat(1.0*unit.bar, TEMPid*unit.kelvin, 25)
     system.addForce(barostat)
     
@@ -331,13 +398,14 @@ if(RUNSid >= 4):
         simulation.step(TIMEeq) # no separate heating step and fixed equilibration time of 0.1ns
         #simulation.step(1000) # for testing
         print('eq_'+PDBid+'.nc is done')
-  
+        fin_pos = simulation.context.getState(getPositions=True).getPositions()
         # append reporters
         print ('MD production run for', 'prod_'+PDBid+'.nc')
         simulation.reporters.append(pmd.openmm.NetCDFReporter('prod_'+PDBid+'.nc', 200))
-        simulation.reporters.append(app.StateDataReporter(stdout, 10000, step=True, potentialEnergy=True, temperature=True, progress=True, remainingTime=False, speed=False, totalSteps=TIMEprod, separator='\t'))
+        #simulation.reporters.append(app.StateDataReporter(stdout, 10000, step=True, potentialEnergy=True, temperature=True, progress=True, remainingTime=False, speed=False, totalSteps=TIMEprod, separator='\t'))
         # run production simulation
         print('Running Production...')
+        simulation.context.setPositions(fin_pos)
         simulation.step(TIMEprod)
         print('prod_'+PDBid+'.nc is done')
     if(antechamber == "yes"): 
@@ -348,13 +416,14 @@ if(RUNSid >= 4):
         simulation.step(TIMEeq) # no separate heating step and fixed equilibration time of 0.1ns
         #simulation.step(1000) # for testing
         print('eq_'+PDBid+'_complex.nc is done')
-  
+        fin_pos = simulation.context.getState(getPositions=True).getPositions()
         # append reporters
         print ('MD production run for', 'prod_'+PDBid+'_complex.nc')
         simulation.reporters.append(pmd.openmm.NetCDFReporter('prod_'+PDBid+'_complex.nc', 200))
-        simulation.reporters.append(app.StateDataReporter(stdout, 10000, step=True, potentialEnergy=True, temperature=True, progress=True, remainingTime=False, speed=False, totalSteps=TIMEprod, separator='\t'))
+        #simulation.reporters.append(app.StateDataReporter(stdout, 10000, step=True, potentialEnergy=True, temperature=True, progress=True, remainingTime=False, speed=False, totalSteps=TIMEprod, separator='\t'))
         # run production simulation
         print('Running Production...')
+        simulation.context.setPositions(fin_pos)
         simulation.step(TIMEprod)
         print('prod_'+PDBid+'_complex.nc is done')
         
@@ -369,10 +438,24 @@ if(RUNSid == 5):
     PDBid= PDBid5
     # prepare system and integrator
     system = prmtop.createSystem(nonbondedMethod=app.PME, nonbondedCutoff=1.0*unit.nanometers, constraints=app.HBonds, rigidWater=True, ewaldErrorTolerance=0.0005)
-    integrator = mm.LangevinIntegrator(TEMPid*unit.kelvin, 1.0/unit.picoseconds, 2.0*unit.femtoseconds)
-    integrator.setConstraintTolerance(0.00001)
-    thermostat = mm.AndersenThermostat(TEMPid*unit.kelvin, 1/unit.picosecond)
-    system.addForce(thermostat)
+    if(integrator_type == "Langevin"):
+        integrator = mm.LangevinIntegrator(TEMPid*unit.kelvin, 1.0/unit.picoseconds, 2.0*unit.femtoseconds)
+        integrator.setConstraintTolerance(0.00001)
+        thermostat = mm.AndersenThermostat(TEMPid*unit.kelvin, 1/unit.picosecond)
+    if(integrator_type == "Verlet"):
+        integrator = mm.VerletIntegrator(2.0*unit.femtoseconds)
+        integrator.setConstraintTolerance(0.00001)
+        thermostat = mm.AndersenThermostat(TEMPid*unit.kelvin, 1/unit.picosecond)
+        system.addForce(thermostat)
+    if(integrator_type == "aMD"):
+        inp1 = input("\nEnter energy boost (alpha) (e.g. -180000)\n") 
+        inp1 = float(inp1)
+        inp2 = input("\nEnter energy cutoff (E) (e.g. 2700)\n") 
+        inp2 = float(inp2)
+        integrator = mm.amd.AMDIntegrator(2.0*unit.femtoseconds,inp1,inp2)
+        integrator.setConstraintTolerance(0.00001)
+        thermostat = mm.AndersenThermostat(TEMPid*unit.kelvin, 1/unit.picosecond)
+    # add constant pressure 1 atmosphere
     barostat = mm.MonteCarloBarostat(1.0*unit.bar, TEMPid*unit.kelvin, 25)
     system.addForce(barostat)
     
@@ -397,13 +480,14 @@ if(RUNSid == 5):
         simulation.step(TIMEeq) # no separate heating step and fixed equilibration time of 0.1ns
         #simulation.step(1000) # for testing
         print('eq_'+PDBid+'.nc is done')
-  
+        fin_pos = simulation.context.getState(getPositions=True).getPositions()
         # append reporters
         print ('MD production run for', 'prod_'+PDBid+'.nc')
         simulation.reporters.append(pmd.openmm.NetCDFReporter('prod_'+PDBid+'.nc', 200))
-        simulation.reporters.append(app.StateDataReporter(stdout, 10000, step=True, potentialEnergy=True, temperature=True, progress=True, remainingTime=False, speed=False, totalSteps=TIMEprod, separator='\t'))
+        #simulation.reporters.append(app.StateDataReporter(stdout, 10000, step=True, potentialEnergy=True, temperature=True, progress=True, remainingTime=False, speed=False, totalSteps=TIMEprod, separator='\t'))
         # run production simulation
         print('Running Production...')
+        simulation.context.setPositions(fin_pos)
         simulation.step(TIMEprod)
         print('prod_'+PDBid+'.nc is done')
     if(antechamber == "yes"): 
@@ -414,13 +498,14 @@ if(RUNSid == 5):
         simulation.step(TIMEeq) # no separate heating step and fixed equilibration time of 0.1ns
         #simulation.step(1000) # for testing
         print('eq_'+PDBid+'_complex.nc is done')
-  
+        fin_pos = simulation.context.getState(getPositions=True).getPositions()
         # append reporters
         print ('MD production run for', 'prod_'+PDBid+'_complex.nc')
         simulation.reporters.append(pmd.openmm.NetCDFReporter('prod_'+PDBid+'_complex.nc', 200))
-        simulation.reporters.append(app.StateDataReporter(stdout, 10000, step=True, potentialEnergy=True, temperature=True, progress=True, remainingTime=False, speed=False, totalSteps=TIMEprod, separator='\t'))
+        #simulation.reporters.append(app.StateDataReporter(stdout, 10000, step=True, potentialEnergy=True, temperature=True, progress=True, remainingTime=False, speed=False, totalSteps=TIMEprod, separator='\t'))
         # run production simulation
         print('Running Production...')
+        simulation.context.setPositions(fin_pos)
         simulation.step(TIMEprod)
         print('prod_'+PDBid+'_complex.nc is done')
     
