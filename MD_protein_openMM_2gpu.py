@@ -114,7 +114,7 @@ INTsamp=200
 TEMPid = 298
 print("my Production Run Temperature is",TEMPid)
 
-writePath= "./MDsimulationLOG.txt" % PDB_id_reference
+writePath= "./MDsimulationLOG.txt"
 with open(writePath, 'w') as f_out:
     f_out.write("MD simulation log\n")
     f_out.write("\n----------------system settings---------------------\n")
