@@ -56,4 +56,7 @@ if(inp1 == "y" or inp1 == "yes" or inp1 == "Y" or inp1 == "YES"):
     print("installing networkx")
     cmd = 'pip3 install networkx'
     os.system(cmd)
+    print("installing patchworklib")
+    cmd = 'pip3 install patchworklib'
+    os.system(cmd)
     print('installation complete')
