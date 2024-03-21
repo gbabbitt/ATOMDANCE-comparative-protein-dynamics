@@ -122,12 +122,12 @@ https://templatemo.com/tm-536-dream-pulse
                           <h2 class="tm-color-primary tm-section-title mb-4">ATOMDANCE - machine learning based denoising and choreographic analysis for comparative molecular dynamics</h2>
                           
 						  <p class="mb-5">
-                          a python-based user interfaced pipeline for statistical machine learning assisted comparison of molecular dynamic trajectories of proteins in two functional or evolutionary states (e.g. mutant vs. wild-type or bound vs unbound).
+                          ATOMDANCE software is a python-based user interfaced suite of machine learning assisted statistical methods for site-wise comparisons of molecular dynamic trajectories of proteins in two functional or evolutionary states (e.g. ligand-bound vs. unbound or wildtype vs mutated). Dynamic comparisons between homologous sites can be direct (i.e. divergence metrics) or de-noised (i.e. maximum mean discrepancy between learned features). Comparisons of non-homologous site dynamics can also detect communities of sites that share coordinated motions (i.e. due to resonance and/or more complex mechanisms of allostery). 
                           </p>
 						  <div></div>
 						  <img src="img/compare.png" alt="Client Image" class="img-fluid tm-client-img" />
 						  <div></div>
-						  <p class="mb-5">ATOMDANCE software is a python-based suite of machine learning assisted statistical methods for site-wise comparisons of molecular dynamic trajectories of proteins in two functional states (e.g. ligand-bound vs. unbound or wildtype vs mutated). It was developed in python and additionally requires the cpptraj library and UCSF Chimerax molecular visualization software to be installed. The methods and software is offered freely (without guarantee) under GPL 3.0 and was developed by Dr. Gragory A. Babbitt, Dr. Ernest P. Fokoue and students at the Rochester Institute of Technology between 2017-2024.</p>
+						  <p class="mb-5"> ATOMDANCE was developed in python 3.11 and additionally requires the cpptraj library and UCSF Chimerax molecular visualization software to be installed. The methods and software is offered freely (without guarantee) under GPL 3.0 and was developed by Dr. Gragory A. Babbitt, Dr. Ernest P. Fokoue and students at the Rochester Institute of Technology between 2017-2024.</p>
                           <h2 class="tm-color-primary tm-section-title mb-4">ATOMDANCE combines 4 main programs</h2>
                           <p>DROIDS 5.0 - (Detecting Relative Outlier Impacts in Dynamic Simulation) providing direct stie-wise comparisons (i.e. divergence metrics) and hypothesis testing for significant differences in amino acid fluctuations</p>
                           <p>maxDemon 4.0 - (kernel-based machine learning for comparative protein dynamics) providing (A) denoised site-wise comparisons of atom fluctuations utilizing max mean discrepancy (MMD) on learned features and (B) site-wise identification of non-neutral evolutionary changes in molecular dynamics (also via MMD).
@@ -143,10 +143,10 @@ https://templatemo.com/tm-536-dream-pulse
 			     <img src="img/MDgui.png" alt="Client Image" class="img-fluid tm-client-img" />
               <div>
 			  <p>
-			  FOR OUR CODE: python module dependencies (os, getopt, sys, multiprocessing, random, re, chimerax.core.commands) python modules to be installed (PyQt5, numpy, scipy, pandas, sklearn, scikit-learn, matplotlib, patchworklib, plotnine, progress, parmed, netCDF4, pingouin, networkx) NOTE: for best results, the CPU on the computer should support at least 4-6 cores and if MDgui.py is used a modern GPU will be required.  
+			  ATOMDANCE: python module dependencies (os, getopt, sys, multiprocessing, random, re, chimerax.core.commands) python modules to be installed (PyQt5, numpy, scipy, pandas, sklearn, scikit-learn, matplotlib, patchworklib, plotnine, progress, parmed, netCDF4, pingouin, networkx) NOTE: for best results, the CPU on the computer should support at least 4-6 cores and if MDgui.py is used a modern GPU will be required.  
               
 			  <p>QUICK INSTALL (terminal): 
-              <p>conda create –name atomdance
+              <p>conda create –-name atomdance
               <p>conda activate atomdance
               <p>conda install –c conda-forge ambertools=23
               <p>conda install –c conda-forge openmm
