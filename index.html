@@ -119,15 +119,13 @@ https://templatemo.com/tm-536-dream-pulse
             <section id="about" class="row tm-section">
               
               <div class="tm-w-80">
-                          <h2 class="tm-color-primary tm-section-title mb-4">ATOMDANCE - machine learning based denoising and choreographic analysis for comparative molecular dynamics</h2>
-                          
+                          <h2 class="tm-color-primary tm-section-title mb-4">ATOMDANCE - kernel-based denoising and choreographic analysis for protein dynamic comparison</h2>
+                          <img src="img/compare.png" alt="Client Image" class="img-fluid tm-client-img" /></img>
 						  <p class="mb-5">
                           ATOMDANCE software is a python-based user interfaced suite of machine learning assisted statistical methods for site-wise comparisons of molecular dynamic trajectories of proteins in two functional or evolutionary states (e.g. ligand-bound vs. unbound or wildtype vs mutated). Dynamic comparisons between homologous sites can be direct (i.e. divergence metrics) or de-noised (i.e. maximum mean discrepancy between learned features). Comparisons of non-homologous site dynamics can also detect communities of sites that share coordinated motions (i.e. due to resonance and/or more complex mechanisms of allostery). 
                           </p>
 						  <div></div>
-						  <img src="img/compare.png" alt="Client Image" class="img-fluid tm-client-img" />
-						  <div></div>
-						  <h2 class="tm-color-primary tm-section-title mb-4">a fundamental problem in comapartive molecular dynamics</h2>
+						  <h2 class="tm-color-primary tm-section-title mb-4">a fundamental problem in comparative molecular dynamics</h2>
 						  <p class="mb-5"> The motions of proteins are comprised of both random thermal noise induced by solvent interactions as well as non-random machine-like motions related to protein function. When two dynamic trajectories are compared directly, the random motions in each simulation can create large differences that are meaningless with respect to protein function and its evolution. Because machine learning cannot learn from random noise, the discrepancy between learned features in dynamics simulations representing two functional states can be utilized for creating de-noised comparisons that isolate the non-random dynamics in key sites involved in protein function.</p>
                           <h2 class="tm-color-primary tm-section-title mb-4">our software</h2>
 						  <p class="mb-5"> ATOMDANCE was developed in python 3.11 and additionally requires the cpptraj library and UCSF Chimerax molecular visualization software to be installed. The methods and software is offered freely (without guarantee) under GPL 3.0 and was developed by Dr. Gragory A. Babbitt, Dr. Ernest P. Fokoue and students at the Rochester Institute of Technology between 2017-2024.</p>
@@ -135,7 +133,8 @@ https://templatemo.com/tm-536-dream-pulse
                           <p>DROIDS 5.0 - (Detecting Relative Outlier Impacts in Dynamic Simulation) providing direct stie-wise comparisons (i.e. divergence metrics) and hypothesis testing for significant differences in amino acid fluctuations</p>
                           <p>maxDemon 4.0 - (kernel-based machine learning for comparative protein dynamics) providing (A) denoised site-wise comparisons of atom fluctuations utilizing max mean discrepancy (MMD) on learned features and (B) site-wise identification of non-neutral evolutionary changes in molecular dynamics (also via MMD).
                           <p>Choreograph 2.0 - multi-effects model ANOVA and graph theory community detection on interaction networks designed for mapping of time-coordinated site dynamics (i.e. choreographic analysis)</p>
-              </div>
+                   
+			  </div>
               <div>
                  <p>We also offer an easy user interface for running the machine learning post processor (ATOMDANCE.py)</p>
               </div>
