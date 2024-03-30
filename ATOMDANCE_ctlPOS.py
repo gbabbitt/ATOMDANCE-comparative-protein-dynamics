@@ -14,9 +14,32 @@
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
-
 class Ui_Dialog(object):
     def setupUi(self, Dialog):
+        print("attempting to calculate number of frames in recent MDgui.py MD runs")
+        # read ChimeraX visualization ctl file
+        MDpath = './MDr.ctl'
+        check_file = os.path.isfile(MDpath)
+        print(check_file)
+        if(check_file == True):
+            infile = open("MDr.ctl", "r")
+            infile_lines = infile.readlines()
+            for x in range(len(infile_lines)):
+                infile_line = infile_lines[x]
+                #print(infile_line)
+                infile_line_array = str.split(infile_line, ",")
+                header = infile_line_array[0]
+                value = infile_line_array[1]
+                #print(header)
+                #print(value)
+                if(header == "prod_len"):
+                    prod_len = value
+                    prod_len = int(prod_len)
+                    n_frames = int(5*(prod_len/1000))
+                    print("number of frames in last MDgui.py MD session is",n_frames)
+        if(check_file == False):
+            n_frames = "could not find"
+        # continue
         Dialog.setObjectName("Dialog")
         Dialog.resize(1116, 703)
         self.frame = QtWidgets.QFrame(Dialog)
@@ -71,7 +94,7 @@ class Ui_Dialog(object):
         self.lineEdit_3 = QtWidgets.QLineEdit(self.frame_3)
         self.lineEdit_3.setGeometry(QtCore.QRect(20, 130, 113, 28))
         self.lineEdit_3.setObjectName("lineEdit_3")
-        self.lineEdit_3.setText("5000")
+        self.lineEdit_3.setText("%s" % n_frames)
         self.label_8 = QtWidgets.QLabel(self.frame_3)
         self.label_8.setGeometry(QtCore.QRect(20, 110, 271, 21))
         self.label_8.setObjectName("label_8")
@@ -382,7 +405,10 @@ class Ui_Dialog(object):
         print("DROIDS/maxDemon program closed")
         sys.exit(app.exec_())
 
-
+    
+        
+        
+        
 #########################################################################################
 ##########################################################################################
 if __name__ == "__main__":
