@@ -28,7 +28,7 @@ from plotnine import *
 #from plotnine.data import mpg
 import soundfile
 from scipy.io import wavfile
-import noisereduce as nr
+#import noisereduce as nr
 from pydub import AudioSegment
 from pydub.playback import play
 from scipy.linalg import svd
@@ -167,31 +167,86 @@ print(label_chains)
 ##################   movie rendering generator  ################################
 ################################################################################
 
-def create_video_from_images():
+def create_fixInt_video_from_images():
     folder = "proteinInteraction_movie_%s/stills" % PDB_id_reference
-    video_filename = "proteinInteraction_movie_%s/myMovie.mp4" % PDB_id_reference
+    video_filename = "proteinInteraction_movie_%s/myMovie_fixInt.mp4" % PDB_id_reference
     valid_images = [i for i in os.listdir(folder) if i.endswith((".jpg", ".jpeg", ".png"))]
+    #print(valid_images)
     each_image_duration = 1 # 1 second
     first_image = cv2.imread(os.path.join(folder, valid_images[0]))
     h, w, _ = first_image.shape
 
     codec = cv2.VideoWriter_fourcc(*'mp4v')
-    vid_writer = cv2.VideoWriter(video_filename, codec, 4.0, (w, h))  # convert to rate of 0.25 sec per image
+    vid_writer = cv2.VideoWriter(video_filename, codec, 2.0, (w, h))  # convert to constant rate of 0.25 sec
 
     for img in valid_images:
         loaded_img = cv2.imread(os.path.join(folder, img))
         for _ in range(each_image_duration):
-            #loaded_img = ImageClip(loaded_img).set_duration(0.5)
             vid_writer.write(loaded_img)
 
     vid_writer.release()
 
+def create_video_from_images():
+    # get variable interval lengths
+    file=open("coordinatedDynamics_%s/interval_lengths.txt" % PDB_id_reference,'r')
+    target=open("coordinatedDynamics_%s/interval_lengths_stripComma.txt" % PDB_id_reference,'w')
+    for line in file:
+        target.write(line[:-1].rstrip(',') + "\n")  # remove last comma
+    file.close()
+    target.close()
+    ints = np.loadtxt("coordinatedDynamics_%s/interval_lengths_stripComma.txt" % PDB_id_reference, comments="#", delimiter=",", unpack=False) # from numpy
+    #print(ints)
+    ints = np.int_(ints)
+    #print(ints)
+    img_durs = 1/500*ints
+    print("variable interval durations adjusted to binding strength")
+    print(img_durs)
+    # make movie
+    folder = "proteinInteraction_movie_%s/stills" % PDB_id_reference
+    valid_images = [i for i in os.listdir(folder) if i.endswith((".jpg", ".jpeg", ".png"))]
+    #print(valid_images)
+    each_image_duration = 1 # 1 second
+    first_image = cv2.imread(os.path.join(folder, valid_images[0]))
+    h, w, _ = first_image.shape
+    
+    i=0
+    for img in valid_images:
+        myInterval = img_durs[i]
+        #print(myInterval)
+        myFPS = 2.00+0.50*(1.00-myInterval)
+        myFPS = float(myFPS)
+        #print(myFPS)
+        video_filename = "proteinInteraction_movie_%s/movie_segments/myMovie_varInt_%s.mp4" % (PDB_id_reference,img)
+        codec = cv2.VideoWriter_fourcc(*'mp4v')
+        vid_writer = cv2.VideoWriter(video_filename, codec, myFPS, (w, h))  # convert to variable rate 
+        loaded_img = cv2.imread(os.path.join(folder, img))
+        for _ in range(each_image_duration):
+            vid_writer.write(loaded_img)
+        i = i+1
+    vid_writer.release()
+    
+    # concatenate movie segment files
+    # loading video
+    
+    clips = []
+    clipsfolder = "proteinInteraction_movie_%s/movie_segments" % PDB_id_reference
+    for j in range(m_frames):
+        clip = VideoFileClip("proteinInteraction_movie_%s/movie_segments/myMovie_varInt_MMD_light_MMD_flux_%s.png.mp4" % (PDB_id_reference,j))
+        clips.append(clip)
+    # clip list
+    #print(clips)
+     # concatenating all the clips
+    final_concat = concatenate_videoclips(clips)
+    final_concat.write_videofile("proteinInteraction_movie_%s/myMovie_varInt.mp4" % PDB_id_reference)
+    
+    
+    
 def combine_audio_video():
     # map MMD in chimerax
     print("combining audio and video for movie for %s" % PDB_id_reference)
-    audio_file = "proteinInteraction_movie_%s/mySound.wav" % PDB_id_reference
-    video_file = "proteinInteraction_movie_%s/myMovie.mp4" % PDB_id_reference
-    wave_file = AudioSegment.from_file('proteinInteraction_movie_%s/mySound.wav' % PDB_id_reference)
+    audio_file = "proteinInteraction_movie_%s/mySound_varInt.wav" % PDB_id_reference
+    video_file = "proteinInteraction_movie_%s/myMovie_varInt.mp4" % PDB_id_reference
+    wave_file = AudioSegment.from_file('proteinInteraction_movie_%s/mySound_varInt.wav' % PDB_id_reference)
     #wave_file_trim = wave_file[0000:8000] # 8 second fit to movie file             
     #wave_file_trim.export('proteinInteraction_movie_%s/mySound_trim.wav' % PDB_id_reference, format="wav")
     #audio_file = "proteinInteraction_movie_%s/mySound_trim.wav" % PDB_id_reference
@@ -208,7 +263,31 @@ def combine_audio_video():
     # add the final audio to the video
     final_clip = video_clip.set_audio(audio_clip)
     # save the final clip
-    final_clip.write_videofile("proteinInteraction_movie_%s/myMovieSound.mp4" % PDB_id_reference)
+    final_clip.write_videofile("proteinInteraction_movie_%s/myMovieSound_varInt.mp4" % PDB_id_reference)
+
+def combine_fixInt_audio_video():
+    # map MMD in chimerax
+    print("combining audio and video for movie for %s" % PDB_id_reference)
+    audio_file = "proteinInteraction_movie_%s/mySound_fixInt.wav" % PDB_id_reference
+    video_file = "proteinInteraction_movie_%s/myMovie_fixInt.mp4" % PDB_id_reference
+    wave_file = AudioSegment.from_file('proteinInteraction_movie_%s/mySound_fixInt.wav' % PDB_id_reference)
+    #wave_file_trim = wave_file[0000:8000] # 8 second fit to movie file             
+    #wave_file_trim.export('proteinInteraction_movie_%s/mySound_trim.wav' % PDB_id_reference, format="wav")
+    #audio_file = "proteinInteraction_movie_%s/mySound_trim.wav" % PDB_id_reference
+    # load the video
+    video_clip = VideoFileClip(video_file)
+    # load the audio
+    audio_clip = AudioFileClip(audio_file)
+    #start = 0
+    # if end is not set, use video clip's end
+    #end = video_clip.end
+    
+    # setting the start & end of the audio clip to `start` and `end` paramters
+    #audio_clip = audio_clip.subclip(start, end)
+    # add the final audio to the video
+    final_clip = video_clip.set_audio(audio_clip)
+    # save the final clip
+    final_clip.write_videofile("proteinInteraction_movie_%s/myMovieSound_fixInt.mp4" % PDB_id_reference)
 
 def still_image_parse_for_movie():
     # map MMD in chimerax
@@ -226,15 +305,38 @@ def still_image_parse_for_movie():
         shutil.copyfile(readPath, copyPath)
     # collect sound file
     readPath = "coordinatedDynamics_%s/aa_adjusted_merged.wav" % PDB_id_reference
-    copyPath = "proteinInteraction_movie_%s/mySound.wav" % PDB_id_reference
+    copyPath = "proteinInteraction_movie_%s/mySound_varInt.wav" % PDB_id_reference
     shutil.copyfile(readPath, copyPath)
+    
+    
+def still_image_parse_for_fixInt_movie():
+    # map MMD in chimerax
+    print("generating movie for %s" % PDB_id_reference)
+    if not os.path.exists('proteinInteraction_movie_%s' % PDB_id_reference):
+           os.makedirs('proteinInteraction_movie_%s' % PDB_id_reference)
+    if not os.path.exists('proteinInteraction_movie_%s/stills' % PDB_id_reference):
+           os.makedirs('proteinInteraction_movie_%s/stills' % PDB_id_reference)
+    if not os.path.exists('proteinInteraction_movie_%s/movie_segments' % PDB_id_reference):
+           os.makedirs('proteinInteraction_movie_%s/movie_segments' % PDB_id_reference)
+    for m in range(m_frames):
+        # collect still images
+        readPath = "maxMeanDiscrepancy_%s/movieFrame_%s/MMD_light_MMD_flux.png" % (PDB_id_reference,m)
+        copyPath = "proteinInteraction_movie_%s/stills/MMD_light_MMD_flux_%s.png" % (PDB_id_reference,m)
+        shutil.copyfile(readPath, copyPath)
+    # collect sound file
+    readPath = "coordinatedDynamics_%s/aa_adjusted_merged_fixInt.wav" % PDB_id_reference
+    copyPath = "proteinInteraction_movie_%s/mySound_fixInt.wav" % PDB_id_reference
+    shutil.copyfile(readPath, copyPath) 
 ###############################################################
 ###############################################################
 
 def main():
     still_image_parse_for_movie()
+    still_image_parse_for_fixInt_movie()
     create_video_from_images()
+    create_fixInt_video_from_images()
     combine_audio_video()
+    combine_fixInt_audio_video()
     
 ###############################################################
 if __name__ == '__main__':
