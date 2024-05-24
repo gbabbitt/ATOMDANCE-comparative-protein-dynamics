@@ -25,9 +25,12 @@ import numpy as np
 import scipy as sp
 from pandas.api.types import CategoricalDtype
 from plotnine import *
+import matplotlib.pyplot as plt
 #from plotnine.data import mpg
+
 import soundfile
 from scipy.io import wavfile
+from scipy import signal
 #import noisereduce as nr
 from pydub import AudioSegment
 from pydub.playback import play
@@ -310,7 +313,6 @@ def still_image_parse_for_movie():
     
     
 def still_image_parse_for_fixInt_movie():
-    # map MMD in chimerax
     print("generating movie for %s" % PDB_id_reference)
     if not os.path.exists('proteinInteraction_movie_%s' % PDB_id_reference):
            os.makedirs('proteinInteraction_movie_%s' % PDB_id_reference)
@@ -327,16 +329,113 @@ def still_image_parse_for_fixInt_movie():
     readPath = "coordinatedDynamics_%s/aa_adjusted_merged_fixInt.wav" % PDB_id_reference
     copyPath = "proteinInteraction_movie_%s/mySound_fixInt.wav" % PDB_id_reference
     shutil.copyfile(readPath, copyPath) 
+
+def create_sonogram(): # run only in base anaconda
+    print("generating sonograms for %s" % PDB_id_reference)
+    """
+    import math
+    import numpy as np
+    import matplotlib.pyplot as plt
+ 
+    # Set the time difference to take picture of
+    # the the generated signal.
+    Time_difference = 0.0001
+ 
+    # Generating an array of values
+    Time_Array = np.linspace(0, 5, math.ceil(5 / Time_difference))
+ 
+    # Actual data array which needs to be plot
+    Data = 20*(np.sin(3 * np.pi * Time_Array))
+ 
+    # Matplotlib.pyplot.specgram() function to
+    # generate spectrogram
+    plt.specgram(Data, Fs=6, cmap="rainbow")
+ 
+    # Set the title of the plot, xlabel and ylabel
+    # and display using show() function
+    plt.title('Spectrogram Using matplotlib.pyplot.specgram() Method')
+    plt.xlabel("DATA")
+    plt.ylabel("TIME")
+    plt.savefig('proteinInteraction_movie_%s/mySound_fixInt sonogram.png' % PDB_id_reference)
+    
+    """
+    #sample_rate, samples = wavfile.read('proteinInteraction_movie_%s/mySound_fixInt.wav' % PDB_id_reference)
+    from scipy.io import wavfile
+    samplingFrequency, signalData = wavfile.read('proteinInteraction_movie_%s/mySound_fixInt.wav' % PDB_id_reference)
+
+
+    plt.title('Spectrogram')    
+    Pxx, freqs, bins, im = plt.specgram(signalData,Fs=samplingFrequency,NFFT=512)
+    plt.xlabel('Time')
+    plt.ylabel('Frequency')
+    #plt.xlim(left=0,right=17)
+
+    plt.savefig('proteinInteraction_movie_%s/mySound_fixInt sonogram.png' % PDB_id_reference)
+    
+    
+    """
+    df = frequencies, times, spectrogram = signal.spectrogram(samples, sample_rate)
+    df = pd.DataFrame(df)
+    print(frequencies, times, spectrogram )
+    print(df)
+    #dataSONO = signal.spectrogram(samples, sample_rate)
+    #dfSONO = pd.DataFrame(dataSONO)
+    #dfSONO = dfSONO.transpose()
+    #print(dfSONO)
+    #print(dataSONO)
+    g = (ggplot(df,aes(x=times,y=frequencies)) + geom_tile())
+    g.save('proteinInteraction_movie_%s/mySound_fixInt sonogram.png' % PDB_id_reference)
+    """
+    
+def multiframe_pdb():
+    if not os.path.exists('proteinInteraction_movie_%s/traj' % PDB_id_reference):
+           os.makedirs('proteinInteraction_movie_%s/traj' % PDB_id_reference)
+    if not os.path.exists('proteinInteraction_movie_%s/multiframePDBs' % PDB_id_reference):
+           os.makedirs('proteinInteraction_movie_%s/multiframePDBs' % PDB_id_reference)
+    
+    m_range = int(n_frames/m_frames)
+    start = 1 
+    stop = start + m_range
+    for m in range(m_frames): # loop through movie frames
+    #for m in range(2):
+        print("making cpptraj .ctl fils on movie frame %s" % m)
+        print("using frames from %s to %s" % (start, stop))
+        f1 = open("proteinInteraction_movie_%s/traj/multiFramePDB_%s_%s.ctl" % (PDB_id_reference, PDB_id_query, m), "w")
+        f1.write("parm %s\n" % top_file_query)
+        f1.write("trajin %s %s %s 10\n" % (traj_file_query, start, stop))  # 10 is offset step to keep file size small
+        #f1.write("autoimage\n")
+        #f1.write("rms fit :1-%s\n" % length_prot)
+        f1.write("trajout proteinInteraction_movie_%s/traj/PDB_%s_%s.nc\n" % (PDB_id_reference, PDB_id_query, m))
+        f1.write("run\n")
+        f1.close()
+        start = stop
+        stop = start + m_range
+    for m in range(m_frames): # loop through movie frames
+    #for m in range(2):  
+        print("movie frame %s - calculating trajectory for query protein" % m)
+        cmd1 = 'cpptraj -i proteinInteraction_movie_%s/traj/multiFramePDB_%s_%s.ctl' % (PDB_id_reference,PDB_id_query,m)
+        os.system(cmd1)
+    for m in range(m_frames): # loop through movie frames
+    #for m in range(2):   
+        print("movie frame %s - converting .nc file to multiframe .pdb file")
+        cmd2 = "cpptraj -p %s -y proteinInteraction_movie_%s/traj/PDB_%s_%s.nc -x proteinInteraction_movie_%s/multiframePDBs/PDB_%s_%s.pdb" % (top_file_query, PDB_id_reference, PDB_id_query, m, PDB_id_reference, PDB_file_query, m)
+        os.system(cmd2)
+    
+    
 ###############################################################
 ###############################################################
 
 def main():
+    
     still_image_parse_for_movie()
     still_image_parse_for_fixInt_movie()
+    multiframe_pdb()
     create_video_from_images()
     create_fixInt_video_from_images()
     combine_audio_video()
     combine_fixInt_audio_video()
+        #create_sonogram()
+    
     
 ###############################################################
 if __name__ == '__main__':
