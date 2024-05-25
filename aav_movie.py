@@ -330,69 +330,32 @@ def still_image_parse_for_fixInt_movie():
     copyPath = "proteinInteraction_movie_%s/mySound_fixInt.wav" % PDB_id_reference
     shutil.copyfile(readPath, copyPath) 
 
-def create_sonogram(): # run only in base anaconda
-    print("generating sonograms for %s" % PDB_id_reference)
-    """
-    import math
-    import numpy as np
-    import matplotlib.pyplot as plt
- 
-    # Set the time difference to take picture of
-    # the the generated signal.
-    Time_difference = 0.0001
- 
-    # Generating an array of values
-    Time_Array = np.linspace(0, 5, math.ceil(5 / Time_difference))
- 
-    # Actual data array which needs to be plot
-    Data = 20*(np.sin(3 * np.pi * Time_Array))
- 
-    # Matplotlib.pyplot.specgram() function to
-    # generate spectrogram
-    plt.specgram(Data, Fs=6, cmap="rainbow")
- 
-    # Set the title of the plot, xlabel and ylabel
-    # and display using show() function
-    plt.title('Spectrogram Using matplotlib.pyplot.specgram() Method')
-    plt.xlabel("DATA")
-    plt.ylabel("TIME")
-    plt.savefig('proteinInteraction_movie_%s/mySound_fixInt sonogram.png' % PDB_id_reference)
-    
-    """
-    #sample_rate, samples = wavfile.read('proteinInteraction_movie_%s/mySound_fixInt.wav' % PDB_id_reference)
-    from scipy.io import wavfile
-    samplingFrequency, signalData = wavfile.read('proteinInteraction_movie_%s/mySound_fixInt.wav' % PDB_id_reference)
-
-
-    plt.title('Spectrogram')    
-    Pxx, freqs, bins, im = plt.specgram(signalData,Fs=samplingFrequency,NFFT=512)
-    plt.xlabel('Time')
-    plt.ylabel('Frequency')
-    #plt.xlim(left=0,right=17)
-
-    plt.savefig('proteinInteraction_movie_%s/mySound_fixInt sonogram.png' % PDB_id_reference)
-    
-    
-    """
-    df = frequencies, times, spectrogram = signal.spectrogram(samples, sample_rate)
-    df = pd.DataFrame(df)
-    print(frequencies, times, spectrogram )
-    print(df)
-    #dataSONO = signal.spectrogram(samples, sample_rate)
-    #dfSONO = pd.DataFrame(dataSONO)
-    #dfSONO = dfSONO.transpose()
-    #print(dfSONO)
-    #print(dataSONO)
-    g = (ggplot(df,aes(x=times,y=frequencies)) + geom_tile())
-    g.save('proteinInteraction_movie_%s/mySound_fixInt sonogram.png' % PDB_id_reference)
-    """
-    
+   
 def multiframe_pdb():
     if not os.path.exists('proteinInteraction_movie_%s/traj' % PDB_id_reference):
            os.makedirs('proteinInteraction_movie_%s/traj' % PDB_id_reference)
     if not os.path.exists('proteinInteraction_movie_%s/multiframePDBs' % PDB_id_reference):
            os.makedirs('proteinInteraction_movie_%s/multiframePDBs' % PDB_id_reference)
+    # make multiframe PBD for whole MD simulation
+    m_step = int(n_frames/m_frames/10)
+    print("making cpptraj .ctl file")
+    print("using frames from 1 to last")
+    f1 = open("proteinInteraction_movie_%s/multiFramePDB_%s.ctl" % (PDB_id_reference, PDB_id_query), "w")
+    f1.write("parm %s\n" % top_file_query)
+    f1.write("trajin %s 1 last %s\n" % (traj_file_query, m_step))  # 10 is offset step to keep file size small
+    #f1.write("autoimage\n")
+    #f1.write("rms fit :1-%s\n" % length_prot)
+    f1.write("trajout proteinInteraction_movie_%s/PDB_%s.nc\n" % (PDB_id_reference, PDB_id_query))
+    f1.write("run\n")
+    f1.close()
+    print("calculating trajectory for query protein")
+    cmd1 = 'cpptraj -i proteinInteraction_movie_%s/multiFramePDB_%s.ctl' % (PDB_id_reference,PDB_id_query)
+    os.system(cmd1)
+    print("converting .nc file to multiframe .pdb file")
+    cmd2 = "cpptraj -p %s -y proteinInteraction_movie_%s/PDB_%s.nc -x proteinInteraction_movie_%s/PDB_%s.pdb" % (top_file_query, PDB_id_reference, PDB_id_query, PDB_id_reference, PDB_file_query)
+    os.system(cmd2)
     
+    # make multiframe PDB for each movie frame
     m_range = int(n_frames/m_frames)
     start = 1 
     stop = start + m_range
@@ -422,11 +385,12 @@ def multiframe_pdb():
         os.system(cmd2)
     
     
+    
+    
 ###############################################################
 ###############################################################
 
 def main():
-    
     still_image_parse_for_movie()
     still_image_parse_for_fixInt_movie()
     multiframe_pdb()
@@ -434,7 +398,8 @@ def main():
     create_fixInt_video_from_images()
     combine_audio_video()
     combine_fixInt_audio_video()
-        #create_sonogram()
+    
+    
     
     
 ###############################################################
