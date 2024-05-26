@@ -30,8 +30,8 @@ from scipy import stats
 
 ################################################################################
 # READ CONTROL FORM
-# read ChimeraX visualization ctl file
-infile = open("DROIDS.ctl", "r")
+# read atomdance ctl file
+infile = open("AAV.ctl", "r")
 infile_lines = infile.readlines()
 for x in range(len(infile_lines)):
     infile_line = infile_lines[x]
@@ -74,6 +74,9 @@ for x in range(len(infile_lines)):
     if(header == "n_frames"):
         n_fr = value
         print("my number of frames is",n_fr)
+    if(header == "m_frames"):
+        m_fr = value
+        print("my number of movie frames is",m_fr)
     if(header == "n_terminals"):
         n_ch = value
         print("my n terminals chains is",n_ch)
@@ -86,24 +89,21 @@ for x in range(len(infile_lines)):
     if(header == "chimerax"):
         ch_path = value
         print("my chimerax path is",ch_path)
-    if(header == "bgcolor"):
-        bg_color = value
-        print("my background is",bg_color)    
-    if(header == "divergence"):
-        div_anal = value
-        print("run divergence is",div_anal)    
+    if(header == "vibfreq"):
+        vib_anal = value
+        print("run divergence is",vib_anal)    
     if(header == "discrepancy"):
         disc_anal = value
         print("run discrepancy is",disc_anal)
-    if(header == "conservation"):
-        cons_anal = value
-        print("run conserved dynamics is",cons_anal)
     if(header == "coordination"):
         coord_anal = value
         print("run coordinated dynamics is",coord_anal)
-    #if(header == "variants"):
-    #    var_anal = value
-    #    print("run variant dynamics is",var_anal)
+    if(header == "sound"):
+        snd_anal = value
+        print("run sound files is",snd_anal)
+    if(header == "movie"):
+        mvr_anal = value
+        print("run sound files is",mvr_anal)    
 ###### variable assignments ######
 PDB_id_query = ""+query_id+""
 PDB_id_reference = ""+ref_id+""
@@ -115,18 +115,44 @@ traj_file_query = ""+query_traj+""
 traj_file_reference = ""+ref_traj+""
 subsamples = int(sub_samples)
 frame_size = int(fr_sz)
+m_frames = int(m_fr)
 n_frames = int(n_fr)
 n_chains = ""+n_ch+""
 length_prot = int(l_pr)
 start_prot = int(st_pr)
 chimerax_path = ""+ch_path+""
 #chimerax_path = "/usr/lib/ucsf-chimerax/bin/"
-graph_scheme = ""+bg_color+""
-div_anal = ""+div_anal+""
+vib_anal = ""+vib_anal+""
 disc_anal = ""+disc_anal+""
-cons_anal = ""+cons_anal+""
 coord_anal = ""+coord_anal+""
-#var_anal = ""+var_anal+""
+snd_anal = ""+snd_anal+""
+mvr_anal = ""+mvr_anal+""
+
+
+# create lists for multichain plots
+print(n_chains)
+n_chains = "%s %s %s" % (st_pr, n_chains, l_pr)
+n_chains = n_chains.split()
+print(n_chains)
+len_chains = []
+start_chains = []
+stop_chains = []
+label_chains = []
+labels = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P"]  # no more than 16 chains allowed
+for x in range(len(n_chains)-1):
+    chain_label = labels[x]
+    chain_start = int(n_chains[x])
+    chain_stop = int(n_chains[x+1])-1
+    chain_length = (chain_stop - chain_start)
+    len_chains.append(chain_length)
+    label_chains.append(chain_label)
+    start_chains.append(chain_start)
+    stop_chains.append(chain_stop)
+print("multichain information")
+print(len_chains)
+print(start_chains)
+print(stop_chains)
+print(label_chains)
 
 ###############################################################################
 ###############################################################################
