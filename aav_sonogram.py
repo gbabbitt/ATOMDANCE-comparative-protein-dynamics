@@ -149,11 +149,31 @@ print(label_chains)
 #infile= input("\nEnter path/name of input sound file (name.wav)\n")   
 #outfile = input("\nEnter path/name of output image file (name.png)\n")
 # IMPORTANT NOTE - run in base conda env, not in atomdance conda env  
-infile = 'proteinInteraction_movie_%s/mySound_varInt.wav' % PDB_id_reference
-outfile = 'proteinInteraction_movie_%s/mySound_varInt sonogram.png' % PDB_id_reference
 
-def create_sonogram(): # run only in base anaconda
+
+def create_sonogram_var(): # run only in base anaconda
     print("generating sonograms for %s" % PDB_id_reference)
+    infile = 'proteinInteraction_movie_%s/mySound_varInt.wav' % PDB_id_reference
+    outfile = 'proteinInteraction_movie_%s/mySound_varInt sonogram.png' % PDB_id_reference
+    samplingFrequency, signalData = wavfile.read(infile)
+    #print(signalData[:,1])
+    #print(samplingFrequency)
+    # Matplotlib.pyplot.specgram() function to
+    # generate spectrogram
+    signalData = signalData[:,1]
+    plt.specgram(signalData, Fs=samplingFrequency,NFFT=512)
+ 
+    # Set the title of the plot, xlabel and ylabel
+    # and display using show() function
+    plt.title('Spectrogram Using matplotlib.pyplot.specgram() Method')
+    plt.xlabel("TIME")
+    plt.ylabel("FREQ")
+    plt.savefig(outfile)
+    
+def create_sonogram_fix(): # run only in base anaconda
+    print("generating sonograms for %s" % PDB_id_reference)
+    infile = 'proteinInteraction_movie_%s/mySound_fixInt.wav' % PDB_id_reference
+    outfile = 'proteinInteraction_movie_%s/mySound_fixInt sonogram.png' % PDB_id_reference
     samplingFrequency, signalData = wavfile.read(infile)
     #print(signalData[:,1])
     #print(samplingFrequency)
@@ -170,14 +190,12 @@ def create_sonogram(): # run only in base anaconda
     plt.savefig(outfile)
     
     
-    
-    
 ###############################################################
 ###############################################################
 
 def main():
-    create_sonogram()
-    
+    create_sonogram_fix()
+    create_sonogram_var()
     
 ###############################################################
 if __name__ == '__main__':
