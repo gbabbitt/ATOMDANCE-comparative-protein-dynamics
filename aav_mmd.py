@@ -183,6 +183,10 @@ print(n_bootstrap)
 def compare_dynamics_MMD_flux():
   if not os.path.exists('maxMeanDiscrepancy_%s' % (PDB_id_reference)):
         os.mkdir('maxMeanDiscrepancy_%s' % (PDB_id_reference))
+  if not os.path.exists('ChimeraXvis/MMDctl'):
+        os.mkdir('ChimeraXvis/MMDctl')
+  if not os.path.exists('ChimeraXvis/MMDdat'):
+        os.mkdir('ChimeraXvis/MMDdat')
   for m in range(m_frames):  
     print("movie frame %s - statistical comparison of dynamic fluctuations via max mean discrepancy in learned features" % m)
     # for loop over length of protein
@@ -444,13 +448,13 @@ def compare_dynamics_MMD_flux():
     # create control, reference PDB and attribute file for chimerax
     os.popen('cp %s.pdb ./ChimeraXvis/query.pdb' % PDB_id_query) # linix
     #os.popen('copy %sREDUCED.pdb ./ChimeraXvis/reference.pdb' % PDB_id_reference) # Windows
-    f5 = open("ChimeraXvis_MMD_flux_%s.ctl" % m, "w")
-    f6= open("./ChimeraXvis/attributeMMD_flux_%s.dat" % m, "w")
+    f5 = open("./ChimeraXvis/MMDctl/ChimeraXvis_MMD_flux_%s.ctl" % m, "w")
+    f6= open("./ChimeraXvis/MMDdat/attributeMMD_flux_%s.dat" % m, "w")
     # ctl for sig KL map
     f5.write("model\t#1\n")
     f5.write("structure\tChimeraXvis/query.pdb\n")
     f5.write("structureADD	ChimeraXvis/reference.pdb\n")
-    f5.write("attr_file\tChimeraXvis/attributeMMD_flux_%s.dat\n" % m)
+    f5.write("attr_file\tChimeraXvis/MMDdat/attributeMMD_flux_%s.dat\n" % m)
     f5.write("length\t%s\n" % length_prot)
     f5.write("attr\tMMD\n")
     #f5.write("palette\tGreens-5\n")
@@ -482,13 +486,13 @@ def compare_dynamics_MMD_flux():
     # create control, reference PDB and attribute file for chimerax
     os.popen('cp %s.pdb ./ChimeraXvis/query.pdb' % PDB_id_query) # linix
     #os.popen('copy %sREDUCED.pdb ./ChimeraXvis/reference.pdb' % PDB_id_reference) # Windows
-    f5 = open("ChimeraXvis_MMDsig_flux_%s.ctl" % m, "w")
-    f6= open("./ChimeraXvis/attributeMMDsig_flux_%s.dat" % m, "w")
+    f5 = open("./ChimeraXvis/MMDctl/ChimeraXvis_MMDsig_flux_%s.ctl" % m, "w")
+    f6= open("./ChimeraXvis/MMDdat/attributeMMDsig_flux_%s.dat" % m, "w")
     # ctl for sig KL map
     f5.write("model\t#1\n")
     f5.write("structure\tChimeraXvis/query.pdb\n")
     f5.write("structureADD	ChimeraXvis/reference.pdb\n")
-    f5.write("attr_file\tChimeraXvis/attributeMMDsig_flux_%s.dat\n" % m)
+    f5.write("attr_file\tChimeraXvis/MMDdat/attributeMMDsig_flux_%s.dat\n" % m)
     f5.write("length\t%s\n" % length_prot)
     f5.write("attr\tMMDsig\n")
     #f5.write("palette\tGreens-5\n")
