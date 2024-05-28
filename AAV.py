@@ -14,12 +14,12 @@ print("This software is offered freely without guarantee under a GPL 3.0 license
 print("\nBefore we open the GUI, please enter the names of your 2 structure files below")
 inp1 = input("\nEnter name of bound complex file (e.g. bound_complex NOT bound_complex.pdb)\n" )
 if(inp1 == ""):
-    inp1 = "1cdw_bound"
-    #inp1 = "1ubq"
+    #inp1 = "1cdw_bound"
+    inp1 = "1ubq"
 inp2 = input("\nEnter unbound reference file (e.g. unbound_protein NOT unbound_protein.pdb)\n" )
 if(inp2 == ""):
-    inp2 = "1cdw_unbound"
-    #inp2 = "1ubq_2nd"
+    #inp2 = "1cdw_unbound"
+    inp2 = "1ubq_2nd"
 print("input structure file names for these MD simulations are...")
 print(inp1)
 print(inp2)
@@ -241,14 +241,14 @@ class Ui_Dialog(object):
         self.horizontalSlider = QtWidgets.QSlider(Dialog)
         self.horizontalSlider.setGeometry(QtCore.QRect(240, 180, 160, 18))
         self.horizontalSlider.setMinimum(1)
-        self.horizontalSlider.setMaximum(200)
+        self.horizontalSlider.setMaximum(20)
         self.horizontalSlider.setOrientation(QtCore.Qt.Horizontal)
         self.horizontalSlider.setObjectName("horizontalSlider")
         self.horizontalSlider_2 = QtWidgets.QSlider(Dialog)
         self.horizontalSlider_2.setGeometry(QtCore.QRect(240, 200, 160, 18))
         self.horizontalSlider_2.setMinimumSize(QtCore.QSize(160, 0))
         self.horizontalSlider_2.setMinimum(1)
-        self.horizontalSlider_2.setMaximum(200)
+        self.horizontalSlider_2.setMaximum(20)
         self.horizontalSlider_2.setOrientation(QtCore.Qt.Horizontal)
         self.horizontalSlider_2.setObjectName("horizontalSlider_2")
         self.label_17 = QtWidgets.QLabel(Dialog)
@@ -325,8 +325,8 @@ class Ui_Dialog(object):
         self.checkBox_6.setText(_translate("Dialog", "use 2 available GPU\'s"))
         self.horizontalSlider.setWhatsThis(_translate("Dialog", "<html><head/><body><p>equilibrationSlider</p></body></html>"))
         self.horizontalSlider_2.setWhatsThis(_translate("Dialog", "<html><head/><body><p>productionSlider</p></body></html>"))
-        self.label_17.setText(_translate("Dialog", "<html><head/><body><p>200ns equilibration</p></body></html>"))
-        self.label_18.setText(_translate("Dialog", "<html><head/><body><p>200ns production</p></body></html>"))
+        self.label_17.setText(_translate("Dialog", "<html><head/><body><p>20ns equilibration</p></body></html>"))
+        self.label_18.setText(_translate("Dialog", "<html><head/><body><p>20ns production</p></body></html>"))
         self.label_19.setText(_translate("Dialog", "<html><head/><body><p>1ns</p></body></html>"))
         self.label_20.setText(_translate("Dialog", "<html><head/><body><p>1ns</p></body></html>"))
 
