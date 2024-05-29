@@ -127,7 +127,8 @@ mvr_anal = ""+mvr_anal+""
 # create folder for ChimeraX visualization files
 if not os.path.exists('ChimeraXvis'):
            os.makedirs('ChimeraXvis')
-
+if not os.path.exists('ChimeraXvis_%s' % PDB_id_reference):
+           os.makedirs('ChimeraXvis_%s' % PDB_id_reference)
 #######################################################################
 
 def rmsd_plot():
@@ -598,8 +599,8 @@ def plot_rmsd():
 #################################################################################
 def calc_vibfreq():
     print("\nextracting vibrational frequencies for each amino acid site\n")
-    cmd1 = "python3 aav_vibfreq.py"
-    os.system(cmd1)
+    #cmd1 = "python3 aav_vibfreq.py"
+    #os.system(cmd1)
 #################################################################################
 def compare_dynamics_MMD():
     print("\ncomputing MMD via kernel learning to discover site-wise de-noised functional dynamic sequences for the protein interaction\n")
@@ -612,8 +613,8 @@ def compare_dynamics_MMD():
 ##################################################################################    
 def choreographic_analysis():
     print("\nconducting choreographic analysis to define groups of coordinated amino acid sites during the protein interaction\n")
-    cmd4 = "python3 aav_coordyn.py"
-    os.system(cmd4)
+    #cmd4 = "python3 aav_coordyn.py"
+    #os.system(cmd4)
 ##################################################################################
 def gen_sound():
     print("\ngenerating sound file\n")

@@ -183,10 +183,10 @@ print(n_bootstrap)
 def compare_dynamics_MMD_flux():
   if not os.path.exists('maxMeanDiscrepancy_%s' % (PDB_id_reference)):
         os.mkdir('maxMeanDiscrepancy_%s' % (PDB_id_reference))
-  if not os.path.exists('ChimeraXvis/MMDctl'):
-        os.mkdir('ChimeraXvis/MMDctl')
-  if not os.path.exists('ChimeraXvis/MMDdat'):
-        os.mkdir('ChimeraXvis/MMDdat')
+  if not os.path.exists('ChimeraXvis_%s/MMDctl' % (PDB_id_reference)):
+        os.mkdir('ChimeraXvis_%s/MMDctl' % (PDB_id_reference))
+  if not os.path.exists('ChimeraXvis_%s/MMDdat' % (PDB_id_reference)):
+        os.mkdir('ChimeraXvis_%s/MMDdat' % (PDB_id_reference))
   for m in range(m_frames):  
     print("movie frame %s - statistical comparison of dynamic fluctuations via max mean discrepancy in learned features" % m)
     # for loop over length of protein
@@ -446,15 +446,17 @@ def compare_dynamics_MMD_flux():
     #    print(myplot15)
     
     # create control, reference PDB and attribute file for chimerax
-    os.popen('cp %s.pdb ./ChimeraXvis/query.pdb' % PDB_id_query) # linix
+    os.popen('cp %s.pdb ./ChimeraXvis_%s/query.pdb' % (PDB_id_query, PDB_id_reference)) # linix
     #os.popen('copy %sREDUCED.pdb ./ChimeraXvis/reference.pdb' % PDB_id_reference) # Windows
-    f5 = open("./ChimeraXvis/MMDctl/ChimeraXvis_MMD_flux_%s.ctl" % m, "w")
-    f6= open("./ChimeraXvis/MMDdat/attributeMMD_flux_%s.dat" % m, "w")
+    f5 = open("./ChimeraXvis_%s/MMDctl/ChimeraXvis_MMD_flux_%s.ctl" % (PDB_id_reference,m), "w")
+    f6= open("./ChimeraXvis_%s/MMDdat/attributeMMD_flux_%s.dat" % (PDB_id_reference,m), "w")
     # ctl for sig KL map
-    f5.write("model\t#1\n")
-    f5.write("structure\tChimeraXvis/query.pdb\n")
-    f5.write("structureADD	ChimeraXvis/reference.pdb\n")
-    f5.write("attr_file\tChimeraXvis/MMDdat/attributeMMD_flux_%s.dat\n" % m)
+    mdl=m+1
+    f5.write("model\t#1.%s\n" % mdl)
+    #f5.write("structure\tChimeraXvis_%s/query.pdb\n" % (PDB_id_reference) )
+    #f5.write("structureADD	ChimeraXvis_%s/reference.pdb\n" % (PDB_id_reference))
+    f5.write("structure\tproteinInteraction_movie_%s/pdb_files/sfPDB_%s_%s.pdb\n" % (PDB_id_reference,PDB_id_query,mdl))
+    f5.write("attr_file\tChimeraXvis_%s/MMDdat/attributeMMD_flux_%s.dat\n" % (PDB_id_reference,mdl))
     f5.write("length\t%s\n" % length_prot)
     f5.write("attr\tMMD\n")
     #f5.write("palette\tGreens-5\n")
@@ -484,15 +486,17 @@ def compare_dynamics_MMD_flux():
         f6.write("\t:%s\t%s\n" % (sitepos, MMDpos))
     
     # create control, reference PDB and attribute file for chimerax
-    os.popen('cp %s.pdb ./ChimeraXvis/query.pdb' % PDB_id_query) # linix
+    os.popen('cp %s.pdb ./ChimeraXvis_%s/query.pdb' % (PDB_id_query, PDB_id_reference)) # linix
     #os.popen('copy %sREDUCED.pdb ./ChimeraXvis/reference.pdb' % PDB_id_reference) # Windows
-    f5 = open("./ChimeraXvis/MMDctl/ChimeraXvis_MMDsig_flux_%s.ctl" % m, "w")
-    f6= open("./ChimeraXvis/MMDdat/attributeMMDsig_flux_%s.dat" % m, "w")
+    f5 = open("./ChimeraXvis_%s/MMDctl/ChimeraXvis_MMDsig_flux_%s.ctl" % (PDB_id_reference,m), "w")
+    f6= open("./ChimeraXvis_%s/MMDdat/attributeMMDsig_flux_%s.dat" % (PDB_id_reference,m), "w")
     # ctl for sig KL map
-    f5.write("model\t#1\n")
-    f5.write("structure\tChimeraXvis/query.pdb\n")
-    f5.write("structureADD	ChimeraXvis/reference.pdb\n")
-    f5.write("attr_file\tChimeraXvis/MMDdat/attributeMMDsig_flux_%s.dat\n" % m)
+    mdl=m+1
+    f5.write("model\t#1.%s\n" % mdl)
+    #f5.write("structure\tChimeraXvis_%s/query.pdb\n" % (PDB_id_reference))
+    #f5.write("structureADD	ChimeraXvis_%s/reference.pdb\n" % (PDB_id_reference))
+    f5.write("structure\tproteinInteraction_movie_%s/pdb_files/sfPDB_%s_%s.pdb\n" % (PDB_id_reference,PDB_id_query,mdl))
+    f5.write("attr_file\tChimeraXvis_%s/MMDdat/attributeMMDsig_flux_%s.dat\n" % (PDB_id_reference,mdl))
     f5.write("length\t%s\n" % length_prot)
     f5.write("attr\tMMDsig\n")
     #f5.write("palette\tGreens-5\n")
