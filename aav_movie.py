@@ -180,7 +180,7 @@ def create_fixInt_video_from_images():
     h, w, _ = first_image.shape
 
     codec = cv2.VideoWriter_fourcc(*'mp4v')
-    vid_writer = cv2.VideoWriter(video_filename, codec, 2.0, (w, h))  # convert to constant rate of 0.5 sec
+    vid_writer = cv2.VideoWriter(video_filename, codec, 4.0, (w, h))  # convert to constant rate of 0.5 sec
 
     for img in valid_images:
         loaded_img = cv2.imread(os.path.join(folder, img))
@@ -216,7 +216,7 @@ def create_varInt_video_from_images():
     for img in valid_images:
         myInterval = img_durs[i]
         #print(myInterval)
-        myFPS = 2.00+0.50*(1.00-myInterval)
+        myFPS = 4.00+0.50*(1.00-myInterval)
         myFPS = float(myFPS)
         #print(myFPS)
         video_filename = "proteinInteraction_movie_%s/movie_segments/myMovie_varInt_%s.mp4" % (PDB_id_reference,img)
@@ -417,7 +417,7 @@ def create_fixInt_video_from_pdb():
     h, w, _ = first_image.shape
 
     codec = cv2.VideoWriter_fourcc(*'mp4v')
-    vid_writer = cv2.VideoWriter(video_filename, codec, 2.0, (w, h))  # convert to constant rate of 0.5 sec
+    vid_writer = cv2.VideoWriter(video_filename, codec, 4.0, (w, h))  # convert to constant rate of 0.25 sec
 
     for img in valid_images:
         loaded_img = cv2.imread(os.path.join(folder, img))
@@ -437,7 +437,7 @@ def create_fixInt_180_video_from_pdb():
     h, w, _ = first_image.shape
 
     codec = cv2.VideoWriter_fourcc(*'mp4v')
-    vid_writer = cv2.VideoWriter(video_filename, codec, 2.0, (w, h))  # convert to constant rate of 0.5 sec
+    vid_writer = cv2.VideoWriter(video_filename, codec, 4.0, (w, h))  # convert to constant rate of 0.25 sec
 
     for img in valid_images:
         loaded_img = cv2.imread(os.path.join(folder, img))

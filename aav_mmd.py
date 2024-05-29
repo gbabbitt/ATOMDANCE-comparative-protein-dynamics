@@ -166,7 +166,7 @@ n_features_flux = df_feature_ref.shape[1] - 1
 #df_feature_ref = pd.read_csv(infeature_ref, sep="\s+")
 #n_features_corr = df_feature_ref.shape[1] - 1      
 
-n_bootstrap = subsamples*5
+n_bootstrap = subsamples
 if(n_bootstrap > 500):
     n_bootstrap = 500
 if(n_bootstrap < 50):

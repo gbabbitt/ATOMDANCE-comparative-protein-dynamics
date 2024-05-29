@@ -260,24 +260,25 @@ def combine_choir():
                                 wave_file_add = wave_file_add + abs(1000*MMDvalue)
                                 strikeKeys.append(strikeKey)
                     wave_file_choir = wave_file_orig.overlay(wave_file_add, position=1) # overlay
-                    wave_file_orig = wave_file_choir
+                    wave_file_choir_trim = wave_file_choir[0000:3000] # 3 second maximum interval
+                    wave_file_orig = wave_file_choir_trim
                     print("overlaying aa %s" % aa2)
                 # list choir voicing decision
                 #print(strikeKeys)
                 # silence if max abs(MMD < 0.05)
                 myMax = max(strikeKeys)
                 myMIN = min(strikeKeys)
-                myInterval = 500-int(500*MMDsum) # stronger binding results in shorter time intervals
+                myInterval = 250-int(250*MMDsum) # stronger binding results in shorter time intervals
                 strInterval = str(myInterval)
                 f_int.write("%s," % strInterval)
                 myVolume = int(1000*myMax)
-                #print("%s %s %s %s" % (myMIN, myMax, myInterval, myVolume))
-                if(myMax < 0.05):
-                    wave_file_choir = wave_file_choir - 100
+                #if(myMax < 0.05): # silence weak binding effects
+                #   wave_file_choir = wave_file_choir - 100
+                #print("%s %s %s %s" % (myMIN, myMax, myInterval, myVolume))    
                 # trim and save choir file 
                 wave_file_choir_trim = wave_file_choir[0000:myInterval] # VARIABLE INTERVAL - seconds per movie frame 0.5s = 500
                 wave_file_choir_trim.export('coordinatedDynamics_%s/movieFrame_%s/aa_adjusted_choir_%s.wav' % (PDB_id_reference,m,i), format="wav")
-                wave_file_choir_trim_cons = wave_file_choir[000:500] # CONSTANT INTERVAL - seconds per movie frame 0.5s = 500
+                wave_file_choir_trim_cons = wave_file_choir[000:250] # CONSTANT INTERVAL - seconds per movie frame 0.5s = 500
                 wave_file_choir_trim_cons.export('coordinatedDynamics_%s/movieFrame_%s/aa_adjusted_choir_fixInt_%s.wav' % (PDB_id_reference,m,i), format="wav")
     for m in range(m_frames):          
         print("combining choir sections for %s - movie frame %s" % (PDB_id_reference,m))
