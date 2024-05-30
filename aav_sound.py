@@ -257,7 +257,7 @@ def combine_choir():
                                 MMDsum = MMDsum+MMDvalue
                                 strikeKey = abs(MMDvalue)
                                 # adjust aa sound volume to MMD
-                                wave_file_add = wave_file_add + abs(1000*MMDvalue)
+                                wave_file_add = wave_file_add + abs(5000*MMDvalue)
                                 strikeKeys.append(strikeKey)
                     wave_file_choir = wave_file_orig.overlay(wave_file_add, position=0, loop=True, gain_during_overlay=-6) # overlay
                     wave_file_choir_trim = wave_file_choir[0000:3000] # 3 second maximum interval
@@ -272,8 +272,8 @@ def combine_choir():
                 strInterval = str(myInterval)
                 f_int.write("%s," % strInterval)
                 myVolume = int(1000*myMax)
-                #if(myMax < 0.05): # silence weak binding effects
-                #   wave_file_choir = wave_file_choir - 100
+                if(myMax < 0.05): # silence weak binding effects
+                   wave_file_choir = wave_file_choir - 100
                 #print("%s %s %s %s" % (myMIN, myMax, myInterval, myVolume))    
                 # trim and save choir file 
                 wave_file_choir_trim = wave_file_choir[0000:myInterval] # VARIABLE INTERVAL - seconds per movie frame 0.5s = 500
