@@ -519,13 +519,17 @@ def create_single_model_pdb():
                 myNumber = elements[1]
             else:
                 myNumber = "NA"
+            if(len(elements)>3):
+                myType = elements[3]
+            else:
+                myType= "NA"
             #print("%s %s %s" % (rowHeader, myNumber, mdl))
             if(rowHeader == "CRYST1"):
                 f_out.write(line)
             if(rowHeader == "MODEL"):
                 if(myNumber == mdl):
                     prtYN = "yes"
-            if(prtYN == "yes"):
+            if(prtYN == "yes" and rowHeader != "TER" and myType != "WAT" and myType != "Cl-" and myType != "Na+"):
                 f_out.write(line)
             if(rowHeader == "ENDMDL"):
                 prtYN = "no"

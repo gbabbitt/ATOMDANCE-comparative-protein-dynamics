@@ -139,11 +139,14 @@ for m in range(m_frames-1):
     light_setting = ""+lighting_id+"" # simple, soft, or full
     trans_setting = ""+transparency_id+""
     bgcolor = ""+background_id+""  # white, gray or black
-    							
+    
+    #set manual color range for MMD
+    inp2 = str(-0.2)
+    inp1 = str(0.2)
     ################################################
     run(session, "open "+pdb_ref+"")
     run(session, "sel "+model+"")
-    run(session, "turn y 180")
+    run(session, "turn y 90")
     run(session, "lighting "+light_setting+"")
     run(session, "surface")
     run(session, "defattr :1-"+length+" "+attr_file+"")
