@@ -14,12 +14,12 @@ print("This software is offered freely without guarantee under a GPL 3.0 license
 print("\nBefore we open the GUI, please enter the names of your 2 structure files below")
 inp1 = input("\nEnter name of bound complex file (e.g. bound_complex NOT bound_complex.pdb)\n" )
 if(inp1 == ""):
-    #inp1 = "1cdw_bound"
-    inp1 = "1ubq"
+    inp1 = "1cdw_bound"
+    #inp1 = "1ubq"
 inp2 = input("\nEnter unbound reference file (e.g. unbound_protein NOT unbound_protein.pdb)\n" )
 if(inp2 == ""):
-    #inp2 = "1cdw_unbound"
-    inp2 = "1ubq_2nd"
+    inp2 = "1cdw_unbound"
+    #inp2 = "1ubq_2nd"
 print("input structure file names for these MD simulations are...")
 print(inp1)
 print(inp2)

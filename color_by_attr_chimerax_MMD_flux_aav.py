@@ -141,8 +141,8 @@ for m in range(m_frames-1):
     bgcolor = ""+background_id+""  # white, gray or black
     
     #set manual color range for MMD
-    inp2 = str(-0.2)
-    inp1 = str(0.2)
+    #inp2 = str(-0.2)
+    #inp1 = str(0.2)
     ################################################
     run(session, "open "+pdb_ref+"")
     run(session, "sel "+model+"")
