@@ -557,14 +557,21 @@ class Ui_Dialog(object):
             os.system(cmd9)
             
         if(n_gpu == "2"):
+            print("\nRUN THE FOLLOWING SIMULTANEOUSLY IN THE THREE NEW TERMINALS\n")
+            print("python3 MD_protein_openMM_aav_query.py\n")
+            print("python3 MD_protein_openMM_2gpu_aav_reference.py\n")
+            print("nvidia-smi -l 5\n")
+            print("remember to run 'conda activate atomdance' first\n\n")
+            import subprocess
+            proc1 = subprocess.Popen(['x-terminal-emulator'])
+            proc2 = subprocess.Popen(['x-terminal-emulator'])
+            proc3 = subprocess.Popen(['x-terminal-emulator'])
+            proc1.wait()
+            proc2.wait()
+            proc3.wait()
             cmd9=("python3 MD_protein_openMM_aav_query_vibfreq.py\n")
             os.system(cmd9)
-            t1 = multiprocessing.Process(target=runGPU1)
-            t2 = multiprocessing.Process(target=runGPU2)
-            t1.start()
-            t2.start()
-            t1.join()
-            t2.join()
+            
             
         # setting for loop to set value of progress bar 
         for i in range(101): 
@@ -573,14 +580,7 @@ class Ui_Dialog(object):
             self.progressBar_2.setValue(i)
         print("\nMD simulations are complete\n")
     
-    def runGPU1():
-            cmd7=("python3 MD_protein_openMM_aav_query.py\n")
-            os.system(cmd7)
-    
-    def runGPU2():
-            cmd8=("python3 MD_protein_openMM_2gpu_aav_reference.py\n")
-            os.system(cmd8)
-    
+       
     def runCPPTRAJ(self):
         import time
         # start subsampling
