@@ -206,10 +206,10 @@ def write_control_files(m):
         f1.write("run\n")
         #f2.write("parm %s\n" % top_file_reference)
         #f2.write("trajin %s\n"% traj_file_reference)
-        #pos = 10 # init
-        pos = 10+(win_frames*m) # init
-        #step = (n_frames-frame_size)/subsamples
-        step = (win_frames)/subsamples
+        pos = 10 # init
+        #pos = 10+(win_frames*m) # init
+        step = (n_frames-frame_size)/subsamples
+        #step = (win_frames)/subsamples
         for x in range(subsamples):
             upper_limit = (n_frames/traj_sets)-frame_size
             start = rnd.randint(1, upper_limit) # random position subsampling
@@ -259,10 +259,10 @@ def write_control_files(m):
         f1.write("run\n")
         #f2.write("parm %s\n" % top_file_query)
         #f2.write("trajin %s\n"% traj_file_query)
-        #pos = 10 # init
-        pos = 10+(win_frames*m) # init
-        #step = (n_frames-frame_size)/subsamples
-        step = (win_frames)/subsamples
+        pos = 10 # init
+        #pos = 10+(win_frames*m) # init
+        step = (n_frames-frame_size)/subsamples
+        #step = (win_frames)/subsamples
         for x in range(subsamples):
             upper_limit = (n_frames/traj_sets)-frame_size
             start = rnd.randint(1, upper_limit) # random position subsampling
@@ -312,10 +312,10 @@ def write_control_files(m):
         f1.write("run\n")
         #f2.write("parm %s\n" % top_file_reference)
         #f2.write("trajin %s\n"% traj_file_reference)
-        #pos = 10 # init
-        pos = 10+(win_frames*m) # init
-        #step = (n_frames-frame_size)/subsamples
-        step = (win_frames)/subsamples
+        pos = 10 # init
+        #pos = 10+(win_frames*m) # init
+        step = (n_frames-frame_size)/subsamples
+        #step = (win_frames)/subsamples
         for x in range(subsamples):
             upper_limit = (n_frames/traj_sets)-frame_size
             start = rnd.randint(1, upper_limit) # random position subsampling
