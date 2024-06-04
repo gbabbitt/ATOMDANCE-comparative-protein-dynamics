@@ -16,7 +16,8 @@ import os
 #import nglview as nv
 import random as rnd
 import re
-import threading
+#import threading
+import multiprocessing
 import pandas as pd
 
 # READ CONTROL FORM
@@ -64,12 +65,12 @@ for x in range(len(infile_lines)):
     if(header == "m_frames"):
         m_fr = value
         print("my number of movie frames is",m_fr)
-    if(header == "ttl_frames"):
-        ttl_fr = value
-        print("my number of MD frames is",ttl_fr)
     if(header == "n_frames"):
         n_fr = value
         print("my number of MD frames per ns is",n_fr)
+    if(header == "ttl_frames"):
+        ttl_fr = value
+        print("my number of MD frames is",ttl_fr)
     if(header == "n_terminals"):
         n_ch = value
         print("my n terminals chains is",n_ch)
@@ -97,7 +98,7 @@ n_chains = ""+n_ch+""
 length_prot = int(l_pr)
 #choreo = ""+coord_yn+""
 choreo = "yes"
-
+traj_sets = int(n_frames/5000)
 #subsamples = 10
 #frame_size = 100
 #n_frames = 5000
@@ -129,10 +130,47 @@ for m in range(m_frames):
 
 # collect atom information
 
+def split_traj_files():
+    print("splitting single long trajectory file into %s smaller files" % traj_sets)
+    
+    #### split reference .nc file ####
+    f = open("./nc_splitter_%s_reference.ctl" % PDB_id_reference, "w")
+    f.write("parm %s\n" % top_file_reference)
+    f.write("trajin %s\n" % traj_file_reference)
+    traj_file_label = traj_file_reference[:-3]
+    traj_start = 0
+    for ts in range(traj_sets):
+        traj_stop = traj_start+5000
+        traj_set_str = str(int(ts))
+        f.write("trajout %s_%s.nc onlyframes %s-%s\n" %(traj_file_label,traj_set_str,traj_start,traj_stop))
+        traj_start = traj_stop
+    f.write("run\n")
+    f.close()
+    
+    #### split query .nc file ####
+    f = open("./nc_splitter_%s_query.ctl" % PDB_id_query, "w")
+    f.write("parm %s\n" % top_file_query)
+    f.write("trajin %s\n" % traj_file_query)
+    traj_file_label = traj_file_query[:-3]
+    traj_start = 0
+    for ts in range(traj_sets):
+        traj_stop = traj_start+5000
+        traj_set_str = str(int(ts))
+        f.write("trajout %s_%s.nc onlyframes %s-%s\n" %(traj_file_label,traj_set_str,traj_start,traj_stop))
+        traj_start = traj_stop
+    f.write("run\n")
+    f.close()
+
+    ### run cpptraj ###
+    cmd1 = "cpptraj nc_splitter_%s_reference.ctl" % PDB_id_reference
+    os.system(cmd1)
+    cmd2 = "cpptraj nc_splitter_%s_query.ctl" % PDB_id_query
+    os.system(cmd2)
+
 def write_control_files(m):
     print("writing control files for movie frame %s" % m)
     ######## define sliding window increments for movie    #########
-    win_frames = int((ttl_frames-frame_size)/m_frames) # frames in movie window
+    win_frames = int((n_frames-frame_size)/m_frames) # frames in movie window
     print("number of MD frames in a single movie frame is %s" % win_frames)
     ################# reference protein ############################
     # for getting atom info
@@ -157,33 +195,35 @@ def write_control_files(m):
     f.close()
 
     # create subsampling .ctl routines for KL divergence
-    f1 = open("./atomflux_%s_sub_reference.ctl" % PDB_id_reference, "w")
-    #f2 = open("./atomcorr_%s_sub_reference.ctl" % PDB_id_reference, "w")
-    f1.write("parm %s\n" % top_file_reference)
-    f1.write("trajin %s\n"% traj_file_reference)
-    f1.write("rms first\n")
-    f1.write("average crdset MyAvg\n")
-    f1.write("run\n")
-    #f2.write("parm %s\n" % top_file_reference)
-    #f2.write("trajin %s\n"% traj_file_reference)
-    #pos = 10 # init
-    pos = 10+(win_frames*m) # init
-    #step = (n_frames-frame_size)/subsamples
-    step = (win_frames)/subsamples
-    for x in range(subsamples):
-        upper_limit = ttl_frames-frame_size
-        start = rnd.randint(1, upper_limit) # random position subsampling
-        if(choreo=="yes"):
-            start = int(pos+(x*step)) # uniform spaced position subsampling
-        stop = start+frame_size
-        f1.write("rms ref MyAvg\n")
-        f1.write("atomicfluct out fluct_%s_sub_reference.txt @CA,C,O,N&!(:WAT) byres start %s stop %s\n" % (PDB_id_reference, start, stop))
+    for ts in range(traj_sets):
+        f1 = open("./atomflux_%s_sub_reference_%s.ctl" % (PDB_id_reference,ts), "w")
+        #f2 = open("./atomcorr_%s_sub_reference.ctl" % PDB_id_reference, "w")
+        f1.write("parm %s\n" % top_file_reference)
+        traj_set_file_reference = "%s_%s.nc" % (traj_file_reference[:-3],ts)
+        f1.write("trajin %s\n"% traj_set_file_reference)
+        f1.write("rms first\n")
+        f1.write("average crdset MyAvg\n")
         f1.write("run\n")
-        #f2.write("trajin %s %s %s\n"% (traj_file_reference, start, stop))
-        #f2.write("atomiccorr out ./subsamples/atomcorr_ref/corr_%s_sub_reference_%s.txt @CA,C,O,N&!(:WAT) byres\n" % (PDB_id_reference, x))
-        #f2.write("run\n")
-    f1.close()
-    #f2.close()
+        #f2.write("parm %s\n" % top_file_reference)
+        #f2.write("trajin %s\n"% traj_file_reference)
+        #pos = 10 # init
+        pos = 10+(win_frames*m) # init
+        #step = (n_frames-frame_size)/subsamples
+        step = (win_frames)/subsamples
+        for x in range(subsamples):
+            upper_limit = (n_frames/traj_sets)-frame_size
+            start = rnd.randint(1, upper_limit) # random position subsampling
+            if(choreo=="yes"):
+                start = int(pos+(x*step)) # uniform spaced position subsampling
+            stop = start+frame_size
+            f1.write("rms ref MyAvg\n")
+            f1.write("atomicfluct out fluct_%s_sub_reference_%s.txt @CA,C,O,N&!(:WAT) byres start %s stop %s\n" % (PDB_id_reference,ts,start,stop))
+            f1.write("run\n")
+            #f2.write("trajin %s %s %s\n"% (traj_file_reference, start, stop))
+            #f2.write("atomiccorr out ./subsamples/atomcorr_ref/corr_%s_sub_reference_%s.txt @CA,C,O,N&!(:WAT) byres\n" % (PDB_id_reference, x))
+            #f2.write("run\n")
+        f1.close()
+        #f2.close()
 
     ################# query protein ############################
     # for getting atom info
@@ -208,33 +248,35 @@ def write_control_files(m):
     f.close()
 
     # create subsampling .ctl routines for KL divergence
-    f1 = open("./atomflux_%s_sub_query.ctl" % PDB_id_query, "w")
-    #f2 = open("./atomcorr_%s_sub_query.ctl" % PDB_id_query, "w")
-    f1.write("parm %s\n" % top_file_query)
-    f1.write("trajin %s\n"% traj_file_query)
-    f1.write("rms first\n")
-    f1.write("average crdset MyAvg\n")
-    f1.write("run\n")
-    #f2.write("parm %s\n" % top_file_query)
-    #f2.write("trajin %s\n"% traj_file_query)
-    #pos = 10 # init
-    pos = 10+(win_frames*m) # init
-    #step = (n_frames-frame_size)/subsamples
-    step = (win_frames)/subsamples
-    for x in range(subsamples):
-        upper_limit = ttl_frames-frame_size
-        start = rnd.randint(1, upper_limit) # random position subsampling
-        if(choreo=="yes"):
-            start = int(pos+(x*step)) # uniform spaced position subsampling
-        stop = start+frame_size
-        f1.write("rms ref MyAvg\n")
-        f1.write("atomicfluct out fluct_%s_sub_query.txt @CA,C,O,N&!(:WAT) byres start %s stop %s\n" % (PDB_id_query, start, stop))
+    for ts in range(traj_sets):
+        f1 = open("./atomflux_%s_sub_query_%s.ctl" % (PDB_id_query,ts), "w")
+        #f2 = open("./atomcorr_%s_sub_query.ctl" % PDB_id_query, "w")
+        f1.write("parm %s\n" % top_file_query)
+        traj_set_file_query = "%s_%s.nc" % (traj_file_query[:-3],ts)
+        f1.write("trajin %s\n"% traj_set_file_query)
+        f1.write("rms first\n")
+        f1.write("average crdset MyAvg\n")
         f1.write("run\n")
-        #f2.write("trajin %s %s %s\n"% (traj_file_query, start, stop))
-        #f2.write("atomiccorr out ./subsamples/atomcorr_query/corr_%s_sub_query_%s.txt @CA,C,O,N&!(:WAT) byres\n" % (PDB_id_query, x))
-        #f2.write("run\n")
-    f1.close()
-    #f2.close()
+        #f2.write("parm %s\n" % top_file_query)
+        #f2.write("trajin %s\n"% traj_file_query)
+        #pos = 10 # init
+        pos = 10+(win_frames*m) # init
+        #step = (n_frames-frame_size)/subsamples
+        step = (win_frames)/subsamples
+        for x in range(subsamples):
+            upper_limit = (n_frames/traj_sets)-frame_size
+            start = rnd.randint(1, upper_limit) # random position subsampling
+            if(choreo=="yes"):
+                start = int(pos+(x*step)) # uniform spaced position subsampling
+            stop = start+frame_size
+            f1.write("rms ref MyAvg\n")
+            f1.write("atomicfluct out fluct_%s_sub_query_%s.txt @CA,C,O,N&!(:WAT) byres start %s stop %s\n" % (PDB_id_query,ts,start,stop))
+            f1.write("run\n")
+            #f2.write("trajin %s %s %s\n"% (traj_file_query, start, stop))
+            #f2.write("atomiccorr out ./subsamples/atomcorr_query/corr_%s_sub_query_%s.txt @CA,C,O,N&!(:WAT) byres\n" % (PDB_id_query, x))
+            #f2.write("run\n")
+        f1.close()
+        #f2.close()
     
     ################# control on reference protein ############################
     # for getting atom info
@@ -259,34 +301,36 @@ def write_control_files(m):
     f.close()
 
     # create subsampling .ctl routines for KL divergence
-    f1 = open("./atomflux_%s_sub_referenceCTL.ctl" % PDB_id_reference, "w")
-    #f2 = open("./atomcorr_%s_sub_referenceCTL.ctl" % PDB_id_reference, "w")
-    f1.write("parm %s\n" % top_file_reference)
-    f1.write("trajin %s\n"% traj_file_reference)
-    f1.write("rms first\n")
-    f1.write("average crdset MyAvg\n")
-    f1.write("run\n")
-    #f2.write("parm %s\n" % top_file_reference)
-    #f2.write("trajin %s\n"% traj_file_reference)
-    #pos = 10 # init
-    pos = 10+(win_frames*m) # init
-    #step = (n_frames-frame_size)/subsamples
-    step = (win_frames)/subsamples
-    for x in range(subsamples):
-        upper_limit = ttl_frames-frame_size
-        start = rnd.randint(1, upper_limit) # random position subsampling
-        if(choreo=="yes"):
-            start = int(pos+(x*step)) # uniform spaced position subsampling
-        stop = start+frame_size
-        f1.write("rms ref MyAvg\n")
-        f1.write("rms ref MyAvg out ./subsamples/count_%s/count%s.txt\n" % (m,x))
-        f1.write("atomicfluct out fluct_%s_sub_referenceCTL.txt @CA,C,O,N&!(:WAT) byres start %s stop %s\n" % (PDB_id_reference, start, stop))
+    for ts in range(traj_sets):
+        f1 = open("./atomflux_%s_sub_referenceCTL_%s.ctl" % (PDB_id_reference,ts), "w")
+        #f2 = open("./atomcorr_%s_sub_referenceCTL.ctl" % PDB_id_reference, "w")
+        f1.write("parm %s\n" % top_file_reference)
+        traj_set_file_reference = "%s_%s.nc" % (traj_file_reference[:-3],ts)
+        f1.write("trajin %s\n"% traj_set_file_reference)
+        f1.write("rms first\n")
+        f1.write("average crdset MyAvg\n")
         f1.write("run\n")
-        #f2.write("trajin %s %s %s\n"% (traj_file_reference, start, stop))
-        #f2.write("atomiccorr out ./subsamples/atomcorr_refCTL/corr_%s_sub_referenceCTL_%s.txt @CA,C,O,N&!(:WAT) byres\n" % (PDB_id_reference, x))
-        #f2.write("run\n")
-    f1.close()
-    #f2.close()
+        #f2.write("parm %s\n" % top_file_reference)
+        #f2.write("trajin %s\n"% traj_file_reference)
+        #pos = 10 # init
+        pos = 10+(win_frames*m) # init
+        #step = (n_frames-frame_size)/subsamples
+        step = (win_frames)/subsamples
+        for x in range(subsamples):
+            upper_limit = (n_frames/traj_sets)-frame_size
+            start = rnd.randint(1, upper_limit) # random position subsampling
+            if(choreo=="yes"):
+                start = int(pos+(x*step)) # uniform spaced position subsampling
+            stop = start+frame_size
+            f1.write("rms ref MyAvg\n")
+            f1.write("rms ref MyAvg out ./subsamples/count_%s/count%s.txt\n" % (m,x))
+            f1.write("atomicfluct out fluct_%s_sub_referenceCTL_%s.txt @CA,C,O,N&!(:WAT) byres start %s stop %s\n" % (PDB_id_reference,ts,start,stop))
+            f1.write("run\n")
+            #f2.write("trajin %s %s %s\n"% (traj_file_reference, start, stop))
+            #f2.write("atomiccorr out ./subsamples/atomcorr_refCTL/corr_%s_sub_referenceCTL_%s.txt @CA,C,O,N&!(:WAT) byres\n" % (PDB_id_reference, x))
+            #f2.write("run\n")
+        f1.close()
+        #f2.close()
     
     
 ##################################################################
@@ -303,12 +347,13 @@ def subsample_reference_flux(m):
     #print(flux)  # overall fluctuation
     cmd = 'cpptraj -i atomflux_%s_all_reference.ctl -o fluct_%s_out_all_reference.txt' % (PDB_id_reference,PDB_id_reference)
     os.system(cmd)
-    print("subsampling reference protein fluctuations")
-    print("NOTE: may take many minutes depending upon N subsamples & frames per subsample")
-    cmd = "cpptraj -i atomflux_%s_sub_reference.ctl -o fluct_%s_out_sub_reference.txt" % (PDB_id_reference,PDB_id_reference)
-    os.system(cmd)
-    print("\ncopying atom flux files to atomflux folder for movie frame %s" % m)
-    os.system('cp fluct_%s_sub_reference.txt ./subsamples/atomflux_ref_%s/fluct_%s_sub_reference.txt' % (PDB_id_reference,m,PDB_id_reference))
+    for ts in range(traj_sets):
+        print("subsampling reference protein fluctuations for movie frame %s and traj set %s" % (m,ts))
+        print("NOTE: may take many minutes depending upon N subsamples & frames per subsample")
+        cmd = "cpptraj -i atomflux_%s_sub_reference_%s.ctl -o fluct_%s_out_sub_reference_%s.txt" % (PDB_id_reference,ts,PDB_id_reference,ts)
+        os.system(cmd)
+        print("\ncopying atom flux files to atomflux folder for movie frame %s and traj set %s" % (m,ts))
+        os.system('cp fluct_%s_sub_reference_%s.txt ./subsamples/atomflux_ref_%s/fluct_%s_sub_reference_%s.txt' % (PDB_id_reference,ts,m,PDB_id_reference,ts))
     
 def subsample_query_flux(m):
     print("collecting atom information")
@@ -321,12 +366,13 @@ def subsample_query_flux(m):
     #print(flux)  # overall fluctuation
     cmd = 'cpptraj -i atomflux_%s_all_query.ctl -o fluct_%s_out_all_query.txt' % (PDB_id_query,PDB_id_query)
     os.system(cmd)
-    print("subsampling query protein fluctuations")
-    print("NOTE: may take many minutes depending upon N subsamples & frames per subsample")
-    cmd = "cpptraj -i atomflux_%s_sub_query.ctl -o fluct_%s_out_sub_query.txt" % (PDB_id_query,PDB_id_query)
-    os.system(cmd)
-    print("\ncopying atom flux files to atomflux folder for movie frame %s" % m)
-    os.system('cp fluct_%s_sub_query.txt ./subsamples/atomflux_query_%s/fluct_%s_sub_query.txt' % (PDB_id_query,m,PDB_id_query))
+    for ts in range(traj_sets):
+        print("subsampling query protein fluctuations for movie frame %s and traj set %s" % (m,ts))
+        print("NOTE: may take many minutes depending upon N subsamples & frames per subsample")
+        cmd = "cpptraj -i atomflux_%s_sub_query_%s.ctl -o fluct_%s_out_sub_query_%s.txt" % (PDB_id_query,ts,PDB_id_query,ts)
+        os.system(cmd)
+        print("\ncopying atom flux files to atomflux folder for movie frame %s and traj set %s" % (m,ts))
+        os.system('cp fluct_%s_sub_query_%s.txt ./subsamples/atomflux_query_%s/fluct_%s_sub_query_%s.txt' % (PDB_id_query,ts,m,PDB_id_query,ts))
     
 def subsample_referenceCTL_flux(m):
     print("collecting atom information")
@@ -339,13 +385,13 @@ def subsample_referenceCTL_flux(m):
     #print(flux)  # overall fluctuation
     cmd = 'cpptraj -i atomflux_%s_all_referenceCTL.ctl -o fluct_%s_out_all_referenceCTL.txt' % (PDB_id_reference,PDB_id_reference)
     os.system(cmd)
-    print("subsampling reference protein fluctuations")
-    print("NOTE: may take many minutes depending upon N subsamples & frames per subsample")
-    cmd = "cpptraj -i atomflux_%s_sub_referenceCTL.ctl -o fluct_%s_out_sub_referenceCTL.txt" % (PDB_id_reference,PDB_id_reference)
-    os.system(cmd)
-    print("\ncopying atom flux files to atomflux folder for movie frame %s" % m)
-    os.system('cp fluct_%s_sub_referenceCTL.txt ./subsamples/atomflux_refCTL_%s/fluct_%s_sub_referenceCTL.txt' % (PDB_id_reference,m,PDB_id_reference))
-
+    for ts in range(traj_sets):
+        print("subsampling reference protein fluctuations for movie frame %s and traj set %s" % (m,ts))
+        print("NOTE: may take many minutes depending upon N subsamples & frames per subsample")
+        cmd = "cpptraj -i atomflux_%s_sub_referenceCTL_%s.ctl -o fluct_%s_out_sub_referenceCTL_%s.txt" % (PDB_id_reference,ts,PDB_id_reference,ts)
+        os.system(cmd)
+        print("\ncopying atom flux files to atomflux folder for movie frame %s and traj set %s" % (m,ts))
+        os.system('cp fluct_%s_sub_referenceCTL_%s.txt ./subsamples/atomflux_refCTL_%s/fluct_%s_sub_referenceCTL_%s.txt' % (PDB_id_reference,ts,m,PDB_id_reference,ts))
 
 
 #################################################################################
@@ -395,20 +441,24 @@ def runProgressBar(m):
         lst = os.listdir('subsamples/count_%s' % m) # your directory path
         next_num_files = len(lst)
     bar.finish()
-    
+ 
+def concat_traj_files():
+    print("concatenating MD trajectory fluctuation analyses files in subsamples folder")
  
 ###############################################################
 ###############################################################
 
 def main():
+    print("split MD trajectories")
+    split_traj_files()
+    print("subsampling of MD trajectories")
     for m in range(m_frames):
         write_control_files(m)
-        
         # creating thread
-        t1 = threading.Thread(target=subsample_reference_flux, args=(m,))
-        t2 = threading.Thread(target=subsample_referenceCTL_flux, args=(m,))
-        t3 = threading.Thread(target=subsample_query_flux, args=(m,))
-        t4 = threading.Thread(target=runProgressBar, args=(m,))
+        t1 = multiprocessing.Process(target=subsample_reference_flux, args=(m,))
+        t2 = multiprocessing.Process(target=subsample_referenceCTL_flux, args=(m,))
+        t3 = multiprocessing.Process(target=subsample_query_flux, args=(m,))
+        t4 = multiprocessing.Process(target=runProgressBar, args=(m,))
         t1.start() # start threads
         t2.start()
         t3.start() 
@@ -417,7 +467,9 @@ def main():
         t2.join()
         t3.join() 
         t4.join()
-        
+    
+    print("concatenate split files after analysis")
+    concat_traj_files()   
     print("subsampling of MD trajectories is completed") 
     resinfo()
     print("parsing of amino acid information is completed")    
