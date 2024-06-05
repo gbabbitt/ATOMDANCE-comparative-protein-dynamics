@@ -269,10 +269,9 @@ class Ui_Dialog(object):
         self.lineEdit_2.setText("179") # sites
         self.lineEdit_3.setText("3") # visual frames per movie
         self.lineEdit_4.setText("100") # MD frames per subsample
-        self.lineEdit_5.setText("35") # subsamples
+        self.lineEdit_5.setText("40") # subsamples
         self.lineEdit_6.setText("") # N terminal start positions
         self.lineEdit_7.setText("1") # protein chain start position
-        
         self.retranslateUi(Dialog)
         QtCore.QMetaObject.connectSlotsByName(Dialog)
 
@@ -307,7 +306,7 @@ class Ui_Dialog(object):
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">prod_%s.nc</p></body></html>"% (inp2,inp2,inp2)))
         self.pushButton_3.setText(_translate("Dialog", "run MD sampling"))
         self.label_8.setText(_translate("Dialog", "<html><head/><body><p><span style=\" font-weight:600;\">analytic parameters</span></p></body></html>"))
-        self.label_9.setText(_translate("Dialog", "<html><head/><body><p>number of subsamples</p></body></html>"))
+        self.label_9.setText(_translate("Dialog", "<html><head/><body><p>subsamples/ns</p></body></html>"))
         self.label_10.setText(_translate("Dialog", "<html><head/><body><p>MD frames/subsample</p></body></html>"))
         self.label_11.setText(_translate("Dialog", "<html><head/><body><p>visual frames/movie</p></body></html>"))
         self.label_12.setText(_translate("Dialog", "<html><head/><body><p>number of protein sites</p></body></html>"))
@@ -585,11 +584,15 @@ class Ui_Dialog(object):
         import time
         # start subsampling
         print("starting trajectory subsampling")
-        n_frames = self.horizontalSlider_2.value()*5000
+        my_frames = self.horizontalSlider_2.value()*5000
         
-        print("setting total number of frames to %s" % n_frames)
-        cmd9 = "python3 aav_cpptraj_sampler.py"
-        os.system(cmd9)
+        print("setting total number of frames to %s" % my_frames)
+        if(my_frames <= 15000):
+            cmd9 = "python3 aav_cpptraj_sampler.py"
+            os.system(cmd9)
+        if(my_frames > 15000):
+            cmd9 = "python3 aav_cpptraj_sampler_fast.py"
+            os.system(cmd9)
         cmd10 = "python3 aav_cpptraj_sampler_all.py"
         os.system(cmd10)
         # setting for loop to set value of progress bar 

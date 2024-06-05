@@ -16,7 +16,8 @@ import os
 #import nglview as nv
 import random as rnd
 import re
-import threading
+#import threading
+import multiprocessing
 import pandas as pd
 
 # READ CONTROL FORM
@@ -830,13 +831,13 @@ def runProgressBar():
 def main():
     write_control_files()
     # creating thread
-    t1 = threading.Thread(target=subsample_reference_flux)
-    t2 = threading.Thread(target=subsample_referenceCTL_flux)
-    t3 = threading.Thread(target=subsample_query_flux)
+    t1 = multiprocessing.Process(target=subsample_reference_flux)
+    t2 = multiprocessing.Process(target=subsample_referenceCTL_flux)
+    t3 = multiprocessing.Process(target=subsample_query_flux)
     #t4 = threading.Thread(target=subsample_reference_corr)
     #t5 = threading.Thread(target=subsample_referenceCTL_corr)
     #t6 = threading.Thread(target=subsample_query_corr)
-    t7 = threading.Thread(target=runProgressBar)
+    t7 = multiprocessing.Process(target=runProgressBar)
     t1.start() # start threads
     t2.start()
     t3.start() 
