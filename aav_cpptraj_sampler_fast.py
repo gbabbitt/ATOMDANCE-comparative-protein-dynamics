@@ -448,11 +448,52 @@ def runProgressBar(m):
  
 def concat_traj_files():
     print("concatenating MD trajectory fluctuation analyses files in subsamples folder")
- 
+    
+    for m in range(m_frames):
+        print("movie frame %s - concatenating MD fluctuation files in subsamples" % m)
+        outfile = open("subsamples/atomflux_query_%s/fluct_%s_sub_query.txt" % (m,PDB_id_query), "w")
+        
+        for ps in range(length_prot):
+            if(ps == 0):
+                continue
+            pos = int(ps)
+            concat_lines = ""
+            print("collecting AA position %s" % ps)
+            for ts in range(traj_sets):
+                if(ts == 0):
+                    continue
+                print("reading traj set %s" % ts)
+                infile = open("subsamples/atomflux_query_%s/fluct_%s_sub_query_%s.txt" % (m,PDB_id_query,ts), "r")
+                infile_lines = infile.readlines()
+                for x in range(len(infile_lines)):
+                    if(x==0):
+                        continue
+                    infile_line = infile_lines[x]
+                    #print(infile_line)
+                    infile_line_array = re.split("\s+", infile_line)
+                    #print(infile_line_array[2:-1])
+                    myline_array = infile_line_array[2:-1]
+                    delimiter = "\t"
+                    myline = delimiter.join(myline_array)
+                    test_pos = int(float(infile_line_array[1]))
+                    #print("%s %s" % (pos, test_pos))
+                    if(test_pos == pos):
+                        print("match %s %s" % (pos, test_pos))
+                        #print(myline)
+                        #print(type(myline))
+                        #print(type(concat_lines))
+                        concat_lines = " %s %s" % (concat_lines, myline)
+                        #print(concat_lines)
+                infile.close
+            # print line to file
+            print("%s %s\n" % (pos, concat_lines))
+            outfile.write("%s %s\n" % (pos, concat_lines))
+        outfile.close
 ###############################################################
 ###############################################################
 
 def main():
+    """
     print("split MD trajectories")
     split_traj_files()
     print("subsampling of MD trajectories")
@@ -471,11 +512,11 @@ def main():
         t2.join()
         t3.join() 
         #t4.join()
-        
+    """    
     print("concatenate split files after analysis")
     concat_traj_files()   
     print("subsampling of MD trajectories is completed") 
-    resinfo()
+    #resinfo()
     print("parsing of amino acid information is completed")    
 ###############################################################
 if __name__ == '__main__':
