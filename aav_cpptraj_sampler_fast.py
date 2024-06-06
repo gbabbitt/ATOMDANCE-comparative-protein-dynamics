@@ -452,17 +452,30 @@ def concat_traj_files():
     for m in range(m_frames):
         print("movie frame %s - concatenating MD fluctuation files in subsamples" % m)
         outfile = open("subsamples/atomflux_query_%s/fluct_%s_sub_query.txt" % (m,PDB_id_query), "w")
-        
-        for ps in range(length_prot):
+        outfile.write("#Res\t")
+        for ps in range(length_prot+1):
             if(ps == 0):
+                infile = open("subsamples/atomflux_query_0/fluct_%s_sub_query_1.txt" % (PDB_id_query), "r")
+                infile_lines = infile.readlines()
+                for x in range(2):
+                    if(x==0):
+                        continue
+                    infile_line = infile_lines[x]
+                    infile_line_array = re.split("\s+", infile_line)
+                    myline_array = infile_line_array[2:-1]
+                    myLen = len(myline_array)*(traj_sets - 1)
+                infile.close    
+                for ss in range(myLen):
+                    outfile.write("AtomicFlx\t")
+                outfile.write("\n")
                 continue
             pos = int(ps)
             concat_lines = ""
-            print("collecting AA position %s" % ps)
+            #print("collecting AA position %s" % ps)
             for ts in range(traj_sets):
                 if(ts == 0):
                     continue
-                print("reading traj set %s" % ts)
+                #print("reading traj set %s" % ts)
                 infile = open("subsamples/atomflux_query_%s/fluct_%s_sub_query_%s.txt" % (m,PDB_id_query,ts), "r")
                 infile_lines = infile.readlines()
                 for x in range(len(infile_lines)):
@@ -478,7 +491,7 @@ def concat_traj_files():
                     test_pos = int(float(infile_line_array[1]))
                     #print("%s %s" % (pos, test_pos))
                     if(test_pos == pos):
-                        print("match %s %s" % (pos, test_pos))
+                        #print("match %s %s" % (pos, test_pos))
                         #print(myline)
                         #print(type(myline))
                         #print(type(concat_lines))
@@ -486,14 +499,14 @@ def concat_traj_files():
                         #print(concat_lines)
                 infile.close
             # print line to file
-            print("%s %s\n" % (pos, concat_lines))
-            outfile.write("%s %s\n" % (pos, concat_lines))
+            #print("\t%s %s\n" % (float(pos), concat_lines))
+            outfile.write("\t%s %s\n" % (float(pos), concat_lines))
         outfile.close
 ###############################################################
 ###############################################################
 
 def main():
-    """
+    
     print("split MD trajectories")
     split_traj_files()
     print("subsampling of MD trajectories")
@@ -512,7 +525,7 @@ def main():
         t2.join()
         t3.join() 
         #t4.join()
-    """    
+       
     print("concatenate split files after analysis")
     concat_traj_files()   
     print("subsampling of MD trajectories is completed") 
