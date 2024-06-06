@@ -138,9 +138,12 @@ def split_traj_files():
     f.write("parm %s\n" % top_file_reference)
     f.write("trajin %s\n" % traj_file_reference)
     traj_file_label = traj_file_reference[:-3]
-    traj_start = 0
+    traj_start = 1
     for ts in range(traj_sets):
-        traj_stop = traj_start+5000
+        if(ts == 0):
+            traj_stop = traj_start+4999
+        if(ts > 0):
+            traj_stop = traj_start+5000
         traj_set_str = str(int(ts))
         f.write("trajout %s_%s.nc onlyframes %s-%s\n" %(traj_file_label,traj_set_str,traj_start,traj_stop))
         traj_start = traj_stop
@@ -152,9 +155,12 @@ def split_traj_files():
     f.write("parm %s\n" % top_file_query)
     f.write("trajin %s\n" % traj_file_query)
     traj_file_label = traj_file_query[:-3]
-    traj_start = 0
+    traj_start = 1
     for ts in range(traj_sets):
-        traj_stop = traj_start+5000
+        if(ts == 0):
+            traj_stop = traj_start+4999
+        if(ts > 0):
+            traj_stop = traj_start+5000
         traj_set_str = str(int(ts))
         f.write("trajout %s_%s.nc onlyframes %s-%s\n" %(traj_file_label,traj_set_str,traj_start,traj_stop))
         traj_start = traj_stop
@@ -196,8 +202,8 @@ def write_control_files(m):
 
     # create subsampling .ctl routines for KL divergence
     for ts in range(traj_sets):
-        if(ts == 0):
-            continue
+        #if(ts == 0):
+        #    continue
         f1 = open("./atomflux_%s_sub_reference_%s.ctl" % (PDB_id_reference,ts), "w")
         #f2 = open("./atomcorr_%s_sub_reference.ctl" % PDB_id_reference, "w")
         f1.write("parm %s\n" % top_file_reference)
@@ -251,8 +257,8 @@ def write_control_files(m):
 
     # create subsampling .ctl routines for KL divergence
     for ts in range(traj_sets):
-        if(ts == 0):
-            continue
+        #if(ts == 0):
+        #    continue
         f1 = open("./atomflux_%s_sub_query_%s.ctl" % (PDB_id_query,ts), "w")
         #f2 = open("./atomcorr_%s_sub_query.ctl" % PDB_id_query, "w")
         f1.write("parm %s\n" % top_file_query)
@@ -451,6 +457,7 @@ def concat_traj_files():
     
     for m in range(m_frames):
         print("movie frame %s - concatenating MD fluctuation files in subsamples" % m)
+        ################### query protein #####################
         outfile = open("subsamples/atomflux_query_%s/fluct_%s_sub_query.txt" % (m,PDB_id_query), "w")
         outfile.write("#Res\t")
         for ps in range(length_prot+1):
@@ -473,8 +480,8 @@ def concat_traj_files():
             concat_lines = ""
             #print("collecting AA position %s" % ps)
             for ts in range(traj_sets):
-                if(ts == 0):
-                    continue
+                #if(ts == 0):
+                #    continue
                 #print("reading traj set %s" % ts)
                 infile = open("subsamples/atomflux_query_%s/fluct_%s_sub_query_%s.txt" % (m,PDB_id_query,ts), "r")
                 infile_lines = infile.readlines()
@@ -502,6 +509,111 @@ def concat_traj_files():
             #print("\t%s %s\n" % (float(pos), concat_lines))
             outfile.write("\t%s %s\n" % (float(pos), concat_lines))
         outfile.close
+        ################### reference protein #####################
+        outfile = open("subsamples/atomflux_ref_%s/fluct_%s_sub_reference.txt" % (m,PDB_id_reference), "w")
+        outfile.write("#Res\t")
+        for ps in range(length_prot+1):
+            if(ps == 0):
+                infile = open("subsamples/atomflux_ref_0/fluct_%s_sub_reference_1.txt" % (PDB_id_reference), "r")
+                infile_lines = infile.readlines()
+                for x in range(2):
+                    if(x==0):
+                        continue
+                    infile_line = infile_lines[x]
+                    infile_line_array = re.split("\s+", infile_line)
+                    myline_array = infile_line_array[2:-1]
+                    myLen = len(myline_array)*(traj_sets - 1)
+                infile.close    
+                for ss in range(myLen):
+                    outfile.write("AtomicFlx\t")
+                outfile.write("\n")
+                continue
+            pos = int(ps)
+            concat_lines = ""
+            #print("collecting AA position %s" % ps)
+            for ts in range(traj_sets):
+                #if(ts == 0):
+                #    continue
+                #print("reading traj set %s" % ts)
+                infile = open("subsamples/atomflux_ref_%s/fluct_%s_sub_reference_%s.txt" % (m,PDB_id_reference,ts), "r")
+                infile_lines = infile.readlines()
+                for x in range(len(infile_lines)):
+                    if(x==0):
+                        continue
+                    infile_line = infile_lines[x]
+                    #print(infile_line)
+                    infile_line_array = re.split("\s+", infile_line)
+                    #print(infile_line_array[2:-1])
+                    myline_array = infile_line_array[2:-1]
+                    delimiter = "\t"
+                    myline = delimiter.join(myline_array)
+                    test_pos = int(float(infile_line_array[1]))
+                    #print("%s %s" % (pos, test_pos))
+                    if(test_pos == pos):
+                        #print("match %s %s" % (pos, test_pos))
+                        #print(myline)
+                        #print(type(myline))
+                        #print(type(concat_lines))
+                        concat_lines = " %s %s" % (concat_lines, myline)
+                        #print(concat_lines)
+                infile.close
+            # print line to file
+            #print("\t%s %s\n" % (float(pos), concat_lines))
+            outfile.write("\t%s %s\n" % (float(pos), concat_lines))
+        outfile.close
+        ################### reference protein control #####################
+        outfile = open("subsamples/atomflux_refCTL_%s/fluct_%s_sub_referenceCTL.txt" % (m,PDB_id_reference), "w")
+        outfile.write("#Res\t")
+        for ps in range(length_prot+1):
+            if(ps == 0):
+                infile = open("subsamples/atomflux_refCTL_0/fluct_%s_sub_referenceCTL_1.txt" % (PDB_id_reference), "r")
+                infile_lines = infile.readlines()
+                for x in range(2):
+                    if(x==0):
+                        continue
+                    infile_line = infile_lines[x]
+                    infile_line_array = re.split("\s+", infile_line)
+                    myline_array = infile_line_array[2:-1]
+                    myLen = len(myline_array)*(traj_sets - 1)
+                infile.close    
+                for ss in range(myLen):
+                    outfile.write("AtomicFlx\t")
+                outfile.write("\n")
+                continue
+            pos = int(ps)
+            concat_lines = ""
+            #print("collecting AA position %s" % ps)
+            for ts in range(traj_sets):
+                #if(ts == 0):
+                #    continue
+                #print("reading traj set %s" % ts)
+                infile = open("subsamples/atomflux_refCTL_%s/fluct_%s_sub_referenceCTL_%s.txt" % (m,PDB_id_reference,ts), "r")
+                infile_lines = infile.readlines()
+                for x in range(len(infile_lines)):
+                    if(x==0):
+                        continue
+                    infile_line = infile_lines[x]
+                    #print(infile_line)
+                    infile_line_array = re.split("\s+", infile_line)
+                    #print(infile_line_array[2:-1])
+                    myline_array = infile_line_array[2:-1]
+                    delimiter = "\t"
+                    myline = delimiter.join(myline_array)
+                    test_pos = int(float(infile_line_array[1]))
+                    #print("%s %s" % (pos, test_pos))
+                    if(test_pos == pos):
+                        #print("match %s %s" % (pos, test_pos))
+                        #print(myline)
+                        #print(type(myline))
+                        #print(type(concat_lines))
+                        concat_lines = " %s %s" % (concat_lines, myline)
+                        #print(concat_lines)
+                infile.close
+            # print line to file
+            #print("\t%s %s\n" % (float(pos), concat_lines))
+            outfile.write("\t%s %s\n" % (float(pos), concat_lines))
+        outfile.close
+        
 ###############################################################
 ###############################################################
 
@@ -509,6 +621,7 @@ def main():
     
     print("split MD trajectories")
     split_traj_files()
+    
     print("subsampling of MD trajectories")
     for m in range(m_frames):
         write_control_files(m)
@@ -529,8 +642,9 @@ def main():
     print("concatenate split files after analysis")
     concat_traj_files()   
     print("subsampling of MD trajectories is completed") 
-    #resinfo()
-    print("parsing of amino acid information is completed")    
+    resinfo()
+    print("parsing of amino acid information is completed")
+    
 ###############################################################
 if __name__ == '__main__':
     main()
