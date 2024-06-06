@@ -470,7 +470,7 @@ def concat_traj_files():
                     infile_line = infile_lines[x]
                     infile_line_array = re.split("\s+", infile_line)
                     myline_array = infile_line_array[2:-1]
-                    myLen = len(myline_array)*(traj_sets - 1)
+                    myLen = len(myline_array)*(traj_sets)
                 infile.close    
                 for ss in range(myLen):
                     outfile.write("AtomicFlx\t")
@@ -522,7 +522,7 @@ def concat_traj_files():
                     infile_line = infile_lines[x]
                     infile_line_array = re.split("\s+", infile_line)
                     myline_array = infile_line_array[2:-1]
-                    myLen = len(myline_array)*(traj_sets - 1)
+                    myLen = len(myline_array)*(traj_sets)
                 infile.close    
                 for ss in range(myLen):
                     outfile.write("AtomicFlx\t")
@@ -574,7 +574,7 @@ def concat_traj_files():
                     infile_line = infile_lines[x]
                     infile_line_array = re.split("\s+", infile_line)
                     myline_array = infile_line_array[2:-1]
-                    myLen = len(myline_array)*(traj_sets - 1)
+                    myLen = len(myline_array)*(traj_sets)
                 infile.close    
                 for ss in range(myLen):
                     outfile.write("AtomicFlx\t")
