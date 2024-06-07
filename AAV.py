@@ -346,7 +346,7 @@ class Ui_Dialog(object):
                     
         # write control files for analyses
         print("writing control file")
-        n_frames = 5000 # MD frames/nanosecond
+        n_frames = 5000*prod_len # MD frames/nanosecond
         n_subsamples = self.lineEdit_5.text()
         #print(n_subsamples)
         frs_subsample = self.lineEdit_4.text()
