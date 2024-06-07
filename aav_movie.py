@@ -115,7 +115,10 @@ for x in range(len(infile_lines)):
         print("run sound files is",snd_anal)
     if(header == "movie"):
         mvr_anal = value
-        print("run sound files is",mvr_anal)    
+        print("run sound files is",mvr_anal)
+    if(header == "prod_len"):
+        prod_len = value
+        print("my total length of production MD run",prod_len)
 ###### variable assignments ######
 PDB_id_query = ""+query_id+""
 PDB_id_reference = ""+ref_id+""
@@ -127,7 +130,7 @@ traj_file_query = ""+query_traj+""
 traj_file_reference = ""+ref_traj+""
 subsamples = int(sub_samples)
 frame_size = int(fr_sz)
-m_frames = int(m_fr)
+m_frames = int(m_fr)*int(prod_len)
 n_frames = int(n_fr)
 n_chains = ""+n_ch+""
 length_prot = int(l_pr)
@@ -541,9 +544,9 @@ def create_single_model_pdb():
 def main():
     still_image_parse_for_varInt_movie()
     still_image_parse_for_fixInt_movie()
-    create_varInt_video_from_images()
+    #create_varInt_video_from_images()
     create_fixInt_video_from_images()
-    combine_varInt_audio_video()
+    #combine_varInt_audio_video()
     combine_fixInt_audio_video()
     multiframe_pdb()
     create_single_model_pdb()

@@ -101,7 +101,10 @@ for x in range(len(infile_lines)):
         print("run sound files is",snd_anal)
     if(header == "movie"):
         mvr_anal = value
-        print("run sound files is",mvr_anal)    
+        print("run sound files is",mvr_anal)
+    if(header == "prod_len"):
+        prod_len = value
+        print("my total length of production MD run",prod_len)
 ###### variable assignments ######
 PDB_id_query = ""+query_id+""
 PDB_id_reference = ""+ref_id+""
@@ -113,7 +116,7 @@ traj_file_query = ""+query_traj+""
 traj_file_reference = ""+ref_traj+""
 subsamples = int(sub_samples)
 frame_size = int(fr_sz)
-m_frames = int(m_fr)
+m_frames = int(m_fr)*int(prod_len)
 n_frames = int(n_fr)
 n_chains = ""+n_ch+""
 length_prot = int(l_pr)
@@ -599,8 +602,8 @@ def plot_rmsd():
 #################################################################################
 def calc_vibfreq():
     print("\nextracting vibrational frequencies for each amino acid site\n")
-    #cmd1 = "python3 aav_vibfreq.py"
-    #os.system(cmd1)
+    cmd1 = "python3 aav_vibfreq.py"
+    os.system(cmd1)
 #################################################################################
 def compare_dynamics_MMD():
     print("\ncomputing MMD via kernel learning to discover site-wise de-noised functional dynamic sequences for the protein interaction\n")
@@ -613,8 +616,8 @@ def compare_dynamics_MMD():
 ##################################################################################    
 def choreographic_analysis():
     print("\nconducting choreographic analysis to define groups of coordinated amino acid sites during the protein interaction\n")
-    #cmd4 = "python3 aav_coordyn.py"
-    #os.system(cmd4)
+    cmd4 = "python3 aav_coordyn.py"
+    os.system(cmd4)
 ##################################################################################
 def gen_sound():
     print("\ngenerating sound file\n")
