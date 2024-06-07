@@ -346,14 +346,14 @@ class Ui_Dialog(object):
                     
         # write control files for analyses
         print("writing control file")
-        n_frames = 5000*prod_len # MD frames/nanosecond
+        n_frames = 5000*int(prod_len) # MD frames/nanosecond
         n_subsamples = self.lineEdit_5.text()
         #print(n_subsamples)
         frs_subsample = self.lineEdit_4.text()
         #print(frs_subsample)
         m_frames = self.lineEdit_3.text()
         #print(n_frames)
-        frs_total = int(prod_len)*n_frames # MD script generates 5000 frames/nanosecond
+        frs_total = n_frames # MD script generates 5000 frames/nanosecond
         #print(frs_total)
         frs_usable = int(frs_total)-int(frs_subsample) - 1
         #print(frs_usable)
