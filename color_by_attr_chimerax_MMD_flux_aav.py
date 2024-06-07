@@ -25,7 +25,10 @@ for x in range(len(infile_lines)):
     if(header == "chimerax"):
         ch_path = value
         print("my chimerax path is",ch_path)
-m_frames = int(m_fr)
+    if(header == "prod_len"):
+        prod_len = value
+        print("my total length of production MD run",prod_len)
+m_frames = int(m_fr)*int(prod_len)
 PDB_id_reference = ""+ref_id+""
 chimerax_path = ""+ch_path+""
 ##############################

@@ -25,7 +25,10 @@ for x in range(len(infile_lines)):
     if(header == "chimerax"):
         ch_path = value
         print("my chimerax path is",ch_path)
-m_frames = int(m_fr)
+    if(header == "prod_len"):
+        prod_len = value
+        print("my total length of production MD run",prod_len)
+m_frames = int(m_fr)*int(prod_len)
 PDB_id_reference = ""+ref_id+""
 chimerax_path = ""+ch_path+""
 ##############################
@@ -146,7 +149,7 @@ for m in range(m_frames-1):
     ################################################
     run(session, "open "+pdb_ref+"")
     run(session, "sel "+model+"")
-    run(session, "turn y 180")
+    run(session, "turn y 90")
     run(session, "lighting "+light_setting+"")
     run(session, "surface")
     run(session, "defattr :1-"+length+" "+attr_file+"")
