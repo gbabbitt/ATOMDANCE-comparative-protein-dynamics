@@ -423,8 +423,8 @@ class Ui_Dialog(object):
         f.write("subsamples,%s,#number of subsamples\n" % n_subsamples)
         f.write("frame_size,%s,#number of MD frames per subsample\n" % frs_subsample)
         f.write("m_frames,%s,#number of visual frames in movie file\n" % m_frames)
-        f.write("n_frames,%s,#number of MD frames per nanosecond\n" % n_frames)
-        f.write("ttl_frames,%s,#total number of MD frames in the production MD run\n" % frs_usable)
+        f.write("n_frames,%s,#total number of MD frames in the production MD run\n" % n_frames)
+        f.write("ttl_frames,%s,#total number of usable MD frames in the production MD run\n" % frs_usable)
         f.write("eq_len,%s,#length of equilibration (ns)\n" % eq_len)
         f.write("prod_len,%s,#length of production (ns)\n" % prod_len)
         f.write("n_terminals,%s,#n terminal locations for multi-chain PDB\n" % n_chains)
@@ -587,10 +587,10 @@ class Ui_Dialog(object):
         my_frames = self.horizontalSlider_2.value()*5000
         
         print("setting total number of frames to %s" % my_frames)
-        if(my_frames <= 15000):
+        if(my_frames <= 10000):
             cmd9 = "python3 aav_cpptraj_sampler.py"
             os.system(cmd9)
-        if(my_frames > 15000):
+        if(my_frames > 10000):
             cmd9 = "python3 aav_cpptraj_sampler_fast.py"
             os.system(cmd9)
         cmd10 = "python3 aav_cpptraj_sampler_all.py"
