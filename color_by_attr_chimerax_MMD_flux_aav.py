@@ -28,7 +28,7 @@ for x in range(len(infile_lines)):
     if(header == "prod_len"):
         prod_len = value
         print("my total length of production MD run",prod_len)
-m_frames = int(m_fr)*int(prod_len)
+m_frames = int(m_fr)
 PDB_id_reference = ""+ref_id+""
 chimerax_path = ""+ch_path+""
 ##############################
