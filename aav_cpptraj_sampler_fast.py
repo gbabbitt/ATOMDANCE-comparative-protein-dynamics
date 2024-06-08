@@ -623,12 +623,11 @@ def concat_traj_files():
 def main():
     
     print("split MD trajectories")
-    #split_traj_files()
+    split_traj_files()
     
     print("subsampling of MD trajectories")
     for m in range(m_frames):
         write_control_files(m)
-        """
         # creating thread
         t1 = multiprocessing.Process(target=subsample_reference_flux, args=(m,))
         t2 = multiprocessing.Process(target=subsample_referenceCTL_flux, args=(m,))
@@ -648,7 +647,7 @@ def main():
     print("subsampling of MD trajectories is completed") 
     resinfo()
     print("parsing of amino acid information is completed")
-    """
+    
 ###############################################################
 if __name__ == '__main__':
     main()
