@@ -416,7 +416,7 @@ def create_fixInt_video_from_pdb():
     valid_images = [i for i in os.listdir(folder) if i.endswith((".jpg", ".jpeg", ".png"))]
     #print(valid_images)
     each_image_duration = 1 # 1 second
-    first_image = cv2.imread(os.path.join(folder, valid_images[0]))
+    first_image = cv2.imread(os.path.join(folder, valid_images[1]))
     h, w, _ = first_image.shape
 
     codec = cv2.VideoWriter_fourcc(*'mp4v')
@@ -436,7 +436,7 @@ def create_fixInt_180_video_from_pdb():
     valid_images = [i for i in os.listdir(folder) if i.endswith((".jpg", ".jpeg", ".png"))]
     #print(valid_images)
     each_image_duration = 1 # 1 second
-    first_image = cv2.imread(os.path.join(folder, valid_images[0]))
+    first_image = cv2.imread(os.path.join(folder, valid_images[1]))
     h, w, _ = first_image.shape
 
     codec = cv2.VideoWriter_fourcc(*'mp4v')
