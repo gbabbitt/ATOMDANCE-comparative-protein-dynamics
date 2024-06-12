@@ -30,7 +30,7 @@ from scipy.stats import ttest_ind
 from scipy import stats
 import soundfile
 from scipy.io import wavfile
-import noisereduce as nr
+#import noisereduce as nr
 from pydub import AudioSegment
 from pydub.playback import play
 from scipy.linalg import svd
@@ -141,7 +141,7 @@ mvr_anal = ""+mvr_anal+""
 ###############################################################################
 ###############################################################################
 
-def calculate_vibfreq():
+def calculate_auxplots():
     print("computing site-wise vibrational frequencies on %s and %s and shifts between them " % (query_id, ref_id))
     if not os.path.exists('vibfreqDynamics_%s' % PDB_id_reference):
         os.mkdir('vibfreqDynamics_%s' % PDB_id_reference)
@@ -156,7 +156,8 @@ def calculate_vibfreq():
     for x in range(length_prot): # loop through protein length
     #for x in range(2):
         pos = x+1
-        print("analyzing vibrational frequency on position %s" % pos)
+        print("analyzing RMSF and creating plots on position %s" % pos)
+        
         # compute RMSF by residue
         f1 = open("vibfreqDynamics_%s/data_files_query/RMSF_%s_%s.ctl" % (PDB_id_reference, PDB_id_query, pos), "w")
         f2 = open("vibfreqDynamics_%s/data_files_reference/RMSF_%s_%s.ctl" % (PDB_id_reference, PDB_id_reference, pos), "w")
@@ -209,7 +210,7 @@ def calculate_vibfreq():
         plt.legend()
         plt.grid(True)
         plt.savefig("./vibfreqDynamics_%s/data_files_query/vibfreqDynamics_query_%s_RMSF.png" % (PDB_id_reference, pos))
-        #plt.show()
+        plt.close()
         
         # Plot the MD reference data
         plt.figure(figsize=(10, 4))
@@ -220,7 +221,7 @@ def calculate_vibfreq():
         plt.legend()
         plt.grid(True)
         plt.savefig("./vibfreqDynamics_%s/data_files_reference/vibfreqDynamics_reference_%s_RMSF.png" % (PDB_id_reference, pos))
-        #plt.show()
+        plt.close()
         
         # Perform Fourier Transform on query
         fft_vals = np.fft.fft(dataQ)
@@ -245,7 +246,7 @@ def calculate_vibfreq():
         plt.legend()
         plt.grid(True)
         plt.savefig("./vibfreqDynamics_%s/data_files_query/vibfreqDynamics_query_%s_powerSpectrum.png" % (PDB_id_reference, pos))
-        #plt.show()
+        plt.close()
         
         # find autocorrelation pattern
         autocorr = np.correlate(dataQ, dataQ, mode='full')/len(dataQ)
@@ -257,85 +258,7 @@ def calculate_vibfreq():
         plt.title('autocorrelation in atom fluctuation')
         plt.grid(True)
         plt.savefig("./vibfreqDynamics_%s/data_files_query/vibfreqDynamics_query_%s_autocorrelation.png" % (PDB_id_reference, pos))
-        
-        # eckart frame denoising to extract vibrational frequencies
-        sampling_rate = 2.0
-        # random data test of function
-        #md_data = np.random.rand(99, 50, 3)
-        #print(md_data)
-        #fft_result_eckart = fft_with_eckart(md_data, sampling_rate)
-        #power_spectrum_eckart = np.abs(fft_result_eckart)**2
-        #print(fft_result_eckart)
-        f3 = open("vibfreqDynamics_%s/XYZ_%s_%s.ctl" % (PDB_id_reference,PDB_id_query,pos), "w")
-        f3.write("parm %s\n" % top_file_query)
-        f3.write("trajin %s\n" % traj_file_query)
-        f3.write("vector center :%s@CA,C,O,N,H&!(:WAT) out vibfreqDynamics_%s/XYZ_%s_%s.txt\n" % (pos,PDB_id_reference,PDB_id_query,pos))
-        f3.write("run\n")
-        f3.close()
-        print("extracting XYZ for query protein at amino acid site %s" % pos)
-        cmd = 'cpptraj -i vibfreqDynamics_%s/XYZ_%s_%s.ctl -o vibfreqDynamics_%s/XYZ_%s_%s_out.txt' % (PDB_id_reference,PDB_id_query,pos,PDB_id_reference,PDB_id_query,pos)
-        os.system(cmd)
-        #eliminate first line of XYZ file
-        with open('vibfreqDynamics_%s/XYZ_%s_%s.txt' % (PDB_id_reference,PDB_id_query,pos), 'r') as fin:
-            data = fin.read().splitlines(True)
-        with open('vibfreqDynamics_%s/XYZ_%s_%s.txt' % (PDB_id_reference,PDB_id_query,pos), 'w') as fout:
-            fout.writelines(data[1:])
-        inXYZ = "vibfreqDynamics_%s/XYZ_%s_%s.txt" % (PDB_id_reference, PDB_id_query, pos)     
-        dfXYZ = pd.read_csv(inXYZ, sep="\s+")
-        #print(dfXYZ)
-        myXYZ = dfXYZ.iloc[:, 1:4]
-        myXYZ = myXYZ.to_numpy()
-        #print(myXYZ)
-        # find highest n to break into n longitudinal subsets while maintaining 3D array
-        if(pos==1):
-            print("\nfinding all n longitudinal subsets with 3 dimensions\n")
-            global h_num
-            h_num = 3 # init
-            for i in range(n_frames):
-                if(i==0):
-                    continue 
-                num=i # find highest n 
-                myXYZtest = chunkIt(myXYZ, num)
-                myXYZtest = np.array(myXYZtest, dtype=object)
-                #print(myXYZ.ndim)
-                #print(i)
-                if(myXYZtest.ndim == 3):
-                    h_num = num
-                    print("%s %s" % (i, h_num))
-               
-        # break into n longitudinal subsets
-        num=h_num # must be 3, 9, 33, 99, 101, 303, 909, 1111, 3333 etc
-        myXYZ = chunkIt(myXYZ, num)
-        myXYZ = np.array(myXYZ, dtype=object)
-        #print(myXYZ.ndim)
-        #print(myXYZ)
-        md_data = myXYZ
-        fft_result_eckart = fft_with_eckart(md_data, sampling_rate)
-        power_spectrum_eckart = np.abs(fft_result_eckart)**2
-        #print(fft_result_eckart)
-        # extract y coordinate of trajectory for sound file
-        myXY = fft_result_eckart[:,1]
-        myY = myXY[:,1]
-        myVibFreq = myY
-        #print(myY.ndim)
-        #print(myY)
-        chunk=np.arange(num)
-        #print(chunk)
-        plt.plot(chunk, myVibFreq, label='Molecular Dynamics vib freq Data')
-        plt.xlabel('Time Interval')
-        plt.ylabel('Signal')
-        plt.xlim(left=0,right=num)
-        plt.title('Molecular Dynamics vib freq Data')
-        plt.legend()
-        plt.grid(True)
-        plt.savefig("./vibfreqDynamics_%s/data_files_query/vibfreqDynamics_query_%s_vibfreq.png" % (PDB_id_reference, pos))
-        #plt.show()
-        f4 = open("vibfreqDynamics_%s/data_files_query/eckartXYZ_%s_%s.txt" % (PDB_id_reference, PDB_id_query, pos), "w")
-        for i in range(num):
-            pt1 = chunk[i]
-            pt2 = float(myVibFreq[i])
-            f4.write("%s %s\n" % (pt1,pt2))
-        f4.close()
+        plt.close()
         
         # Differentiate between resonance and non-resonance based on peaks
         if len(vibfreq_freqs) > 0:
@@ -374,7 +297,7 @@ def calculate_vibfreq():
         plt.legend()
         plt.grid(True)
         plt.savefig("./vibfreqDynamics_%s/data_files_reference/vibfreqDynamics_reference_%s_powerSpectrum.png" % (PDB_id_reference, pos))
-        #plt.show()
+        plt.close()
         
         # find autocorrelation pattern
         autocorr = np.correlate(dataR, dataR, mode='full')/len(dataR)
@@ -386,6 +309,106 @@ def calculate_vibfreq():
         plt.title('autocorrelation in atom fluctuation')
         plt.grid(True)
         plt.savefig("./vibfreqDynamics_%s/data_files_reference/vibfreqDynamics_reference_%s_autocorrelation.png" % (PDB_id_reference, pos))
+        plt.close()
+
+
+def calculate_vibfreq():
+    print("computing site-wise vibrational frequencies on %s and %s and shifts between them " % (query_id, ref_id))
+    if not os.path.exists('vibfreqDynamics_%s' % PDB_id_reference):
+        os.mkdir('vibfreqDynamics_%s' % PDB_id_reference)
+    if not os.path.exists('vibfreqDynamics_%s/data_files_query' % (PDB_id_reference)):
+        os.mkdir('vibfreqDynamics_%s/data_files_query' % (PDB_id_reference))
+    if not os.path.exists('vibfreqDynamics_%s/data_files_reference' % (PDB_id_reference)):
+        os.mkdir('vibfreqDynamics_%s/data_files_reference' % (PDB_id_reference))
+    
+    vibf_query = []
+    vibf_ref = []
+    fQ = open("vibfreqDynamics_%s/vibfreq_peaks_query_%s.txt" % (PDB_id_reference, PDB_id_query), "w")
+    for x in range(length_prot): # loop through protein length
+    #for x in range(2):
+        pos = x+1
+        print("analyzing vibrational frequency on position %s" % pos)
+        
+        # eckart frame denoising to extract vibrational frequencies
+        sampling_rate = 2.0
+        # random data test of function
+        #md_data = np.random.rand(99, 50, 3)
+        #print(md_data)
+        #fft_result_eckart = fft_with_eckart(md_data, sampling_rate)
+        #power_spectrum_eckart = np.abs(fft_result_eckart)**2
+        #print(fft_result_eckart)
+        f3 = open("vibfreqDynamics_%s/XYZ_%s_%s.ctl" % (PDB_id_reference,PDB_id_query,pos), "w")
+        f3.write("parm %s\n" % top_file_query) 
+        f3.write("trajin %s\n" % traj_file_query)
+        f3.write("vector center :%s@CA,C,O,N,H&!(:WAT) out vibfreqDynamics_%s/XYZ_%s_%s.txt\n" % (pos,PDB_id_reference,PDB_id_query,pos))
+        f3.write("run\n")
+        f3.close()
+        print("extracting XYZ for query protein at amino acid site %s" % pos)
+        cmd = 'cpptraj -i vibfreqDynamics_%s/XYZ_%s_%s.ctl -o vibfreqDynamics_%s/XYZ_%s_%s_out.txt' % (PDB_id_reference,PDB_id_query,pos,PDB_id_reference,PDB_id_query,pos)
+        os.system(cmd)
+        #eliminate first line of XYZ file
+        with open('vibfreqDynamics_%s/XYZ_%s_%s.txt' % (PDB_id_reference,PDB_id_query,pos), 'r') as fin:
+            data = fin.read().splitlines(True)
+        with open('vibfreqDynamics_%s/XYZ_%s_%s.txt' % (PDB_id_reference,PDB_id_query,pos), 'w') as fout:
+            fout.writelines(data[1:])
+        inXYZ = "vibfreqDynamics_%s/XYZ_%s_%s.txt" % (PDB_id_reference, PDB_id_query, pos)     
+        dfXYZ = pd.read_csv(inXYZ, sep="\s+")
+        #print(dfXYZ)
+        myXYZ = dfXYZ.iloc[:, 1:4]
+        myXYZ = myXYZ.to_numpy()
+        #print(myXYZ)
+        # find highest n to break into n longitudinal subsets while maintaining 3D array
+        if(pos==1):
+            print("\nfinding all n longitudinal subsets with 3 dimensions\n")
+            global h_num
+            h_num = 3 # init
+            for i in range(n_frames):
+                if(i==0):
+                    continue 
+                num=i # find highest n 
+                myXYZtest = chunkIt(myXYZ, num)
+                myXYZtest = np.array(myXYZtest, dtype=object)
+                #print(myXYZ.ndim)
+                #print(i)
+                if(myXYZtest.ndim == 3):
+                    h_num = num
+                    print("%s %s" % (i, h_num))
+               
+        # break into n longitudinal subsets
+        num=h_num # must be 3, 9, 33, 99, 101, 303, 909, 1111, 3333 etc
+        if(h_num > 4000):
+            num=3333
+        myXYZ = chunkIt(myXYZ, num)
+        myXYZ = np.array(myXYZ, dtype=object)
+        #print(myXYZ.ndim)
+        #print(myXYZ)
+        md_data = myXYZ
+        fft_result_eckart = fft_with_eckart(md_data, sampling_rate)
+        power_spectrum_eckart = np.abs(fft_result_eckart)**2
+        #print(fft_result_eckart)
+        # extract y coordinate of trajectory for sound file
+        myXY = fft_result_eckart[:,1]
+        myY = myXY[:,1]
+        myVibFreq = myY
+        #print(myY.ndim)
+        #print(myY)
+        chunk=np.arange(num)
+        #print(chunk)
+        plt.plot(chunk, myVibFreq, label='Molecular Dynamics vib freq Data')
+        plt.xlabel('Time Interval')
+        plt.ylabel('Signal')
+        plt.xlim(left=0,right=num)
+        plt.title('Molecular Dynamics vib freq Data')
+        plt.legend()
+        plt.grid(True)
+        plt.savefig("./vibfreqDynamics_%s/data_files_query/vibfreqDynamics_query_%s_vibfreq.png" % (PDB_id_reference, pos))
+        plt.close()
+        f4 = open("vibfreqDynamics_%s/data_files_query/eckartXYZ_%s_%s.txt" % (PDB_id_reference, PDB_id_query, pos), "w")
+        for i in range(num):
+            pt1 = chunk[i]
+            pt2 = float(myVibFreq[i])
+            f4.write("%s %s\n" % (pt1,pt2))
+        f4.close()
         
         
 def eckart_frame(data):
@@ -519,11 +542,10 @@ def map_vibf_query():
 ###############################################################
 
 def main():
-       
+    calculate_auxplots()   
     calculate_vibfreq()
     sound_aa()
     adjust_pitch()
-    
     plot_vibfreq()
     #map_vibf_query()
     
