@@ -32,7 +32,7 @@ from scipy.io import wavfile
 from pydub import AudioSegment
 from pydub.playback import play
 from scipy.linalg import svd
-
+import time
 
 ################################################################################
 # READ CONTROL FORM
@@ -163,6 +163,18 @@ print(start_chains)
 print(stop_chains)
 print(label_chains)
 
+
+inp = input("\nWill sound represent binding interaction or activation response? (type 'binding' or 'activation')\n" )
+if(inp == "binding" or inp == ""):
+    print("selection is %s" % inp)
+if(inp == "activation"):
+    print("selection is %s" % inp)
+if(inp != "activation" and inp != "binding" and inp!= ""):
+    print("selection is INCORRECT as %s" % inp)
+    time.sleep(2)
+    print("changing to default...")
+    time.sleep(2)
+
 ################################################################################
 ##################   sound choir generator      ################################
 ################################################################################
@@ -260,9 +272,13 @@ def combine_choir():
                                 MMDsum = MMDsum+MMDvalue
                                 strikeKey = abs(MMDvalue)
                                 # adjust aa sound volume to MMD
-                                wave_file_add = wave_file_add + abs(5000*MMDvalue)
+                                #wave_file_add = wave_file_add + abs(5000*MMDvalue) # capture both binding and activation dynamics
+                                if(inp == "activation"):
+                                    wave_file_add = wave_file_add + (5000*MMDvalue) # capture only activation dynamics
+                                if(inp == "binding" or inp == ""):
+                                    wave_file_add = wave_file_add + (5000*-MMDvalue) # capture only binding dynamics
                                 strikeKeys.append(strikeKey)
-                    wave_file_choir = wave_file_orig.overlay(wave_file_add, position=0, loop=True, gain_during_overlay=-2) # overlay
+                    wave_file_choir = wave_file_orig.overlay(wave_file_add, position=0, loop=True, gain_during_overlay=-4) # overlay
                     wave_file_choir_trim = wave_file_choir[0000:3000] # 3 second maximum interval
                     wave_file_orig = wave_file_choir_trim
                     #print("overlaying aa %s" % aa2)
@@ -291,7 +307,7 @@ def combine_choir():
                 wave_file_start = AudioSegment.from_file('coordinatedDynamics_%s/movieFrame_%s/aa_adjusted_choir_0.wav' % (PDB_id_reference,m))  
             aa3 = str(i+1)
             wave_file_next = AudioSegment.from_file('coordinatedDynamics_%s/movieFrame_%s/aa_adjusted_choir_%s.wav' % (PDB_id_reference,m,aa3))
-            wave_file_combined = wave_file_start.overlay(wave_file_next, position=0, loop=True, gain_during_overlay=-2) # overlay
+            wave_file_combined = wave_file_start.overlay(wave_file_next, position=0, loop=True, gain_during_overlay=-4) # overlay
             wave_file_start = wave_file_combined                    
             wave_file_combined.export('coordinatedDynamics_%s/movieFrame_%s/aa_adjusted_combinedChoirs.wav' % (PDB_id_reference,m), format="wav")
     for m in range(m_frames):          
@@ -302,7 +318,7 @@ def combine_choir():
                 wave_file_start = AudioSegment.from_file('coordinatedDynamics_%s/movieFrame_%s/aa_adjusted_choir_fixInt_0.wav' % (PDB_id_reference,m))  
             aa3 = str(i+1)
             wave_file_next = AudioSegment.from_file('coordinatedDynamics_%s/movieFrame_%s/aa_adjusted_choir_fixInt_%s.wav' % (PDB_id_reference,m,aa3))
-            wave_file_combined = wave_file_start.overlay(wave_file_next, position=0, loop=True, gain_during_overlay=-2) # overlay
+            wave_file_combined = wave_file_start.overlay(wave_file_next, position=0, loop=True, gain_during_overlay=-4) # overlay
             wave_file_start = wave_file_combined                    
             wave_file_combined.export('coordinatedDynamics_%s/movieFrame_%s/aa_adjusted_combinedChoirs_fixInt.wav' % (PDB_id_reference,m), format="wav")          
 def merge_final_file():
