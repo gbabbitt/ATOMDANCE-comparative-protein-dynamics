@@ -36,20 +36,21 @@ if(inp3 == "no"):
         ff1 = "leaprc.protein.ff14SB"
         print(ff1)
     ff2 = input("\nEnter name of DNA force field if needed (default=null)(e.g. leaprc.DNA.OL15)\n" )
-    if(ff2 == "leaprc.DNA.OL15"):
+    if(ff2 == "leaprc.DNA.OL15" or inp1 == "1cdw_bound"):
         dna_option = "yes"
+        print(dna_option)
     if(ff2 == ""): 
-        #dna_option = "no" # disabled for testing
-        dna_option = "yes"
-        ff2 = "leaprc.DNA.OL15"
+        dna_option = "no" 
     ff3 = input("\nEnter name of RNA force field if needed (default=null)(e.g. leaprc.RNA.ROC)\n" )
     if(ff3 == "leaprc.RNA.ROC"):
         rna_option = "yes"
+        print(rna_option)
     if(ff3 == ""):
         rna_option = "no"
     ff4 = input("\nEnter name of general small molecule force field if needed (default=null)(e.g. leaprc.gaff2) This option will activate antechamber/sqm during MD prep unless it is left null.\n" )
     if(ff4 == "leaprc.gaff2"):
         antechamber_option = "yes"
+        print(antechamber_option)
     if(ff4 == ""):
         antechamber_option = "no"
     intgr = input("\nEnter type of integrator (default is Langevin)(options are Langevin, aMD, or Verlet\n" )
@@ -266,9 +267,9 @@ class Ui_Dialog(object):
         
         # hard code inputs
         self.lineEdit.setText("/usr/lib/ucsf-chimerax/bin/")
-        self.lineEdit_2.setText("179") # sites
-        self.lineEdit_3.setText("3") # visual frames per movie
-        self.lineEdit_4.setText("100") # MD frames per subsample
+        self.lineEdit_2.setText("") # sites
+        self.lineEdit_3.setText("100") # visual frames per movie
+        self.lineEdit_4.setText("50") # MD frames per subsample
         self.lineEdit_5.setText("40") # subsamples
         self.lineEdit_6.setText("") # N terminal start positions
         self.lineEdit_7.setText("1") # protein chain start position
@@ -290,14 +291,24 @@ class Ui_Dialog(object):
         self.label_5.setText(_translate("Dialog", "<html><head/><body><p><span style=\" font-weight:600;\">structure, topology, and trajectory files</span></p></body></html>"))
         self.label_6.setText(_translate("Dialog", "<html><head/><body><p><span style=\" color:#aa0000;\">comparative query files</span></p></body></html>"))
         self.label_7.setText(_translate("Dialog", "<html><head/><body><p><span style=\" color:#aa0000;\">comparative reference files (unbound)</span></p></body></html>"))
-        self.textEdit.setHtml(_translate("Dialog", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+        if(antechamber_option == "no"):
+            self.textEdit.setHtml(_translate("Dialog", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
 "</style></head><body style=\" font-family:\'Sans Serif\'; font-size:9pt; font-weight:400; font-style:normal;\">\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">%s.pdb</p>\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">wat_%s.prmtop</p>\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">prod_%s.nc</p></body></html>" % (inp1,inp1,inp1)))
-        self.textEdit_2.setHtml(_translate("Dialog", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+        if(antechamber_option == "yes"):
+            self.textEdit.setHtml(_translate("Dialog", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
+"p, li { white-space: pre-wrap; }\n"
+"</style></head><body style=\" font-family:\'Sans Serif\'; font-size:9pt; font-weight:400; font-style:normal;\">\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">%s.pdb</p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">wat_%s_complex.prmtop</p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">prod_%s_complex.nc</p></body></html>" % (inp2,inp2,inp2)))
+        if(antechamber_option == "yes" or antechamber_option == "no"):
+            self.textEdit_2.setHtml(_translate("Dialog", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
 "</style></head><body style=\" font-family:\'Sans Serif\'; font-size:9pt; font-weight:400; font-style:normal;\">\n"
@@ -452,9 +463,9 @@ class Ui_Dialog(object):
         if(dna_option == "yes"):
             out.write("ff2,%s,#DNA force field\n" % ff2)
         if(rna_option == "yes"):
-            out.write("ff3,%s,#RNA force field\n" % ff3)
+            out.write("ff2,%s,#RNA force field\n" % ff3)
         if(antechamber_option == "yes"):
-            out.write("ff4,%s,#small molecule force field\n" % ff4)
+            out.write("ff2,%s,#small molecule force field\n" % ff4)
         out.write("box_size,%s,#water box size\n" % wbox)
         out.write("integrator,%s,#integrator\n" % intgr)
         out.write("eq_len,%s,#length of equilibration\n" % eq_steps)
@@ -470,9 +481,9 @@ class Ui_Dialog(object):
         if(dna_option == "yes"):
             out.write("ff2,%s,#DNA force field\n" % ff2)
         if(rna_option == "yes"):
-            out.write("ff3,%s,#RNA force field\n" % ff3)
+            out.write("ff2,%s,#RNA force field\n" % ff3)
         if(antechamber_option == "yes"):
-            out.write("ff4,%s,#small molecule force field\n" % ff4)
+            out.write("ff2,%s,#small molecule force field\n" % ff4)
         out.write("box_size,%s,#water box size\n" % wbox)
         out.write("integrator,%s,#integrator\n" % intgr)
         out.write("eq_len,%s,#length of equilibration\n" % eq_steps)
@@ -488,9 +499,9 @@ class Ui_Dialog(object):
         if(dna_option == "yes"):
             out.write("ff2,%s,#DNA force field\n" % ff2)
         if(rna_option == "yes"):
-            out.write("ff3,%s,#RNA force field\n" % ff3)
+            out.write("ff2,%s,#RNA force field\n" % ff3)
         if(antechamber_option == "yes"):
-            out.write("ff4,%s,#small molecule force field\n" % ff4)
+            out.write("ff2,%s,#small molecule force field\n" % ff4)
         out.write("box_size,%s,#water box size\n" % wbox)
         out.write("integrator,%s,#integrator\n" % intgr)
         out.write("eq_len,%s,#length of equilibration\n" % eq_steps_vibfreq)
