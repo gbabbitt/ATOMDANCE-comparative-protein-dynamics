@@ -36,19 +36,23 @@ if(inp3 == "no"):
         ff1 = "leaprc.protein.ff14SB"
         print(ff1)
     ff2 = input("\nEnter name of DNA force field if needed (default=null)(e.g. leaprc.DNA.OL15)\n" )
-    if(ff2 == "leaprc.DNA.OL15" or inp1 == "1cdw_bound"):
+    if(ff2 != ""):
         dna_option = "yes"
+        print(dna_option)
+    if(inp1 == "1cdw_bound"):
+        dna_option = "yes"
+        ff2 = "leaprc.DNA.OL15"
         print(dna_option)
     if(ff2 == ""): 
         dna_option = "no" 
     ff3 = input("\nEnter name of RNA force field if needed (default=null)(e.g. leaprc.RNA.ROC)\n" )
-    if(ff3 == "leaprc.RNA.ROC"):
+    if(ff3 != ""):
         rna_option = "yes"
         print(rna_option)
     if(ff3 == ""):
         rna_option = "no"
     ff4 = input("\nEnter name of general small molecule force field if needed (default=null)(e.g. leaprc.gaff2) This option will activate antechamber/sqm during MD prep unless it is left null.\n" )
-    if(ff4 == "leaprc.gaff2"):
+    if(ff4 != ""):
         antechamber_option = "yes"
         print(antechamber_option)
     if(ff4 == ""):
@@ -306,7 +310,7 @@ class Ui_Dialog(object):
 "</style></head><body style=\" font-family:\'Sans Serif\'; font-size:9pt; font-weight:400; font-style:normal;\">\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">%s.pdb</p>\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">wat_%s_complex.prmtop</p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">prod_%s_complex.nc</p></body></html>" % (inp2,inp2,inp2)))
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">prod_%s_complex.nc</p></body></html>" % (inp1,inp2,inp2)))
         if(antechamber_option == "yes" or antechamber_option == "no"):
             self.textEdit_2.setHtml(_translate("Dialog", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
@@ -460,23 +464,28 @@ class Ui_Dialog(object):
         out = open("./MDr_aav.ctl", "w") 
         out.write("pdbID,%s,#pdb id for first structure\n" % reference_pdb)
         out.write("ff1,%s,#protein force field\n" % ff1)
-        if(dna_option == "yes"):
-            out.write("ff2,%s,#DNA force field\n" % ff2)
-        if(rna_option == "yes"):
-            out.write("ff2,%s,#RNA force field\n" % ff3)
-        if(antechamber_option == "yes"):
-            out.write("ff2,%s,#small molecule force field\n" % ff4)
+        #if(dna_option == "yes"):
+        #    out.write("ff2,%s,#DNA force field\n" % ff2)
+        #if(rna_option == "yes"):
+        #    out.write("ff2,%s,#RNA force field\n" % ff3)
+        #if(antechamber_option == "yes"):
+        #    out.write("ff2,%s,#small molecule force field\n" % ff4)
         out.write("box_size,%s,#water box size\n" % wbox)
         out.write("integrator,%s,#integrator\n" % intgr)
         out.write("eq_len,%s,#length of equilibration\n" % eq_steps)
         out.write("prod_len,%s,#length of production run\n" % prod_steps)
         out.write("prod_reps,%s,#sequential replicates of production (frames in the movie)\n" % prod_len)
-        out.write("antechamber,%s,#run antechamber\n" % antechamber_option)
+        #out.write("antechamber,%s,#run antechamber\n" % antechamber_option)
+        out.write("antechamber,no,#run antechamber\n")
         out.write("tleap_path,%s,#path to force field folder\n" % ff_path)
         out.close()
         
         out = open("./MDq_aav.ctl", "w")
-        out.write("pdbID,%s,#pdb id for first structure\n" % query_pdb)
+        #out.write("pdbID,%s,#pdb id for first structure\n" % query_pdb)
+        if(antechamber_option != "yes"):
+            out.write("pdbID,%s,#pdb id for first structure\n" % query_pdb)
+        if(antechamber_option == "yes"):
+            out.write("pdbID,%s,#pdb id for first structure\n" % reference_pdb)
         out.write("ff1,%s,#protein force field\n" % ff1)
         if(dna_option == "yes"):
             out.write("ff2,%s,#DNA force field\n" % ff2)
@@ -494,7 +503,11 @@ class Ui_Dialog(object):
         out.close()
         
         out = open("./MDq_aav_vibfreq.ctl", "w")
-        out.write("pdbID,%s,#pdb id for first structure\n" % query_pdb)
+        #out.write("pdbID,%s,#pdb id for first structure\n" % query_pdb)
+        if(antechamber_option != "yes"):
+            out.write("pdbID,%s,#pdb id for first structure\n" % query_pdb)
+        if(antechamber_option == "yes"):
+            out.write("pdbID,%s,#pdb id for first structure\n" % reference_pdb)
         out.write("ff1,%s,#protein force field\n" % ff1)
         if(dna_option == "yes"):
             out.write("ff2,%s,#DNA force field\n" % ff2)
