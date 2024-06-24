@@ -611,12 +611,15 @@ class Ui_Dialog(object):
         my_frames = self.horizontalSlider_2.value()*5000
         
         print("setting total number of frames to %s" % my_frames)
-        if(my_frames <= 5000):
+        if(my_frames <= 5000 and n_sites <= 500):
             cmd9 = "python3 aav_cpptraj_sampler.py"
             os.system(cmd9)
-        if(my_frames > 5000):
+        if(my_frames > 5000 and n_sites <= 500):
             cmd9 = "python3 aav_cpptraj_sampler_fast.py"
             os.system(cmd9)
+        if(n_sites > 500):
+            cmd9 = "python3 aav_cpptraj_sampler_fastest.py"
+            os.system(cmd9)    
         cmd10 = "python3 aav_cpptraj_sampler_all.py"
         os.system(cmd10)
         # setting for loop to set value of progress bar 

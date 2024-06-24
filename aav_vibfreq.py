@@ -73,6 +73,12 @@ for x in range(len(infile_lines)):
     if(header == "queryTRAJ"):
         query_traj = value
         print("my query TRAJ is",query_traj)
+        m = re.search("_complex", query_traj)
+        if m:
+           antechamber_option = "yes"
+        else:
+           antechamber_option = "no"
+        print("antechamber_option",antechamber_option)
     if(header == "referenceTRAJ"):
         ref_traj = value
         print("my reference TRAJ is",ref_traj)
@@ -120,7 +126,10 @@ PDB_file_reference = ""+ref_pdb+""
 top_file_query = ""+query_top+""
 top_file_reference = ""+ref_top+""
 #traj_file_query = ""+query_traj+""
-traj_file_query = "prod_"+query_id+"_vibfreq.nc"
+if(antechamber_option == "no"):
+    traj_file_query = "prod_"+query_id+"_vibfreq.nc"
+if(antechamber_option == "yes"):
+    traj_file_query = "prod_"+ref_id+"_complex_vibfreq.nc"
 traj_file_reference = ""+ref_traj+""
 subsamples = int(sub_samples)
 frame_size = int(fr_sz)
@@ -135,8 +144,6 @@ disc_anal = ""+disc_anal+""
 coord_anal = ""+coord_anal+""
 snd_anal = ""+snd_anal+""
 mvr_anal = ""+mvr_anal+""
-
-
 
 ###############################################################################
 ###############################################################################
@@ -378,6 +385,7 @@ def calculate_vibfreq():
         num=h_num # must be 3, 9, 33, 99, 101, 303, 909, 1111, 3333 etc
         if(h_num > 4000):
             num=3333
+        print("will use %s %s" % (num, h_num))
         myXYZ = chunkIt(myXYZ, num)
         myXYZ = np.array(myXYZ, dtype=object)
         #print(myXYZ.ndim)
@@ -542,7 +550,8 @@ def map_vibf_query():
 ###############################################################
 
 def main():
-    calculate_auxplots()   
+    if(n_frames <= 5000 and length_prot < 500):
+        calculate_auxplots()   
     calculate_vibfreq()
     sound_aa()
     adjust_pitch()
