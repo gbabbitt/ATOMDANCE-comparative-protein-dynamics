@@ -606,6 +606,7 @@ class Ui_Dialog(object):
        
     def runCPPTRAJ(self):
         import time
+        n_sites = int(self.lineEdit_2.text())
         # start subsampling
         print("starting trajectory subsampling")
         my_frames = self.horizontalSlider_2.value()*5000
