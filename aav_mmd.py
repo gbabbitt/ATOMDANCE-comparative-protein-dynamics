@@ -27,8 +27,11 @@ from pandas.api.types import CategoricalDtype
 from plotnine import *
 #from plotnine.data import mpg
 
-
-
+inp = input("Enter background color for molecular dynamic movie (e.g. white, gray, or black)")
+if(inp == "black"):
+    trns = 70
+else:
+    trns = 50
 ################################################################################
 # READ CONTROL FORM
 # read atomdance ctl file
@@ -465,8 +468,8 @@ def compare_dynamics_MMD_flux():
     #f5.write("palette\tGreens-5\n")
     f5.write("palette\tbluered\n")
     f5.write("lighting\tsimple\n")
-    f5.write("transparency\t50\n")
-    f5.write("background\tgray\n")
+    f5.write("transparency\t%s\n" % trns)
+    f5.write("background\t%s\n" % inp)
     f6.write("recipient: residues\n")
     f6.write("attribute: MMD\n")
     f6.write("\n")
@@ -505,8 +508,8 @@ def compare_dynamics_MMD_flux():
     #f5.write("palette\tGreens-5\n")
     f5.write("palette\tbluered\n")
     f5.write("lighting\tsimple\n")
-    f5.write("transparency\t50\n")
-    f5.write("background\tgray\n")
+    f5.write("transparency\t%s\n" % trns)
+    f5.write("background\t%s\n" % inp)
     f6.write("recipient: residues\n")
     f6.write("attribute: MMDsig\n")
     f6.write("\n")
