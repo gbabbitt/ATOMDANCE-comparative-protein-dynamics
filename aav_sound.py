@@ -288,6 +288,8 @@ def combine_choir():
                 myMax = max(strikeKeys)
                 myMIN = min(strikeKeys)
                 myInterval = 250-int(250*MMDsum) # stronger binding results in shorter time intervals
+                if(myInterval <= 10):
+                    myInterval = 10 # dont let intervals go negative
                 strInterval = str(myInterval)
                 f_int.write("%s," % strInterval)
                 myVolume = int(1000*myMax)
@@ -304,23 +306,24 @@ def combine_choir():
         for i in range(line_count-1):
             # combine/overlay choir files
             if(i==0):
+                wave_file_start = AudioSegment.from_file('coordinatedDynamics_%s/movieFrame_%s/aa_adjusted_choir_fixInt_0.wav' % (PDB_id_reference,m))  
+            aa3 = str(i+1)
+            wave_file_next = AudioSegment.from_file('coordinatedDynamics_%s/movieFrame_%s/aa_adjusted_choir_fixInt_%s.wav' % (PDB_id_reference,m,aa3))
+            wave_file_combined = wave_file_start.overlay(wave_file_next, position=0, loop=True, gain_during_overlay=-4) # overlay
+            wave_file_start = wave_file_combined                    
+            wave_file_combined.export('coordinatedDynamics_%s/movieFrame_%s/aa_adjusted_combinedChoirs_fixInt.wav' % (PDB_id_reference,m), format="wav")
+    for m in range(m_frames):          
+        print("combining choir sections for %s - movie frame %s" % (PDB_id_reference,m))
+        for i in range(line_count-1):
+            # combine/overlay choir files
+            if(i==0):
                 wave_file_start = AudioSegment.from_file('coordinatedDynamics_%s/movieFrame_%s/aa_adjusted_choir_0.wav' % (PDB_id_reference,m))  
             aa3 = str(i+1)
             wave_file_next = AudioSegment.from_file('coordinatedDynamics_%s/movieFrame_%s/aa_adjusted_choir_%s.wav' % (PDB_id_reference,m,aa3))
             wave_file_combined = wave_file_start.overlay(wave_file_next, position=0, loop=True, gain_during_overlay=-4) # overlay
             wave_file_start = wave_file_combined                    
             wave_file_combined.export('coordinatedDynamics_%s/movieFrame_%s/aa_adjusted_combinedChoirs.wav' % (PDB_id_reference,m), format="wav")
-    for m in range(m_frames):          
-        print("combining choir sections for %s - movie frame %s" % (PDB_id_reference,m))
-        for i in range(line_count-1):
-            # combine/overlay choir files
-            if(i==0):
-                wave_file_start = AudioSegment.from_file('coordinatedDynamics_%s/movieFrame_%s/aa_adjusted_choir_fixInt_0.wav' % (PDB_id_reference,m))  
-            aa3 = str(i+1)
-            wave_file_next = AudioSegment.from_file('coordinatedDynamics_%s/movieFrame_%s/aa_adjusted_choir_fixInt_%s.wav' % (PDB_id_reference,m,aa3))
-            wave_file_combined = wave_file_start.overlay(wave_file_next, position=0, loop=True, gain_during_overlay=-4) # overlay
-            wave_file_start = wave_file_combined                    
-            wave_file_combined.export('coordinatedDynamics_%s/movieFrame_%s/aa_adjusted_combinedChoirs_fixInt.wav' % (PDB_id_reference,m), format="wav")          
+              
 def merge_final_file():
     for m in range(m_frames-1):
         print("final file merge for %s - movie frame %s" % (PDB_id_reference,m))                  

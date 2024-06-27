@@ -27,7 +27,7 @@ from pandas.api.types import CategoricalDtype
 from plotnine import *
 #from plotnine.data import mpg
 
-inp = input("Enter background color for molecular dynamic movie (e.g. white, gray, or black)")
+inp = input("\nEnter background color for molecular dynamic movie (e.g. white, gray, or black)\n")
 if(inp == "black"):
     trns = 70
 else:
