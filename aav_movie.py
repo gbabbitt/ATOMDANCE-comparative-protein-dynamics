@@ -352,67 +352,55 @@ def multiframe_pdb():
     cmd2 = "cpptraj -p %s -y proteinInteraction_movie_%s/mfPDB_%s.nc -x proteinInteraction_movie_%s/mfPDB_%s.pdb" % (top_file_query, PDB_id_reference, PDB_id_query, PDB_id_reference, PDB_id_query)
     os.system(cmd2)
     
-    """
-    if not os.path.exists('proteinInteraction_movie_%s/traj' % PDB_id_reference):
-           os.makedirs('proteinInteraction_movie_%s/traj' % PDB_id_reference)
-    if not os.path.exists('proteinInteraction_movie_%s/multiframePDBs' % PDB_id_reference):
-           os.makedirs('proteinInteraction_movie_%s/multiframePDBs' % PDB_id_reference)
-    # make multiframe PDB for each movie frame
-    m_range = int(n_frames/m_frames)
-    start = 1 
-    stop = start + m_range
-    for m in range(m_frames): # loop through movie frames
-    #for m in range(2):
-        print("making cpptraj .ctl fils on movie frame %s" % m)
-        print("using frames from %s to %s" % (start, stop))
-        f1 = open("proteinInteraction_movie_%s/traj/multiFramePDB_%s_%s.ctl" % (PDB_id_reference, PDB_id_query, m), "w")
-        f1.write("parm %s\n" % top_file_query)
-        f1.write("trajin %s %s %s 10\n" % (traj_file_query, start, stop))  # 10 is offset step to keep file size small
-        #f1.write("autoimage\n")
-        #f1.write("rms fit :1-%s\n" % length_prot)
-        f1.write("trajout proteinInteraction_movie_%s/traj/PDB_%s_%s.nc\n" % (PDB_id_reference, PDB_id_query, m))
-        f1.write("run\n")
-        f1.close()
-        start = stop
-        stop = start + m_range
-    for m in range(m_frames): # loop through movie frames
-    #for m in range(2):  
-        print("movie frame %s - calculating trajectory for query protein" % m)
-        cmd1 = 'cpptraj -i proteinInteraction_movie_%s/traj/multiFramePDB_%s_%s.ctl' % (PDB_id_reference,PDB_id_query,m)
-        os.system(cmd1)
-    for m in range(m_frames): # loop through movie frames
-    #for m in range(2):   
-        print("movie frame %s - converting .nc file to multiframe .pdb file")
-        cmd2 = "cpptraj -p %s -y proteinInteraction_movie_%s/traj/PDB_%s_%s.nc -x proteinInteraction_movie_%s/multiframePDBs/PDB_%s_%s.pdb" % (top_file_query, PDB_id_reference, PDB_id_query, m, PDB_id_reference, PDB_file_query, m)
-        os.system(cmd2)
-   """
-    
-def pdb_image_parse_for_movie():
+        
+def MMDpdb_image_parse_for_movie():
     print("generating pdb stills for %s" % PDB_id_reference)
     if not os.path.exists('proteinInteraction_movie_%s' % PDB_id_reference):
            os.makedirs('proteinInteraction_movie_%s' % PDB_id_reference)
-    if not os.path.exists('proteinInteraction_movie_%s/pdb_stills' % PDB_id_reference):
-           os.makedirs('proteinInteraction_movie_%s/pdb_stills' % PDB_id_reference)
+    if not os.path.exists('proteinInteraction_movie_%s/pdb_stills_mmd' % PDB_id_reference):
+           os.makedirs('proteinInteraction_movie_%s/pdb_stills_mmd' % PDB_id_reference)
     # collect pdb images
     print("mapping MMD to protein %s" % PDB_id_reference)
     cmd = "%sChimeraX color_by_attr_chimerax_MMD_flux_aav.py" % chimerax_path
     os.system(cmd)
 
-def pdb_image_parse_for_180_movie():
+def MMDpdb_image_parse_for_180_movie():
     print("generating pdb stills for %s" % PDB_id_reference)
     if not os.path.exists('proteinInteraction_movie_%s' % PDB_id_reference):
            os.makedirs('proteinInteraction_movie_%s' % PDB_id_reference)
-    if not os.path.exists('proteinInteraction_movie_%s/pdb_stills_180' % PDB_id_reference):
-           os.makedirs('proteinInteraction_movie_%s/pdb_stills_180' % PDB_id_reference)
+    if not os.path.exists('proteinInteraction_movie_%s/pdb_stills_180_mmd' % PDB_id_reference):
+           os.makedirs('proteinInteraction_movie_%s/pdb_stills_180_mmd' % PDB_id_reference)
     # collect pdb images
     print("mapping MMD to protein %s" % PDB_id_reference)
     cmd = "%sChimeraX color_by_attr_chimerax_MMD_flux_180_aav.py" % chimerax_path
     os.system(cmd)
 
-def create_fixInt_video_from_pdb():
+def NETpdb_image_parse_for_movie():
+    print("generating pdb stills for %s" % PDB_id_reference)
+    if not os.path.exists('proteinInteraction_movie_%s' % PDB_id_reference):
+           os.makedirs('proteinInteraction_movie_%s' % PDB_id_reference)
+    if not os.path.exists('proteinInteraction_movie_%s/pdb_stills_net' % PDB_id_reference):
+           os.makedirs('proteinInteraction_movie_%s/pdb_stills_net' % PDB_id_reference)
+    # collect pdb images
+    print("mapping MMD to protein %s" % PDB_id_reference)
+    cmd = "%sChimeraX color_by_attr_chimerax_NET_intQ_aav.py" % chimerax_path
+    os.system(cmd)
+
+def NETpdb_image_parse_for_180_movie():
+    print("generating pdb stills for %s" % PDB_id_reference)
+    if not os.path.exists('proteinInteraction_movie_%s' % PDB_id_reference):
+           os.makedirs('proteinInteraction_movie_%s' % PDB_id_reference)
+    if not os.path.exists('proteinInteraction_movie_%s/pdb_stills_180_net' % PDB_id_reference):
+           os.makedirs('proteinInteraction_movie_%s/pdb_stills_180_net' % PDB_id_reference)
+    # collect pdb images
+    print("mapping MMD to protein %s" % PDB_id_reference)
+    cmd = "%sChimeraX color_by_attr_chimerax_NET_intQ_180_aav.py" % chimerax_path
+    os.system(cmd)
+
+def create_fixInt_video_from_MMDpdb():
     print("generating pdb movie for %s" % PDB_id_reference)
-    folder = "proteinInteraction_movie_%s/pdb_stills" % PDB_id_reference
-    video_filename = "proteinInteraction_movie_%s/myMovie_fixInt_pdb.mp4" % PDB_id_reference
+    folder = "proteinInteraction_movie_%s/pdb_stills_mmd" % PDB_id_reference
+    video_filename = "proteinInteraction_movie_%s/myMovie_fixInt_MMDpdb.mp4" % PDB_id_reference
     valid_images = [i for i in os.listdir(folder) if i.endswith((".jpg", ".jpeg", ".png"))]
     #print(valid_images)
     each_image_duration = 1 # 1 second
@@ -429,10 +417,10 @@ def create_fixInt_video_from_pdb():
 
     vid_writer.release()
  
-def create_fixInt_180_video_from_pdb():
+def create_fixInt_180_video_from_MMDpdb():
     print("generating pdb movie for %s" % PDB_id_reference)
-    folder = "proteinInteraction_movie_%s/pdb_stills_180" % PDB_id_reference
-    video_filename = "proteinInteraction_movie_%s/myMovie_fixInt_180_pdb.mp4" % PDB_id_reference
+    folder = "proteinInteraction_movie_%s/pdb_stills_180_mmd" % PDB_id_reference
+    video_filename = "proteinInteraction_movie_%s/myMovie_fixInt_180_MMDpdb.mp4" % PDB_id_reference
     valid_images = [i for i in os.listdir(folder) if i.endswith((".jpg", ".jpeg", ".png"))]
     #print(valid_images)
     each_image_duration = 1 # 1 second
@@ -449,11 +437,51 @@ def create_fixInt_180_video_from_pdb():
 
     vid_writer.release()
 
-def combine_fixInt_audio_video_pdb():
+def create_fixInt_video_from_NETpdb():
+    print("generating pdb movie for %s" % PDB_id_reference)
+    folder = "proteinInteraction_movie_%s/pdb_stills_net" % PDB_id_reference
+    video_filename = "proteinInteraction_movie_%s/myMovie_fixInt_NETpdb.mp4" % PDB_id_reference
+    valid_images = [i for i in os.listdir(folder) if i.endswith((".jpg", ".jpeg", ".png"))]
+    #print(valid_images)
+    each_image_duration = 1 # 1 second
+    first_image = cv2.imread(os.path.join(folder, valid_images[1]))
+    h, w, _ = first_image.shape
+
+    codec = cv2.VideoWriter_fourcc(*'mp4v')
+    vid_writer = cv2.VideoWriter(video_filename, codec, 4.0, (w, h))  # convert to constant rate of 0.25 sec
+
+    for img in valid_images:
+        loaded_img = cv2.imread(os.path.join(folder, img))
+        for _ in range(each_image_duration):
+            vid_writer.write(loaded_img)
+
+    vid_writer.release()
+ 
+def create_fixInt_180_video_from_NETpdb():
+    print("generating pdb movie for %s" % PDB_id_reference)
+    folder = "proteinInteraction_movie_%s/pdb_stills_180_net" % PDB_id_reference
+    video_filename = "proteinInteraction_movie_%s/myMovie_fixInt_180_NETpdb.mp4" % PDB_id_reference
+    valid_images = [i for i in os.listdir(folder) if i.endswith((".jpg", ".jpeg", ".png"))]
+    #print(valid_images)
+    each_image_duration = 1 # 1 second
+    first_image = cv2.imread(os.path.join(folder, valid_images[1]))
+    h, w, _ = first_image.shape
+
+    codec = cv2.VideoWriter_fourcc(*'mp4v')
+    vid_writer = cv2.VideoWriter(video_filename, codec, 4.0, (w, h))  # convert to constant rate of 0.25 sec
+
+    for img in valid_images:
+        loaded_img = cv2.imread(os.path.join(folder, img))
+        for _ in range(each_image_duration):
+            vid_writer.write(loaded_img)
+
+    vid_writer.release()
+
+def combine_fixInt_audio_video_MMDpdb():
     # map MMD in chimerax
     print("combining audio and video for movie for %s" % PDB_id_reference)
     audio_file = "proteinInteraction_movie_%s/mySound_fixInt.wav" % PDB_id_reference
-    video_file = "proteinInteraction_movie_%s/myMovie_fixInt_pdb.mp4" % PDB_id_reference
+    video_file = "proteinInteraction_movie_%s/myMovie_fixInt_MMDpdb.mp4" % PDB_id_reference
     wave_file = AudioSegment.from_file('proteinInteraction_movie_%s/mySound_fixInt.wav' % PDB_id_reference)
     #wave_file_trim = wave_file[0000:8000] # 8 second fit to movie file             
     #wave_file_trim.export('proteinInteraction_movie_%s/mySound_trim.wav' % PDB_id_reference, format="wav")
@@ -471,14 +499,14 @@ def combine_fixInt_audio_video_pdb():
     # add the final audio to the video
     final_clip = video_clip.set_audio(audio_clip)
     # save the final clip
-    final_clip.write_videofile("proteinInteraction_movie_%s/myMovieSound_fixInt_pdb.mp4" % PDB_id_reference)
+    final_clip.write_videofile("proteinInteraction_movie_%s/myMovieSound_fixInt_MMDpdb.mp4" % PDB_id_reference)
 
 
-def combine_fixInt_audio_180_video_pdb():
+def combine_fixInt_audio_180_video_MMDpdb():
     # map MMD in chimerax
     print("combining audio and video for movie for %s" % PDB_id_reference)
     audio_file = "proteinInteraction_movie_%s/mySound_fixInt.wav" % PDB_id_reference
-    video_file = "proteinInteraction_movie_%s/myMovie_fixInt_180_pdb.mp4" % PDB_id_reference
+    video_file = "proteinInteraction_movie_%s/myMovie_fixInt_180_MMDpdb.mp4" % PDB_id_reference
     wave_file = AudioSegment.from_file('proteinInteraction_movie_%s/mySound_fixInt.wav' % PDB_id_reference)
     #wave_file_trim = wave_file[0000:8000] # 8 second fit to movie file             
     #wave_file_trim.export('proteinInteraction_movie_%s/mySound_trim.wav' % PDB_id_reference, format="wav")
@@ -496,7 +524,56 @@ def combine_fixInt_audio_180_video_pdb():
     # add the final audio to the video
     final_clip = video_clip.set_audio(audio_clip)
     # save the final clip
-    final_clip.write_videofile("proteinInteraction_movie_%s/myMovieSound_fixInt_180_pdb.mp4" % PDB_id_reference)
+    final_clip.write_videofile("proteinInteraction_movie_%s/myMovieSound_fixInt_180_MMDpdb.mp4" % PDB_id_reference)
+
+def combine_fixInt_audio_video_NETpdb():
+    # map MMD in chimerax
+    print("combining audio and video for movie for %s" % PDB_id_reference)
+    audio_file = "proteinInteraction_movie_%s/mySound_fixInt.wav" % PDB_id_reference
+    video_file = "proteinInteraction_movie_%s/myMovie_fixInt_NETpdb.mp4" % PDB_id_reference
+    wave_file = AudioSegment.from_file('proteinInteraction_movie_%s/mySound_fixInt.wav' % PDB_id_reference)
+    #wave_file_trim = wave_file[0000:8000] # 8 second fit to movie file             
+    #wave_file_trim.export('proteinInteraction_movie_%s/mySound_trim.wav' % PDB_id_reference, format="wav")
+    #audio_file = "proteinInteraction_movie_%s/mySound_trim.wav" % PDB_id_reference
+    # load the video
+    video_clip = VideoFileClip(video_file)
+    # load the audio
+    audio_clip = AudioFileClip(audio_file)
+    #start = 0
+    # if end is not set, use video clip's end
+    #end = video_clip.end
+    
+    # setting the start & end of the audio clip to `start` and `end` paramters
+    #audio_clip = audio_clip.subclip(start, end)
+    # add the final audio to the video
+    final_clip = video_clip.set_audio(audio_clip)
+    # save the final clip
+    final_clip.write_videofile("proteinInteraction_movie_%s/myMovieSound_fixInt_NETpdb.mp4" % PDB_id_reference)
+
+
+def combine_fixInt_audio_180_video_NETpdb():
+    # map MMD in chimerax
+    print("combining audio and video for movie for %s" % PDB_id_reference)
+    audio_file = "proteinInteraction_movie_%s/mySound_fixInt.wav" % PDB_id_reference
+    video_file = "proteinInteraction_movie_%s/myMovie_fixInt_180_NETpdb.mp4" % PDB_id_reference
+    wave_file = AudioSegment.from_file('proteinInteraction_movie_%s/mySound_fixInt.wav' % PDB_id_reference)
+    #wave_file_trim = wave_file[0000:8000] # 8 second fit to movie file             
+    #wave_file_trim.export('proteinInteraction_movie_%s/mySound_trim.wav' % PDB_id_reference, format="wav")
+    #audio_file = "proteinInteraction_movie_%s/mySound_trim.wav" % PDB_id_reference
+    # load the video
+    video_clip = VideoFileClip(video_file)
+    # load the audio
+    audio_clip = AudioFileClip(audio_file)
+    #start = 0
+    # if end is not set, use video clip's end
+    #end = video_clip.end
+    
+    # setting the start & end of the audio clip to `start` and `end` paramters
+    #audio_clip = audio_clip.subclip(start, end)
+    # add the final audio to the video
+    final_clip = video_clip.set_audio(audio_clip)
+    # save the final clip
+    final_clip.write_videofile("proteinInteraction_movie_%s/myMovieSound_fixInt_180_NETpdb.mp4" % PDB_id_reference)
 
 def create_single_model_pdb():
     print("generating single model pdb files for %s" % PDB_id_reference)
@@ -542,21 +619,34 @@ def create_single_model_pdb():
 ###############################################################
 ###############################################################
 def main():
+    """
+    ###  MMD plot movie ###
     still_image_parse_for_varInt_movie()
     still_image_parse_for_fixInt_movie()
     #create_varInt_video_from_images()
     create_fixInt_video_from_images()
     #combine_varInt_audio_video()
     combine_fixInt_audio_video()
+    
+    #### PDB model parsing ####
     multiframe_pdb()
     create_single_model_pdb()
-    pdb_image_parse_for_movie()
-    create_fixInt_video_from_pdb()
-    combine_fixInt_audio_video_pdb()
-    pdb_image_parse_for_180_movie()
-    create_fixInt_180_video_from_pdb()
-    combine_fixInt_audio_180_video_pdb()
     
+    ##### MMD movies ########
+    MMDpdb_image_parse_for_movie()
+    create_fixInt_video_from_MMDpdb()
+    combine_fixInt_audio_video_MMDpdb()
+    MMDpdb_image_parse_for_180_movie()
+    create_fixInt_180_video_from_MMDpdb()
+    combine_fixInt_audio_180_video_MMDpdb()
+    """
+    ##### NETWORK movies #####
+    NETpdb_image_parse_for_movie()
+    create_fixInt_video_from_NETpdb()
+    combine_fixInt_audio_video_NETpdb()
+    NETpdb_image_parse_for_180_movie()
+    create_fixInt_180_video_from_NETpdb()
+    combine_fixInt_audio_180_video_NETpdb()
     
 ###############################################################
 if __name__ == '__main__':

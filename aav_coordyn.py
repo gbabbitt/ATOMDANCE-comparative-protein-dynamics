@@ -1439,8 +1439,8 @@ def network_plot_int_query(inp1, inp2):
     #f5.write("palette\tGreens-5\n")
     f5.write("palette\tSet2-8\n")
     f5.write("lighting\tsimple\n")
-    f5.write("transparency\t50\n")
-    f5.write("background\tgray\n")
+    f5.write("transparency\t70\n")
+    f5.write("background\tblack\n")
     f6.write("recipient: residues\n")
     f6.write("attribute: NET\n")
     f6.write("\n")
@@ -1704,8 +1704,8 @@ def network_plot_int_reference(inp1, inp2):
     #f5.write("palette\tGreens-5\n")
     f5.write("palette\tSet2-8\n")
     f5.write("lighting\tsimple\n")
-    f5.write("transparency\t50\n")
-    f5.write("background\tgray\n")
+    f5.write("transparency\t70\n")
+    f5.write("background\tblack\n")
     f6.write("recipient: residues\n")
     f6.write("attribute: NET\n")
     f6.write("\n")
@@ -2023,8 +2023,8 @@ def network_plot_site_query():
     #f5.write("palette\tGreens-5\n")
     f5.write("palette\tSet3-12\n")
     f5.write("lighting\tsimple\n")
-    f5.write("transparency\t50\n")
-    f5.write("background\tgray\n")
+    f5.write("transparency\t70\n")
+    f5.write("background\tblack\n")
     f6.write("recipient: residues\n")
     f6.write("attribute: NET\n")
     f6.write("\n")
@@ -2110,8 +2110,8 @@ def network_plot_site_reference():
     #f5.write("palette\tGreens-5\n")
     f5.write("palette\tSet3-12\n")
     f5.write("lighting\tsimple\n")
-    f5.write("transparency\t50\n")
-    f5.write("background\tgray\n")
+    f5.write("transparency\t70\n")
+    f5.write("background\tblack\n")
     f6.write("recipient: residues\n")
     f6.write("attribute: NET\n")
     f6.write("\n")
@@ -2199,6 +2199,91 @@ def complot_disc():
     g42.savefig("coordinatedDynamics_%s/NETWORKcommunities_light.png" % PDB_id_reference)
     g31 = (g3)/g1
     g31.savefig("coordinatedDynamics_%s/NETWORKcommunities_dark.png" % PDB_id_reference)
+
+def movie_parse():
+    print("setting up chimerax .ctl and .dat files for each movie frame\n")
+    if not os.path.exists('ChimeraXvis_%s/NETctl' % (PDB_id_reference)):
+        os.mkdir('ChimeraXvis_%s/NETctl' % (PDB_id_reference))
+    for m in range(m_frames):  
+        mdl = str(m+1)
+        myMODEL = "model\t#1.%s\n" % mdl
+        myPDB = "structure\tproteinInteraction_movie_%s/pdb_files/sfPDB_%s_%s.pdb\n" % (PDB_id_reference,PDB_id_query,mdl)
+        myATTR = "attr_file\tChimeraXvis_%s/NETdat/attributeNET_intQ_%s.dat\n" % (PDB_id_reference,mdl)
+        print("movie frame %s - setting up chimerax .ctl files" % mdl)
+        readPath = "ChimeraXvis_NET_intQ.ctl"
+        writePath = "ChimeraXvis_%s/NETctl/ChimeraXvis_NET_intQ_%s.ctl" % (PDB_id_reference,str(m))
+        f_in = open(readPath, 'r')
+        lines = f_in.readlines()
+        f_out = open(writePath, 'w')
+        for line in lines:
+            #print(line)
+            elements = line.split()
+            rowHeader = elements[0]
+            #print(rowHeader)
+            if(rowHeader == "model"):
+                f_out.write(myMODEL)
+                continue
+            if(rowHeader == "structure"):
+                f_out.write(myPDB)
+                continue
+            if(rowHeader == "structureADD"):
+                continue
+            if(rowHeader == "attr_file"):
+                f_out.write(myATTR)
+                continue
+            # adjust transparency to MMD
+            if(rowHeader == "transparency"):
+                mmdPath = "maxMeanDiscrepancy_%s/movieFrame_%s/maxMeanDiscrepancy_flux.txt" % (PDB_id_reference, m)
+                f_mmd = open(mmdPath, 'r')
+                linesMMD = f_mmd.readlines()
+                #print(linesMMD)
+                # find maximum value of abs(MMD)
+                maxMMD = 0
+                for l in linesMMD:
+                    elements_mmd = l.split()
+                    pos = elements_mmd[0]
+                    mmd = elements_mmd[2]
+                    if(pos=="pos"): # skip header
+                        continue
+                    #print("%s %s\n" % (pos,mmd))
+                    mmd = abs(float(mmd))
+                    if(mmd >= maxMMD):
+                        maxMMD = mmd
+                #print("my maxMMD = %s" % maxMMD)
+                for l in linesMMD:
+                    elements_mmd = l.split()
+                    pos = elements_mmd[0]
+                    mmd = elements_mmd[2]
+                    if(pos=="pos"): # skip header
+                        continue
+                    #print("%s %s\n" % (pos,mmd))
+                    mmd = abs(float(mmd))
+                    trns = int(mmd/maxMMD*100)
+                    myTRANS = "transparency\t:%s\t%s\t target s\n" % (pos,trns)
+                    f_out.write(myTRANS)
+                #print("my transparency = %s" % trns)
+                continue
+            else:
+                f_out.write(line)
+        f_out.close
+        f_in.close
+    if not os.path.exists('ChimeraXvis_%s/NETdat' % (PDB_id_reference)):
+        os.mkdir('ChimeraXvis_%s/NETdat' % (PDB_id_reference))
+    for m in range(m_frames):  
+        mdl = str(m)
+        print("movie frame %s - setting up chimerax .dat files" % mdl)
+        readPath = "ChimeraXvis/attributeNET_intQ.dat"
+        writePath = "ChimeraXvis_%s/NETdat/attributeNET_intQ_%s.dat" % (PDB_id_reference,mdl)
+        f_in = open(readPath, 'r')
+        lines = f_in.readlines()
+        f_out = open(writePath, 'w')
+        for line in lines:
+            #print(line)
+            #elements = line.split()
+            #rowHeader = elements[0]
+            f_out.write(line)
+        f_out.close
+        f_in.close
 ###############################################################
 ###############################################################
 
@@ -2242,6 +2327,8 @@ def main():
     
     if(disc_anal == "yes"):
         complot_disc()
+    
+    movie_parse()
         
     print("comparative analyses of molecular dynamics is completed")
     
