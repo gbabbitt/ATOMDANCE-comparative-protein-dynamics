@@ -2258,7 +2258,7 @@ def movie_parse():
                         continue
                     #print("%s %s\n" % (pos,mmd))
                     mmd = abs(float(mmd))
-                    trns = int(mmd/maxMMD*100)
+                    trns = 100 - int(mmd/maxMMD*100)
                     myTRANS = "transparency\t:%s\t%s\t target s\n" % (pos,trns)
                     f_out.write(myTRANS)
                 #print("my transparency = %s" % trns)

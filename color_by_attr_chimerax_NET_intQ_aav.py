@@ -83,9 +83,9 @@ for m in range(m_frames-1):
         if(header == "lighting"):
             lighting_id = value
             print("my lighting is",lighting_id)
-        if(header == "transparency"):
-            transparency_id = value
-            print("my transparency level is",transparency_id)
+        #if(header == "transparency"):
+        #    transparency_id = value
+        #    print("my transparency level is",transparency_id)
         if(header == "background"):
             background_id = value
             print("my background is",background_id)
@@ -103,7 +103,7 @@ for m in range(m_frames-1):
     palette = ""+palette_id+""  # Greys-5 for classification OR bluered for KL divergences
     light_setting = ""+lighting_id+"" # simple, soft, or full
     #trans_setting = ""+transparency_id+""
-    trans_setting = str(50)
+    #trans_setting = str(50)
     bgcolor = ""+background_id+""  # white, gray or black
     
     #set manual color range for MMD
@@ -117,7 +117,19 @@ for m in range(m_frames-1):
     run(session, "defattr :1-"+length+" "+attr_file+"")
     #run(session, "color byattribute "+attr+" range "+minval+", "+maxval+" palette "+palette+"")
     run(session, "color byattribute "+attr+" palette "+palette+"")
-    run(session, "transparency "+trans_setting+"")
+    #run(session, "transparency "+trans_setting+"")
+    f_in = open("ChimeraXvis_%s/NETctl/ChimeraXvis_NET_intQ_%s.ctl" % (PDB_id_reference,m_str), "r")
+    f_in_lines = f_in.readlines()
+    for l in range(len(f_in_lines)):
+        f_in_line = f_in_lines[l]
+        #print(f_in_line)
+        f_in_line_array = str.split(f_in_line, "\t")
+        header = f_in_line_array[0]
+        if(header != "transparency"):
+            continue
+        if(header == "transparency"):
+            #print(f_in_line)
+            run(session, ""+f_in_line+"")
     run(session, "graphics silhouettes true")
     #run(session, "turn x 1 180")
     run(session, "set bgcolor "+bgcolor+"")
