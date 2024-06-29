@@ -36,7 +36,7 @@ for m in range(m_frames-1):
 #for m in range(3):
     ctlPath = "ChimeraXvis_%s/MMDctl/ChimeraXvis_MMD_flux_%s.ctl" % (PDB_id_reference,m)
     readPath = "ChimeraXvis_%s/MMDdat/attributeMMD_flux_%s.dat" % (PDB_id_reference,m)
-    writePath = "proteinInteraction_movie_%s/pdb_stills_180/MMD_pdb_%s.png" % (PDB_id_reference,m)
+    writePath = "proteinInteraction_movie_%s/pdb_stills_180_mmd/MMD_pdb_%s.png" % (PDB_id_reference,m)
     m_str = str(m)
     ################################################
     print("set symmetric color range\n")
@@ -149,7 +149,7 @@ for m in range(m_frames-1):
     ################################################
     run(session, "open "+pdb_ref+"")
     run(session, "sel "+model+"")
-    run(session, "turn y 90")
+    run(session, "turn y 180")
     run(session, "lighting "+light_setting+"")
     run(session, "surface")
     run(session, "defattr :1-"+length+" "+attr_file+"")
