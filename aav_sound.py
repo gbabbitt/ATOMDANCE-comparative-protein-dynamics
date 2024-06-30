@@ -164,7 +164,7 @@ print(stop_chains)
 print(label_chains)
 
 
-inp = input("\nWill sound represent binding interaction or activation response? (type 'binding' or 'activation')\n" )
+inp = input("\nWill sound represent binding interaction or activation response? (type 'binding' or 'activation' | default is 'binding')\n" )
 if(inp == "binding" or inp == ""):
     print("selection is %s" % inp)
 if(inp == "activation"):
@@ -173,6 +173,7 @@ if(inp != "activation" and inp != "binding" and inp!= ""):
     print("selection is INCORRECT as %s" % inp)
     time.sleep(2)
     print("changing to default...")
+    inp == "binding"
     time.sleep(2)
 
 ################################################################################

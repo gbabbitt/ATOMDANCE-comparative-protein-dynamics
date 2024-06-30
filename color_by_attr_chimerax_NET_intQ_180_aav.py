@@ -126,9 +126,9 @@ for m in range(m_frames-1):
         #print(f_in_line)
         f_in_line_array = str.split(f_in_line, "\t")
         header = f_in_line_array[0]
-        if(header != "transparency"):
+        if(header != "transparency" and header != "show"):
             continue
-        if(header == "transparency"):
+        if(header == "transparency" or header == "show"):
             #print(f_in_line)
             run(session, ""+f_in_line+"")
     run(session, "graphics silhouettes true")

@@ -28,6 +28,22 @@ from plotnine import *
 from scipy.stats import ttest_ind
 from scipy import stats
 
+##############################################################################
+# collect user input
+inp = input("\nWill video represent binding interaction or activation response? (type 'binding' or 'activation' | default is 'binding')\n" )
+if(inp == "binding" or inp == ""):
+    print("selection is %s" % inp)
+if(inp == "activation"):
+    print("selection is %s" % inp)
+if(inp != "activation" and inp != "binding" and inp!= ""):
+    print("selection is INCORRECT as %s" % inp)
+    time.sleep(2)
+    print("changing to default...")
+    inp == ""
+    time.sleep(2)
+
+
+
 ################################################################################
 # READ CONTROL FORM
 # read atomdance ctl file
@@ -2246,6 +2262,10 @@ def movie_parse():
                     if(pos=="pos"): # skip header
                         continue
                     #print("%s %s\n" % (pos,mmd))
+                    if(float(mmd) > 0):
+                        mmd_sign = "positive"
+                    if(float(mmd) < 0):
+                        mmd_sign = "negative"
                     mmd = abs(float(mmd))
                     if(mmd >= maxMMD):
                         maxMMD = mmd
@@ -2259,8 +2279,27 @@ def movie_parse():
                     #print("%s %s\n" % (pos,mmd))
                     mmd = abs(float(mmd))
                     trns = 100 - int(mmd/maxMMD*100)
-                    myTRANS = "transparency\t:%s\t%s\t target s\n" % (pos,trns)
+                    #### binding option ####
+                    if(inp=="binding"):
+                        if(mmd_sign == "positive"):
+                            trns = 100
+                            myTRANS = "transparency\t:%s\t%s\t target s\n" % (pos,trns)
+                        if(mmd_sign == "negative"):
+                            trns = 100 - int(mmd/maxMMD*100)
+                            myTRANS = "transparency\t:%s\t%s\t target s\n" % (pos,trns)
+                    #### activation option ####
+                    if(inp=="activation"):
+                        if(mmd_sign == "positive"):
+                            trns = 100 - int(mmd/maxMMD*100)
+                            myTRANS = "transparency\t:%s\t%s\t target s\n" % (pos,trns)
+                        if(mmd_sign == "negative"):
+                            trns = 100
+                            myTRANS = "transparency\t:%s\t%s\t target s\n" % (pos,trns)
+                    #### write output ####
                     f_out.write(myTRANS)
+                    mySIDECHAIN = "show\t:%s\n" % pos
+                    if(trns <= 80): # show sidechain if sound contribution is relatively large
+                        f_out.write(mySIDECHAIN)
                 #print("my transparency = %s" % trns)
                 continue
             else:
