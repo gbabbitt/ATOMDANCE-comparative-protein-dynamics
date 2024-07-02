@@ -550,8 +550,8 @@ def map_vibf_query():
 ###############################################################
 
 def main():
-    if(n_frames <= 5000 and length_prot < 500):
-        calculate_auxplots()   
+    #if(n_frames <= 5000 and length_prot < 500):
+    calculate_auxplots()   
     calculate_vibfreq()
     sound_aa()
     adjust_pitch()
