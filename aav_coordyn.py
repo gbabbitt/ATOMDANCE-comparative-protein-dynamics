@@ -2298,7 +2298,7 @@ def movie_parse():
                     #### write output ####
                     f_out.write(myTRANS)
                     mySIDECHAIN = "show\t:%s\n" % pos
-                    if(trns <= 80): # show sidechain if sound contribution is relatively large
+                    if(trns <= 90): # show sidechain if sound contribution is meaningful
                         f_out.write(mySIDECHAIN)
                 #print("my transparency = %s" % trns)
                 continue
