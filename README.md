@@ -70,7 +70,6 @@ NOTE: to use older versions of cpptraj (prior to 2018) open the following files 
 more on UCSF ChimeraX
 https://www.rbvi.ucsf.edu/chimerax/
 
-version 2.0 introduces the AAV (atomdance audio-vuslizer) for data sonification of protein interactions. It has a stand-alone GUI (AAV.py) to run MD simulations, extract trajectory, and analyze the time course of the simulation creating a sound file, spectrogram/sonogram, and movie file. See software landing site for more details. This additional software has 4 python module dependencies (opencv-python, soundfile, pydub, moviepy)
 FOR OUR CODE: 
 python module dependencies (os, getopt, sys, threading, random, re, chimerax.core.commands) 
 python modules to be installed (PyQt5, numpy, scipy, pandas, sklearn, scikit-learn, matplotlib, patchworklib, plotnine, progress, pinguoin, networkx, parmed and netCDF4)
@@ -90,6 +89,8 @@ TO INSTALL EVERYTHING (ambertools, openmm and all python modules) INTO YOUR COND
 2. conda create --name atomdance
 3. conda activate atomdance
 4. python3 INSTALL.py
+
+version 2.0 introduces the AAV (atomdance audio-vuslizer) for data sonification of protein interactions. It has a stand-alone GUI (AAV.py) to run MD simulations, extract trajectory, and analyze the time course of the simulation creating a sound file, spectrogram/sonogram, and movie file. See software landing site for more details. This additional software has 4 python module dependencies (opencv-python, soundfile, pydub, moviepy)
 
 For fully licensed Amber software users, we also have a standalone GUI as well...available here
 https://gbabbitt.github.io/amberMDgui/
