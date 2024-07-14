@@ -1,4 +1,4 @@
-# ATOMDANCE-1.3-comparative-protein-dynamics
+# ATOMDANCE-2.0-comparative-protein-dynamics
 ATOMDANCE software containing DROIDS 5.0/maxDemon 4.0/Choreograph 1.0 is a python-based suite of machine learning assisted statistical methods for comparing molecular dynamic trajectories of proteins in two functional states (e.g. unbound vs. bound to something or wildtype vs mutated or hot vs. cold).  It was developed on a python 3 science stack and only additionally requires the cpptraj library software and UCSF Chimerax molecular visualization software to be installed.  The methods and software is offered freely (without guarantee) under GPL 3.0 and was developed by Dr. Gragory A. Babbitt, Dr. Ernest P. Fokoue and bioinformatics students at the Rochester Institute of Technology in 2017-2023. 
 
 ATOMDANCE combines 3 main programs
@@ -70,6 +70,7 @@ NOTE: to use older versions of cpptraj (prior to 2018) open the following files 
 more on UCSF ChimeraX
 https://www.rbvi.ucsf.edu/chimerax/
 
+version 2.0 introduces the AAV (atomdance audio-vuslizer) for data sonification of protein interactions. It has a stand-alone GUI (AAV.py) to run MD simulations, extract trajectory, and analyze the time course of the simulation creating a sound file, spectrogram/sonogram, and movie file. See software landing site for more details. This additional software has 4 python module dependencies (opencv-python, soundfile, pydub, moviepy)
 FOR OUR CODE: 
 python module dependencies (os, getopt, sys, threading, random, re, chimerax.core.commands) 
 python modules to be installed (PyQt5, numpy, scipy, pandas, sklearn, scikit-learn, matplotlib, patchworklib, plotnine, progress, pinguoin, networkx, parmed and netCDF4)
@@ -101,7 +102,7 @@ python3 ATOMDANCE_ctlPOS.py
 
 please cite us (as well as ChimeraX and cpptraj)
 
-Babbitt G.A. et al. 2023. ATOMDANCE: machine learning denoising and resonance analysis for functional and evolutionary comparisons of protein dynamics bioRxiv 2023.04.20.537698; doi: https://doi.org/10.1101/2023.04.20.537698
+Babbitt G.A. et al. 2024. ATOMDANCE: Kernel-based denoising and choreographic analysis for protein dynamic comparison. BIOPHYSICAL JOURNAL XXX: xxx-xxx CELL Press. doi: (https://doi.org/10.1016/j.bpj.2024.03.024)
 
 Babbitt G.A. Coppola E.E. Mortensen J.S. Adams L.E. Liao J. K. 2018. DROIDS 1.2 – a GUI-based pipeline for GPU-accelerated comparative protein dynamics. BIOPHYSICAL JOURNAL 114: 1009-1017. CELL Press.
 
