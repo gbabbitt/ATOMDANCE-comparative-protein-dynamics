@@ -348,12 +348,121 @@ def merge_final_file():
         wave_file_start = wave_file_merged                   
     wave_file_merged.export('coordinatedDynamics_%s/aa_adjusted_merged_fixInt.wav' % (PDB_id_reference), format="wav")              
         
-        
+def movie_parse():
+    print("setting up chimerax .ctl and .dat files for each movie frame\n")
+    if not os.path.exists('ChimeraXvis_%s/NETctl' % (PDB_id_reference)):
+        os.mkdir('ChimeraXvis_%s/NETctl' % (PDB_id_reference))
+    for m in range(m_frames):  
+        mdl = str(m+1)
+        myMODEL = "model\t#1.%s\n" % mdl
+        myPDB = "structure\tproteinInteraction_movie_%s/pdb_files/sfPDB_%s_%s.pdb\n" % (PDB_id_reference,PDB_id_query,mdl)
+        myATTR = "attr_file\tChimeraXvis_%s/NETdat/attributeNET_intQ_%s.dat\n" % (PDB_id_reference,mdl)
+        print("movie frame %s - setting up chimerax .ctl files" % mdl)
+        readPath = "ChimeraXvis_NET_intQ.ctl"
+        writePath = "ChimeraXvis_%s/NETctl/ChimeraXvis_NET_intQ_%s.ctl" % (PDB_id_reference,str(m))
+        f_in = open(readPath, 'r')
+        lines = f_in.readlines()
+        f_out = open(writePath, 'w')
+        for line in lines:
+            #print(line)
+            elements = line.split()
+            rowHeader = elements[0]
+            #print(rowHeader)
+            if(rowHeader == "model"):
+                f_out.write(myMODEL)
+                continue
+            if(rowHeader == "structure"):
+                f_out.write(myPDB)
+                continue
+            if(rowHeader == "structureADD"):
+                continue
+            if(rowHeader == "attr_file"):
+                f_out.write(myATTR)
+                continue
+            # adjust transparency to MMD
+            if(rowHeader == "transparency"):
+                mmdPath = "maxMeanDiscrepancy_%s/movieFrame_%s/maxMeanDiscrepancy_flux.txt" % (PDB_id_reference, m)
+                f_mmd = open(mmdPath, 'r')
+                linesMMD = f_mmd.readlines()
+                #print(linesMMD)
+                # find maximum value of abs(MMD)
+                maxMMD = 0
+                for l in linesMMD:
+                    elements_mmd = l.split()
+                    pos = elements_mmd[0]
+                    mmd = elements_mmd[2]
+                    if(pos=="pos"): # skip header
+                        continue
+                    #print("%s %s\n" % (pos,mmd))
+                    if(float(mmd) > 0):
+                        mmd_sign = "positive"
+                    if(float(mmd) < 0):
+                        mmd_sign = "negative"
+                    mmd = abs(float(mmd))
+                    if(mmd >= maxMMD):
+                        maxMMD = mmd
+                #print("my maxMMD = %s" % maxMMD)
+                for l in linesMMD:
+                    elements_mmd = l.split()
+                    pos = elements_mmd[0]
+                    mmd = elements_mmd[2]
+                    if(pos=="pos"): # skip header
+                        continue
+                    #print("%s %s\n" % (pos,mmd))
+                    mmd = abs(float(mmd))
+                    trns = 100 - int(mmd/maxMMD*100)
+                    #### binding option ####
+                    if(inp=="binding"):
+                        if(mmd_sign == "positive"):
+                            trns = 100
+                            myTRANS = "transparency\t:%s\t%s\t target s\n" % (pos,trns)
+                        if(mmd_sign == "negative"):
+                            trns = 100 - int(mmd/maxMMD*100)
+                            myTRANS = "transparency\t:%s\t%s\t target s\n" % (pos,trns)
+                    #### activation option ####
+                    if(inp=="activation"):
+                        if(mmd_sign == "positive"):
+                            trns = 100 - int(mmd/maxMMD*100)
+                            myTRANS = "transparency\t:%s\t%s\t target s\n" % (pos,trns)
+                        if(mmd_sign == "negative"):
+                            trns = 100
+                            myTRANS = "transparency\t:%s\t%s\t target s\n" % (pos,trns)
+                    #### write output ####
+                    f_out.write(myTRANS)
+                    mySIDECHAIN = "show\t:%s\n" % pos
+                    if(trns <= 90): # show sidechain if sound contribution is meaningful
+                        f_out.write(mySIDECHAIN)
+                #print("my transparency = %s" % trns)
+                continue
+            else:
+                f_out.write(line)
+        f_out.close
+        f_in.close
+    if not os.path.exists('ChimeraXvis_%s/NETdat' % (PDB_id_reference)):
+        os.mkdir('ChimeraXvis_%s/NETdat' % (PDB_id_reference))
+    for m in range(m_frames):  
+        mdl = str(m)
+        print("movie frame %s - setting up chimerax .dat files" % mdl)
+        readPath = "ChimeraXvis/attributeNET_intQ.dat"
+        writePath = "ChimeraXvis_%s/NETdat/attributeNET_intQ_%s.dat" % (PDB_id_reference,mdl)
+        f_in = open(readPath, 'r')
+        lines = f_in.readlines()
+        f_out = open(writePath, 'w')
+        for line in lines:
+            #print(line)
+            #elements = line.split()
+            #rowHeader = elements[0]
+            f_out.write(line)
+        f_out.close
+        f_in.close        
          
 ###############################################################
 ###############################################################
 
 def main():
+    # pipeline code hardening (run movie_parse() again if plots fail and interrupt earlier script)
+    if not os.path.exists('ChimeraXvis_%s/NETctl' % (PDB_id_reference)):
+        movie_parse()
     parse_file()
     combine_choir()
     merge_final_file()
