@@ -161,11 +161,11 @@ def create_sonogram_var(): # run only in base anaconda
     # Matplotlib.pyplot.specgram() function to
     # generate spectrogram
     signalData = signalData[:,1]
-    plt.specgram(signalData, Fs=samplingFrequency,NFFT=512)
+    plt.specgram(signalData, Fs=samplingFrequency,NFFT=2048)
  
     # Set the title of the plot, xlabel and ylabel
     # and display using show() function
-    plt.title('Spectrogram Using matplotlib.pyplot.specgram() Method')
+    plt.title("spectrogram for %s" % PDB_id_query)
     plt.xlabel("TIME")
     plt.ylabel("FREQ")
     plt.savefig(outfile)
@@ -180,15 +180,61 @@ def create_sonogram_fix(): # run only in base anaconda
     # Matplotlib.pyplot.specgram() function to
     # generate spectrogram
     signalData = signalData[:,1]
-    plt.specgram(signalData, Fs=samplingFrequency,NFFT=512)
+    plt.specgram(signalData, Fs=samplingFrequency,NFFT=2048)
  
     # Set the title of the plot, xlabel and ylabel
     # and display using show() function
-    plt.title('Spectrogram Using matplotlib.pyplot.specgram() Method')
+    plt.title("spectrogram for %s" % PDB_id_query)
     plt.xlabel("TIME")
     plt.ylabel("FREQ")
     plt.savefig(outfile)
     
+    # export to txt
+    ls=plt.specgram(signalData, Fs=samplingFrequency,NFFT=2048)
+    #print(ls[0].shape)
+    shp = ls[0].shape
+    global n_cols
+    n_cols = shp[1]
+    print("number of notes (i.e. columns)")
+    print(n_cols)
+    with open('proteinInteraction_movie_%s/mySound_fixInt.txt' % PDB_id_reference, 'w') as ffile:
+        for spectros in ls[0]:
+            for spectro in spectros:
+                spectro = round(spectro,4)
+                lline = "%s\t" % spectro
+                #print(lline)
+                ffile.write(lline)
+            # one row written 
+            ffile.write("\n")
+        ffile.close    
+    
+
+def complexity_metrics():
+    print("calculating complexity via NVI (Sawant et al. 2021 in MEE-BES)")
+    readPath = "proteinInteraction_movie_%s/mySound_fixInt.txt" % PDB_id_reference
+    writePath = "proteinInteraction_movie_%s/mySound_complexity.txt" % PDB_id_reference
+    df_in = pd.read_csv(readPath, delimiter='\t',header=None)
+    txt_out = open(writePath, 'w')
+    #print(n_cols)
+    NVIsum = 0
+    for i in range(n_cols):
+        #print("data in column %s" % i)
+        #print(df_in[i])
+        for j in range(n_cols):
+            #print("data in column %s" % j)
+            #print(df_in[j])
+            # correlate
+            #print("correlating columns %s %s" % (i,j))
+            myCorr = np.corrcoef(df_in[i],df_in[j])
+            myCorr = abs(myCorr[0,1])  # set to [0,0] and NVI should = 0
+            #print(myCorr)
+            NVIsum = NVIsum + (1-myCorr)
+            #print(NVIsum)
+    # normalize NVI to number of notes (i.e. columns)
+    NVI = NVIsum/(n_cols*(n_cols-1))
+    print("NVI (note variability index) = %s" % NVI)
+    txt_out.write("NVI (note variability index) = %s\n" % NVI)
+    txt_out.write("calculated via (Sawant et al. 2021 in MEE-BES)")
     
 ###############################################################
 ###############################################################
@@ -196,7 +242,7 @@ def create_sonogram_fix(): # run only in base anaconda
 def main():
     create_sonogram_fix()
     create_sonogram_var()
-    
+    complexity_metrics()
 ###############################################################
 if __name__ == '__main__':
     main()
