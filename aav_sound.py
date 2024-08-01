@@ -215,13 +215,52 @@ def parse_file():
         f_out.close   
 
 def combine_choir():
+    ##################################################################################
+    # determine communities to be converted to sound and write 'stacked.txt' files
+    ##################################################################################
     for m in range(m_frames):
+        print("dropping AA voices when MMD < 0.5 for %s - movie frame %s" % (PDB_id_reference,m))
         if not os.path.exists("coordinatedDynamics_%s/movieFrame_%s" % (PDB_id_reference,m)):
             os.makedirs("coordinatedDynamics_%s/movieFrame_%s" % (PDB_id_reference,m))
+        writePath = "coordinatedDynamics_%s/movieFrame_%s/coordinatedDynamics_query_communities_stacked.txt" % (PDB_id_reference,m)
+        with open(writePath, 'w') as f_out:
+            readPath = "coordinatedDynamics_%s/coordinatedDynamics_query_communities_stacked.txt" % PDB_id_reference
+            with open(readPath, 'r') as f_in:
+                inCOM = f_in.read().splitlines(False)
+                #print(inCOM[0])
+                for i in range(len(inCOM)):
+                    myAArow = inCOM[i]
+                    myAAarray = str.split(myAArow)
+                    valuePASS = "n"
+                    for j in range(len(myAAarray)):
+                        myAA = myAAarray[j]
+                        #print(myAA)            
+                        with open('maxMeanDiscrepancy_%s/movieFrame_%s/maxMeanDiscrepancy_flux.txt' % (PDB_id_reference,m), 'r') as infile:
+                            inMMD = infile.read().splitlines(False)
+                            MMDline_count = len(inMMD)
+                            for k in range(MMDline_count):
+                                MMDline=inMMD[k]
+                                MMDline = str.split(MMDline)
+                                myMMDpos = MMDline[0]
+                                myMMDval = MMDline[2]
+                                if(myAA == myMMDpos):
+                                    myMMDvalue = float(myMMDval)
+                                    #print("%s %s %s" % (myAA,myMMDpos,myMMDvalue))
+                                    if(abs(myMMDvalue) >= 0.05):
+                                        valuePASS = "y"
+                                        #print("%s %s %s" % (myAA,myMMDpos,myMMDvalue))
+                                        f_out.write("%s " % myAA)
+                    if(valuePASS == "y"):
+                        f_out.write("\n")
+                f_out.close   
+    
+    ##########################################################
+    # overlay rules to convert stacked.txt AAs into choirs
+    ##########################################################
     f_int = open("coordinatedDynamics_%s/interval_lengths.txt" % PDB_id_reference, "w")
     for m in range(m_frames):
         print("generating choir sound for %s - movie frame %s" % (PDB_id_reference,m))
-        with open('coordinatedDynamics_%s/coordinatedDynamics_query_communities_stacked.txt' % PDB_id_reference, 'r') as f_in:
+        with open('coordinatedDynamics_%s/movieFrame_%s/coordinatedDynamics_query_communities_stacked.txt' % (PDB_id_reference,m), 'r') as f_in:
             inCOM = f_in.read().splitlines(False)
             #print(inCOM[0])
             #print(inCOM)
@@ -270,7 +309,7 @@ def combine_choir():
                             if(aa2 == MMDpos):
                                 #print("%s %s %s" % (aa2,MMDpos,MMDval))
                                 MMDvalue = float(MMDval)
-                                MMDsum = MMDsum+MMDvalue
+                                MMDsum = MMDsum+abs(MMDvalue)
                                 strikeKey = abs(MMDvalue)
                                 # adjust aa sound volume to MMD
                                 #wave_file_add = wave_file_add + abs(5000*MMDvalue) # capture both binding and activation dynamics
@@ -286,22 +325,34 @@ def combine_choir():
                 # list choir voicing decision
                 #print(strikeKeys)
                 # silence if max abs(MMD < 0.05)
-                myMax = max(strikeKeys)
-                myMIN = min(strikeKeys)
+                
+                # compute interval length for variable interval sound files
                 myInterval = 250-int(250*MMDsum) # stronger binding results in shorter time intervals
                 if(myInterval <= 10):
                     myInterval = 10 # dont let intervals go negative
                 strInterval = str(myInterval)
                 f_int.write("%s," % strInterval)
-                myVolume = int(1000*myMax)
-                if(myMax < 0.05): # quiet weak binding effects
-                   wave_file_choir = wave_file_choir - 30
+                
+                #adjust whole choir
+                #myMax = max(strikeKeys)
+                #myMIN = min(strikeKeys)
+                #myVolume = int(500*myMax)
+                #myVolume = int(30*MMDsum)
+                #if(myMax >= 0.05): # loudening strong binding effects   
+                #   wave_file_choir = wave_file_choir + myVolume
+                #if(myMax < 0.05): # quieting weak binding effects
+                #   wave_file_choir = wave_file_choir - 30
                 #print("%s %s %s %s" % (myMIN, myMax, myInterval, myVolume))    
+                
                 # trim and save choir file 
                 wave_file_choir_trim = wave_file_choir[0000:myInterval] # VARIABLE INTERVAL - seconds per movie frame 0.5s = 500
                 wave_file_choir_trim.export('coordinatedDynamics_%s/movieFrame_%s/aa_adjusted_choir_%s.wav' % (PDB_id_reference,m,i), format="wav")
                 wave_file_choir_trim_cons = wave_file_choir[000:250] # CONSTANT INTERVAL - seconds per movie frame 0.5s = 500
                 wave_file_choir_trim_cons.export('coordinatedDynamics_%s/movieFrame_%s/aa_adjusted_choir_fixInt_%s.wav' % (PDB_id_reference,m,i), format="wav")
+    
+    ###################################################
+    # combining choir sections into single sound file
+    ###################################################
     for m in range(m_frames):          
         print("combining choir sections for %s - movie frame %s" % (PDB_id_reference,m))
         for i in range(line_count-1):
@@ -430,7 +481,7 @@ def movie_parse():
                     #### write output ####
                     f_out.write(myTRANS)
                     mySIDECHAIN = "show\t:%s\n" % pos
-                    if(trns <= 90): # show sidechain if sound contribution is meaningful
+                    if(trns <= 95): # show sidechain if sound contribution is meaningful
                         f_out.write(mySIDECHAIN)
                 #print("my transparency = %s" % trns)
                 continue
