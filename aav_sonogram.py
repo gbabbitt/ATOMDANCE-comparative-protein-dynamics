@@ -15,6 +15,7 @@ import scipy as sp
 import matplotlib.pyplot as plt
 #from plotnine.data import mpg
 from scipy.io import wavfile
+from scipy import signal
 import math
 # IMPORTANT NOTE - run in base conda env, not in atomdance conda env   
 ################################################################################
@@ -280,7 +281,74 @@ def complexity_metric_var():
     print("NVI on variable interval (note variability index) = %s" % NVI)
     txt_out.write("NVI on variable interval (note variability index) = %s\n" % NVI)
     txt_out.write("calculated via (Sawant et al. 2021 in MEE-BES)")
-    
+
+def autocorr_metric_fix():
+    print("calculating max peak autocorrelation on fixed interval")
+    writePath = "proteinInteraction_movie_%s/mySound_maxAutoCorr_fixInt.txt" % PDB_id_reference
+    txt_out = open(writePath, 'w')
+    infile = 'proteinInteraction_movie_%s/mySound_fixInt.wav' % PDB_id_reference
+    samplingFrequency, signalData = wavfile.read(infile)
+    #print(signalData[:,1])
+    #print(samplingFrequency)
+    # Matplotlib.pyplot.specgram() function to
+    # generate spectrogram
+    signalData = signalData[:,1]
+    signalData = np.float32(signalData)
+    corr = signal.correlate(signalData, signalData)
+    lags = signal.correlation_lags(len(signalData), len(signalData))
+    corr = corr / np.max(corr) # normalize
+    # remove self correlation = 1.0 at position 0
+    mid_index = len(corr) // 2  # Floor division to get integer index
+    if len(corr) % 2 == 0:  # Even number of elements
+        middle = (mid_index - 1 + mid_index) / 2
+    else:  # Odd number of elements
+        middle = mid_index
+    #print(middle)
+    corr = np.delete(corr, middle)   
+    # find max auto correlation
+    lag = lags[np.argmax(corr)]
+    #print(corr)
+    #print(lags)
+    MAC = np.max(corr)
+    #print(lag, MAC)
+    print("max autocorrelation on fixed interval = %s" % MAC)
+    txt_out.write("max autocorrelation on fixed interval = %s\n" % MAC)
+    txt_out.write("occurring with lag value of %s\n" % lag)
+    txt_out.write("calculated via scipy signal package")
+
+def autocorr_metric_var():
+    print("calculating max peak autocorrelation on variable interval")
+    writePath = "proteinInteraction_movie_%s/mySound_maxAutoCorr_varInt.txt" % PDB_id_reference
+    txt_out = open(writePath, 'w')
+    infile = 'proteinInteraction_movie_%s/mySound_varInt.wav' % PDB_id_reference
+    samplingFrequency, signalData = wavfile.read(infile)
+    #print(signalData[:,1])
+    #print(samplingFrequency)
+    # Matplotlib.pyplot.specgram() function to
+    # generate spectrogram
+    signalData = signalData[:,1]
+    signalData = np.float32(signalData)
+    corr = signal.correlate(signalData, signalData)
+    lags = signal.correlation_lags(len(signalData), len(signalData))
+    corr = corr / np.max(corr) # normalize
+    # remove self correlation = 1.0 at position 0
+    mid_index = len(corr) // 2  # Floor division to get integer index
+    if len(corr) % 2 == 0:  # Even number of elements
+        middle = (mid_index - 1 + mid_index) / 2
+    else:  # Odd number of elements
+        middle = mid_index
+    #print(middle)
+    corr = np.delete(corr, middle)   
+    # find max auto correlation
+    lag = lags[np.argmax(corr)]
+    #print(corr)
+    #print(lags)
+    MAC = np.max(corr)
+    #print(lag, MAC)
+    print("max autocorrelation on variable interval = %s" % MAC)
+    txt_out.write("max autocorrelation on variable interval = %s\n" % MAC)
+    txt_out.write("occurring with lag value of %s\n" % lag)
+    txt_out.write("calculated via scipy signal package")
 ###############################################################
 ###############################################################
 
@@ -289,6 +357,8 @@ def main():
     create_sonogram_var()
     complexity_metric_fix()
     complexity_metric_var()
+    autocorr_metric_fix()
+    autocorr_metric_var()
 ###############################################################
 if __name__ == '__main__':
     main()
