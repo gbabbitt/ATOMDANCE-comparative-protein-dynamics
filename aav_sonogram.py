@@ -17,6 +17,8 @@ import matplotlib.pyplot as plt
 from scipy.io import wavfile
 from scipy import signal
 import math
+import random
+bootstp = 100
 # IMPORTANT NOTE - run in base conda env, not in atomdance conda env   
 ################################################################################
 # READ CONTROL FORM
@@ -253,7 +255,7 @@ def complexity_metric_fix():
     NVI = NVIsum/(n_cols*(n_cols-1))
     print("NVI on fixed interval (note variability index) = %s" % NVI)
     txt_out.write("NVI on fixed interval (note variability index) = %s\n" % NVI)
-    txt_out.write("calculated via (Sawant et al. 2021 in MEE-BES)")
+    txt_out.write("calculated via (Sawant et al. 2021 in MEE-BES)\n")
 
 def complexity_metric_var():
     print("calculating complexity on variable interval via NVI (Sawant et al. 2021 in MEE-BES)")
@@ -280,7 +282,7 @@ def complexity_metric_var():
     NVI = NVIsum/(n_cols*(n_cols-1))
     print("NVI on variable interval (note variability index) = %s" % NVI)
     txt_out.write("NVI on variable interval (note variability index) = %s\n" % NVI)
-    txt_out.write("calculated via (Sawant et al. 2021 in MEE-BES)")
+    txt_out.write("calculated via (Sawant et al. 2021 in MEE-BES)\n")
 
 def autocorr_metric_fix():
     print("calculating max peak autocorrelation on fixed interval")
@@ -328,6 +330,7 @@ def autocorr_metric_var():
     # generate spectrogram
     signalData = signalData[:,1]
     signalData = np.float32(signalData)
+    #print(signalData)
     corr = signal.correlate(signalData, signalData)
     lags = signal.correlation_lags(len(signalData), len(signalData))
     corr = corr / np.max(corr) # normalize
@@ -349,7 +352,78 @@ def autocorr_metric_var():
     txt_out.write("max autocorrelation on variable interval = %s\n" % MAC)
     txt_out.write("occurring with lag value of %s\n" % lag)
     txt_out.write("calculated via scipy signal package")
-###############################################################
+
+
+def complexity_metric_fix_bootstrap():
+    NVIarray = []
+    for i in range(bootstp):
+        print("calculating complexity on fixed interval via NVI - bootstrap %s" % i)
+        readPath = "proteinInteraction_movie_%s/mySound_fixInt.txt" % PDB_id_reference
+        writePath = "proteinInteraction_movie_%s/mySound_complexity_fixInt.txt" % PDB_id_reference
+        df_in = pd.read_csv(readPath, delimiter='\t',header=None)
+        txt_out = open(writePath, 'a')
+        #print(n_cols)
+        NVIsum = 0
+        for i in range(n_cols):
+            #print("data in column %s" % i)
+            #print(df_in[i])
+            for j in range(n_cols):
+                #print("data in column %s" % j)
+                #print(df_in[j])
+                # correlate
+                #print("correlating columns %s %s" % (i,j))
+                # create bootstrap
+                rand1 = random.randrange(n_cols)
+                rand2 = random.randrange(n_cols)
+                myCorr = np.corrcoef(df_in[rand1],df_in[rand2])
+                myCorr = abs(myCorr[0,1])  # set to [0,0] and NVI should = 0
+                #print(myCorr)
+                NVIsum = NVIsum + (1-myCorr)
+                #print(NVIsum)
+        # normalize NVI to number of notes (i.e. columns)
+        NVI = NVIsum/(n_cols*(n_cols-1))
+        print("NVI on fixed interval (note variability index) = %s" % NVI)
+        NVIarray.append(NVI)
+    myMEAN = np.mean(NVIarray)
+    mySD = np.std(NVIarray)
+    txt_out.write("mean and sd of NVI on fixed interval %s +- %s for %s bootstraps\n" % (myMEAN, mySD, bootstp))
+                  
+    
+def complexity_metric_var_bootstrap():
+    NVIarray = []
+    for i in range(bootstp):
+        print("calculating complexity on variable interval via NVI - bootstrap %s" % i)
+        readPath = "proteinInteraction_movie_%s/mySound_varInt.txt" % PDB_id_reference
+        writePath = "proteinInteraction_movie_%s/mySound_complexity_varInt.txt" % PDB_id_reference
+        df_in = pd.read_csv(readPath, delimiter='\t',header=None)
+        txt_out = open(writePath, 'w')
+        #print(n_cols)
+        NVIsum = 0
+        for i in range(n_cols):
+            #print("data in column %s" % i)
+            #print(df_in[i])
+            for j in range(n_cols):
+                #print("data in column %s" % j)
+                #print(df_in[j])
+                # correlate
+                #print("correlating columns %s %s" % (i,j))
+                # create bootstrap
+                rand1 = random.randrange(n_cols)
+                rand2 = random.randrange(n_cols)
+                myCorr = np.corrcoef(df_in[rand1],df_in[rand2])
+                myCorr = abs(myCorr[0,1])  # set to [0,0] and NVI should = 0
+                #print(myCorr)
+                NVIsum = NVIsum + (1-myCorr)
+                #print(NVIsum)
+        # normalize NVI to number of notes (i.e. columns)
+        NVI = NVIsum/(n_cols*(n_cols-1))
+        print("NVI on variable interval (note variability index) = %s" % NVI)
+        NVIarray.append(NVI)
+    myMEAN = np.mean(NVIarray)
+    mySD = np.std(NVIarray)
+    txt_out.write("mean and sd of NVI on fixed interval %s +- %s for %s bootstraps\n" % (myMEAN, mySD, bootstp))
+    
+       
 ###############################################################
 
 def main():
@@ -359,6 +433,8 @@ def main():
     complexity_metric_var()
     autocorr_metric_fix()
     autocorr_metric_var()
+    complexity_metric_fix_bootstrap()
+    complexity_metric_var_bootstrap()
 ###############################################################
 if __name__ == '__main__':
     main()
