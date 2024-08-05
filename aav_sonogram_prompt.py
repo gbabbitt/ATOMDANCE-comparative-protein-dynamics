@@ -16,21 +16,30 @@ import matplotlib.pyplot as plt
 #from plotnine.data import mpg
 from scipy.io import wavfile
 from scipy import signal
+from scipy.signal import find_peaks
 import math
 import random
-bootstp = 100
+bootstp = 50
 # IMPORTANT NOTE - run in base conda env, not in atomdance conda env   
 ################################################################################
-input1 = input("\nName of sound file to analyze (e.g. CantinaBand60.wav)\n" )
-input2 = input("\nName of sonogram/spectrogam file created (e.g. CantinaBand60.png)\n" )
-input3 = input("\nName of spectrogram data file created (e.g. CantinaBand60.dat)\n")
-input4 = input("\nName of spectrogram stats file created (e.g. CantinaBand60.txt)\n")
+#input1 = input("\nName of sound file to analyze (e.g. CantinaBand60.wav)\n" )
+#input2 = input("\nName of sonogram/spectrogam file created (e.g. CantinaBand60.png)\n" )
+#input3 = input("\nName of spectrogram data file created (e.g. CantinaBand60.dat)\n")
+#input4 = input("\nName of spectrogram stats file created (e.g. CantinaBand60.txt)\n")
+#input5 = input("\nName of correlation plot created (e.g. CantinaBand60_corr.png)\n")
 ################################################################################
 #########################   sonogram generator  ################################
 ################################################################################
 #infile= input("\nEnter path/name of input sound file (name.wav)\n")   
 #outfile = input("\nEnter path/name of output image file (name.png)\n")
 # IMPORTANT NOTE - run in base conda env, not in atomdance conda env  
+
+inp = "birdsong"
+input1 = "%s.wav" % inp
+input2 = "%s.png" % inp
+input3 = "%s.dat" % inp
+input4 = "%s.txt" % inp
+input5 = "%s.jpg" % inp
 
 
 def create_sonogram(): # run only in base anaconda
@@ -52,7 +61,7 @@ def create_sonogram(): # run only in base anaconda
     plt.xlabel("TIME")
     plt.ylabel("FREQ")
     plt.savefig(outfile)
-    
+    plt.close()
     # export to txt
     ls=plt.specgram(signalData, Fs=samplingFrequency,NFFT=2048)
     #print(ls[0].shape)
@@ -115,6 +124,7 @@ def autocorr_metric():
     corr = signal.correlate(signalData, signalData)
     lags = signal.correlation_lags(len(signalData), len(signalData))
     corr = corr / np.max(corr) # normalize
+   
     # remove self correlation = 1.0 at position 0
     mid_index = len(corr) // 2  # Floor division to get integer index
     if len(corr) % 2 == 0:  # Even number of elements
@@ -123,15 +133,36 @@ def autocorr_metric():
         middle = mid_index
     #print(middle)
     corr = np.delete(corr, middle)   
+    lags = np.delete(lags, middle)
+    
     # find max auto correlation
     lag = lags[np.argmax(corr)]
     #print(corr)
     #print(lags)
     MAC = np.max(corr)
     #print(lag, MAC)
+     
+    # autocorrelation plot
+    outfile = "%s" % input5
+    height_adjust=50
+    width_adjust=5
+    peak_idx = find_peaks(corr,height=max(corr)/height_adjust,width=width_adjust)[0]
+    n_peaks = len(peak_idx)
+    #print(n_peaks)
+    plt.title("autocorrelation for %s" % input1)
+    plt.xlabel("time lag")
+    plt.ylabel("ACF")
+    plt.ylim(0,1)
+    plt.plot(lags, corr)
+    plt.scatter(lags[peak_idx],corr[peak_idx],c='r')
+    plt.savefig(outfile)
+    plt.close()
+    
     print("max autocorrelation = %s" % MAC)
+    print("number of distinct autocorrelation peaks = %s" % n_peaks)
     txt_out.write("max autocorrelation = %s\n" % MAC)
     txt_out.write("occurring with lag value of %s\n" % lag)
+    txt_out.write("number ofdistinct autocorrelation peaks = %s\n" % n_peaks)
     txt_out.write("calculated via scipy signal package")
 
 def complexity_metric_bootstrap():

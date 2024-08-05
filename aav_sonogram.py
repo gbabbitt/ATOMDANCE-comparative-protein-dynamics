@@ -16,9 +16,10 @@ import matplotlib.pyplot as plt
 #from plotnine.data import mpg
 from scipy.io import wavfile
 from scipy import signal
+from scipy.signal import find_peaks
 import math
 import random
-bootstp = 100
+bootstp = 50
 # IMPORTANT NOTE - run in base conda env, not in atomdance conda env   
 ################################################################################
 # READ CONTROL FORM
@@ -306,16 +307,36 @@ def autocorr_metric_fix():
     else:  # Odd number of elements
         middle = mid_index
     #print(middle)
-    corr = np.delete(corr, middle)   
+    corr = np.delete(corr, middle)
+    lags = np.delete(lags, middle)
     # find max auto correlation
     lag = lags[np.argmax(corr)]
     #print(corr)
     #print(lags)
     MAC = np.max(corr)
     #print(lag, MAC)
-    print("max autocorrelation on fixed interval = %s" % MAC)
-    txt_out.write("max autocorrelation on fixed interval = %s\n" % MAC)
+    
+    # autocorrelation plot
+    outfile = "proteinInteraction_movie_%s/mySound_AutoCorrPlot_fixInt.png" % PDB_id_reference
+    height_adjust=50
+    width_adjust=5
+    peak_idx = find_peaks(corr,height=max(corr)/height_adjust,width=width_adjust)[0]
+    n_peaks = len(peak_idx)
+    #print(n_peaks)
+    plt.title("autocorrelation for %s" % PDB_id_reference)
+    plt.xlabel("time lag")
+    plt.ylabel("ACF")
+    plt.ylim(0,1)
+    plt.plot(lags, corr)
+    plt.scatter(lags[peak_idx],corr[peak_idx],c='r')
+    plt.savefig(outfile)
+    plt.close()
+    
+    print("max autocorrelation = %s" % MAC)
+    print("number of distinct autocorrelation peaks = %s" % n_peaks)
+    txt_out.write("max autocorrelation = %s\n" % MAC)
     txt_out.write("occurring with lag value of %s\n" % lag)
+    txt_out.write("number of distinct autocorrelation peaks = %s\n" % n_peaks)
     txt_out.write("calculated via scipy signal package")
 
 def autocorr_metric_var():
@@ -341,16 +362,35 @@ def autocorr_metric_var():
     else:  # Odd number of elements
         middle = mid_index
     #print(middle)
-    corr = np.delete(corr, middle)   
+    corr = np.delete(corr, middle)
+    lags = np.delete(lags, middle)
     # find max auto correlation
     lag = lags[np.argmax(corr)]
     #print(corr)
     #print(lags)
     MAC = np.max(corr)
     #print(lag, MAC)
-    print("max autocorrelation on variable interval = %s" % MAC)
-    txt_out.write("max autocorrelation on variable interval = %s\n" % MAC)
+    # autocorrelation plot
+    outfile = "proteinInteraction_movie_%s/mySound_AutoCorrPlot_varInt.png" % PDB_id_reference
+    height_adjust=50
+    width_adjust=5
+    peak_idx = find_peaks(corr,height=max(corr)/height_adjust,width=width_adjust)[0]
+    n_peaks = len(peak_idx)
+    #print(n_peaks)
+    plt.title("autocorrelation for %s" % PDB_id_reference)
+    plt.xlabel("time lag")
+    plt.ylabel("ACF")
+    plt.ylim(0,1)
+    plt.plot(lags, corr)
+    plt.scatter(lags[peak_idx],corr[peak_idx],c='r')
+    plt.savefig(outfile)
+    plt.close()
+    
+    print("max autocorrelation = %s" % MAC)
+    print("number of distinct autocorrelation peaks = %s" % n_peaks)
+    txt_out.write("max autocorrelation = %s\n" % MAC)
     txt_out.write("occurring with lag value of %s\n" % lag)
+    txt_out.write("number of distinct autocorrelation peaks = %s\n" % n_peaks)
     txt_out.write("calculated via scipy signal package")
 
 
