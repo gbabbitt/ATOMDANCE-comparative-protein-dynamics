@@ -22,25 +22,25 @@ import random
 bootstp = 50
 # IMPORTANT NOTE - run in base conda env, not in atomdance conda env   
 ################################################################################
-#input1 = input("\nName of sound file to analyze (e.g. CantinaBand60.wav)\n" )
-#input2 = input("\nName of sonogram/spectrogam file created (e.g. CantinaBand60.png)\n" )
-#input3 = input("\nName of spectrogram data file created (e.g. CantinaBand60.dat)\n")
-#input4 = input("\nName of spectrogram stats file created (e.g. CantinaBand60.txt)\n")
-#input5 = input("\nName of correlation plot created (e.g. CantinaBand60_corr.png)\n")
+input1 = input("\nName of sound file to analyze (e.g. CantinaBand60.wav)\n" )
+input2 = input("\nName of sonogram/spectrogam file created (e.g. CantinaBand60.png)\n" )
+input3 = input("\nName of spectrogram data file created (e.g. CantinaBand60.dat)\n")
+input4 = input("\nName of spectrogram stats file created (e.g. CantinaBand60.txt)\n")
+input5 = input("\nName of correlation plot created (e.g. CantinaBand60_corr.png)\n")
 ################################################################################
 #########################   sonogram generator  ################################
 ################################################################################
 #infile= input("\nEnter path/name of input sound file (name.wav)\n")   
 #outfile = input("\nEnter path/name of output image file (name.png)\n")
 # IMPORTANT NOTE - run in base conda env, not in atomdance conda env  
-
-inp = "birdsong"
+"""
+inp = "CantinaBand60"
 input1 = "%s.wav" % inp
 input2 = "%s.png" % inp
 input3 = "%s.dat" % inp
 input4 = "%s.txt" % inp
 input5 = "%s.jpg" % inp
-
+"""
 
 def create_sonogram(): # run only in base anaconda
     print("generating sonograms for %s" % input1)
