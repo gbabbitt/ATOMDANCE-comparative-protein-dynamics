@@ -28,6 +28,8 @@ from plotnine import *
 #from plotnine.data import mpg
 import soundfile
 from scipy.io import wavfile
+from scipy.signal import butter, filtfilt, gammatone
+import pyfar as pf
 #import noisereduce as nr
 from pydub import AudioSegment
 from pydub.playback import play
@@ -506,7 +508,48 @@ def movie_parse():
             f_out.write(line)
         f_out.close
         f_in.close        
-         
+
+
+def apply_bandpass():
+    print("applying bandpass filter for %s" % PDB_id_reference)
+    # Load the audio file
+    fs = 44100
+    # fixed interval file
+    signalData = pf.io.read_audio('coordinatedDynamics_%s/aa_adjusted_merged_fixInt.wav' % (PDB_id_reference))
+    print(signalData)
+    # Apply the filter to a signal
+    filtered_signal = pf.dsp.filter.butterworth(signalData, 5, [500, 15000], btype='bandpass', sampling_rate=None)
+    print(filtered_signal)
+    pf.io.write_audio(filtered_signal, "coordinatedDynamics_%s/aa_adjusted_merged_fixInt_bandpass.wav" % PDB_id_reference)
+    # variable interval file
+    signalData = pf.io.read_audio('coordinatedDynamics_%s/aa_adjusted_merged.wav' % (PDB_id_reference))
+    print(signalData)
+    # Apply the filter to a signal
+    filtered_signal = pf.dsp.filter.butterworth(signalData, 5, [500, 15000], btype='bandpass', sampling_rate=None)
+    print(filtered_signal)
+    pf.io.write_audio(filtered_signal, "coordinatedDynamics_%s/aa_adjusted_merged_bandpass.wav" % PDB_id_reference)
+    
+def apply_gammatone():
+    print("applying gammatone filter for %s" % PDB_id_reference)
+    # Load the audio file
+    fs = 44100
+    signalData = pf.io.read_audio('coordinatedDynamics_%s/CantinaBand60.wav' % (PDB_id_reference))
+    print(signalData)
+    # Create a filterbank with 64 channels
+    #filterbank = pf.dsp.filter.GammatoneBands([100, 8000], resolution=1, reference_frequency=1000, delay=0.004, sampling_rate = fs)
+    filterbank = pf.dsp.filter.GammatoneBands([100, 8000])
+    
+    # Apply the filterbank to a signal
+    filtered_signal = filterbank.process(signalData)
+    print(filtered_signal)
+    #filtered_signal = pf.Signal(filtered_signal, fs)
+    #print(filtered_signal.times)
+    
+    #pf.io.write_audio(signalData, 'coordinatedDynamics_%s/aa_adjusted_merged_fixInt_gammatone.wav' % (PDB_id_reference), subtype = None)
+    pf.io.write_audio(filtered_signal, "coordinatedDynamics_%s/aa_adjusted_merged_fixInt_gammatone.wav" % PDB_id_reference)
+    
+
+    
 ###############################################################
 ###############################################################
 
@@ -517,8 +560,8 @@ def main():
     parse_file()
     combine_choir()
     merge_final_file()
-    
-    
+    apply_bandpass()
+    #apply_gammatone()
 ###############################################################
 if __name__ == '__main__':
     main()

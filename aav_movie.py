@@ -309,7 +309,7 @@ def still_image_parse_for_varInt_movie():
         copyPath = "proteinInteraction_movie_%s/stills/MMD_light_MMD_flux_%s.png" % (PDB_id_reference,m)
         shutil.copyfile(readPath, copyPath)
     # collect sound file
-    readPath = "coordinatedDynamics_%s/aa_adjusted_merged.wav" % PDB_id_reference
+    readPath = "coordinatedDynamics_%s/aa_adjusted_merged_bandpass.wav" % PDB_id_reference
     copyPath = "proteinInteraction_movie_%s/mySound_varInt.wav" % PDB_id_reference
     shutil.copyfile(readPath, copyPath)
     
@@ -328,7 +328,7 @@ def still_image_parse_for_fixInt_movie():
         copyPath = "proteinInteraction_movie_%s/stills/MMD_light_MMD_flux_%s.png" % (PDB_id_reference,m)
         shutil.copyfile(readPath, copyPath)
     # collect sound file
-    readPath = "coordinatedDynamics_%s/aa_adjusted_merged_fixInt.wav" % PDB_id_reference
+    readPath = "coordinatedDynamics_%s/aa_adjusted_merged_fixInt_bandpass.wav" % PDB_id_reference
     copyPath = "proteinInteraction_movie_%s/mySound_fixInt.wav" % PDB_id_reference
     shutil.copyfile(readPath, copyPath) 
 
