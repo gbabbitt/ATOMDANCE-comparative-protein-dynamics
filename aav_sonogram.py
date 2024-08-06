@@ -318,9 +318,7 @@ def autocorr_metric_fix():
     
     # autocorrelation plot
     outfile = "proteinInteraction_movie_%s/mySound_AutoCorrPlot_fixInt.png" % PDB_id_reference
-    height_adjust=50
-    width_adjust=5
-    peak_idx = find_peaks(corr,height=max(corr)/height_adjust,width=width_adjust)[0]
+    peak_idx = find_peaks(corr,height=0.05,width=None,distance=10)[0]
     n_peaks = len(peak_idx)
     #print(n_peaks)
     plt.title("autocorrelation for %s" % PDB_id_reference)
@@ -372,9 +370,7 @@ def autocorr_metric_var():
     #print(lag, MAC)
     # autocorrelation plot
     outfile = "proteinInteraction_movie_%s/mySound_AutoCorrPlot_varInt.png" % PDB_id_reference
-    height_adjust=50
-    width_adjust=5
-    peak_idx = find_peaks(corr,height=max(corr)/height_adjust,width=width_adjust)[0]
+    peak_idx = find_peaks(corr,height=0.05,width=None,distance=10)[0]
     n_peaks = len(peak_idx)
     #print(n_peaks)
     plt.title("autocorrelation for %s" % PDB_id_reference)
