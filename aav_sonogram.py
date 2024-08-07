@@ -173,7 +173,7 @@ def create_sonogram_var(): # run only in base anaconda
     plt.xlabel("TIME")
     plt.ylabel("FREQ")
     plt.savefig(outfile)
-    
+    plt.close()
     # export to txt
     ls=plt.specgram(signalData, Fs=samplingFrequency,NFFT=2048)
     #print(ls[0].shape)
@@ -211,7 +211,7 @@ def create_sonogram_fix(): # run only in base anaconda
     plt.xlabel("TIME")
     plt.ylabel("FREQ")
     plt.savefig(outfile)
-    
+    plt.close()
     # export to txt
     ls=plt.specgram(signalData, Fs=samplingFrequency,NFFT=2048)
     #print(ls[0].shape)
