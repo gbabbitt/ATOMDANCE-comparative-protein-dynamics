@@ -356,27 +356,37 @@ def combine_choir():
     # combining choir sections into single sound file
     ###################################################
     for m in range(m_frames):          
-        print("combining choir sections for %s - movie frame %s" % (PDB_id_reference,m))
-        for i in range(line_count-1):
-            # combine/overlay choir files
-            if(i==0):
-                wave_file_start = AudioSegment.from_file('coordinatedDynamics_%s/movieFrame_%s/aa_adjusted_choir_fixInt_0.wav' % (PDB_id_reference,m))  
-            aa3 = str(i+1)
-            wave_file_next = AudioSegment.from_file('coordinatedDynamics_%s/movieFrame_%s/aa_adjusted_choir_fixInt_%s.wav' % (PDB_id_reference,m,aa3))
-            wave_file_combined = wave_file_start.overlay(wave_file_next, position=0, loop=True, gain_during_overlay=-4) # overlay
-            wave_file_start = wave_file_combined                    
-            wave_file_combined.export('coordinatedDynamics_%s/movieFrame_%s/aa_adjusted_combinedChoirs_fixInt.wav' % (PDB_id_reference,m), format="wav")
+        print("combining choir sections for fixed interval %s - movie frame %s" % (PDB_id_reference,m))
+        with open('coordinatedDynamics_%s/movieFrame_%s/coordinatedDynamics_query_communities_stacked.txt' % (PDB_id_reference,m), 'r') as f_in:
+            inCOM = f_in.read().splitlines(False)
+            #print(inCOM)
+            #print(len(inCOM))
+            line_count = len(inCOM)
+            for i in range(line_count-1):
+                 # combine/overlay choir files
+                 if(i==0):
+                    wave_file_start = AudioSegment.from_file('coordinatedDynamics_%s/movieFrame_%s/aa_adjusted_choir_fixInt_0.wav' % (PDB_id_reference,m))  
+                 aa3 = str(i+1)
+                 wave_file_next = AudioSegment.from_file('coordinatedDynamics_%s/movieFrame_%s/aa_adjusted_choir_fixInt_%s.wav' % (PDB_id_reference,m,aa3))
+                 wave_file_combined = wave_file_start.overlay(wave_file_next, position=0, loop=True, gain_during_overlay=-4) # overlay
+                 wave_file_start = wave_file_combined                    
+                 wave_file_combined.export('coordinatedDynamics_%s/movieFrame_%s/aa_adjusted_combinedChoirs_fixInt.wav' % (PDB_id_reference,m), format="wav")
     for m in range(m_frames):          
-        print("combining choir sections for %s - movie frame %s" % (PDB_id_reference,m))
-        for i in range(line_count-1):
-            # combine/overlay choir files
-            if(i==0):
-                wave_file_start = AudioSegment.from_file('coordinatedDynamics_%s/movieFrame_%s/aa_adjusted_choir_0.wav' % (PDB_id_reference,m))  
-            aa3 = str(i+1)
-            wave_file_next = AudioSegment.from_file('coordinatedDynamics_%s/movieFrame_%s/aa_adjusted_choir_%s.wav' % (PDB_id_reference,m,aa3))
-            wave_file_combined = wave_file_start.overlay(wave_file_next, position=0, loop=True, gain_during_overlay=-4) # overlay
-            wave_file_start = wave_file_combined                    
-            wave_file_combined.export('coordinatedDynamics_%s/movieFrame_%s/aa_adjusted_combinedChoirs.wav' % (PDB_id_reference,m), format="wav")
+        print("combining choir sections for variable interval %s - movie frame %s" % (PDB_id_reference,m))
+        with open('coordinatedDynamics_%s/movieFrame_%s/coordinatedDynamics_query_communities_stacked.txt' % (PDB_id_reference,m), 'r') as f_in:
+            inCOM = f_in.read().splitlines(False)
+            #print(inCOM)
+            #print(len(inCOM))
+            line_count = len(inCOM)
+            for i in range(line_count-1):
+                 # combine/overlay choir files
+                 if(i==0):
+                     wave_file_start = AudioSegment.from_file('coordinatedDynamics_%s/movieFrame_%s/aa_adjusted_choir_0.wav' % (PDB_id_reference,m))  
+                 aa3 = str(i+1)
+                 wave_file_next = AudioSegment.from_file('coordinatedDynamics_%s/movieFrame_%s/aa_adjusted_choir_%s.wav' % (PDB_id_reference,m,aa3))
+                 wave_file_combined = wave_file_start.overlay(wave_file_next, position=0, loop=True, gain_during_overlay=-4) # overlay
+                 wave_file_start = wave_file_combined                    
+                 wave_file_combined.export('coordinatedDynamics_%s/movieFrame_%s/aa_adjusted_combinedChoirs.wav' % (PDB_id_reference,m), format="wav")
               
 def merge_final_file():
     for m in range(m_frames-1):
