@@ -1413,6 +1413,7 @@ def network_plot_int_query(inp1, inp2):
                 colors.append(com_num)
     #print(colors)
     # Plot network:
+    """
     plt.suptitle('DYNAMIC INTERACTION NETWORK (i.e. fluctuation x time) for %s' % PDB_id_query)
     plt.title("communities of sites with significant interactions over time (p<%s)" % p_threshold)
     nx.draw_networkx(G, with_labels=True, node_color=colors, node_size=100, edge_color='black', linewidths=0.5, font_size=7, cmap=plt.get_cmap("hsv"))
@@ -1420,7 +1421,7 @@ def network_plot_int_query(inp1, inp2):
     G=nx.Graph(G) # to unfreeze graph
     G.clear() # to clear for next graph
     plt.close()
-    
+    """
     # collect NET mapping data
     NET_output = []
     for i in range(length_prot):
@@ -1678,6 +1679,7 @@ def network_plot_int_reference(inp1, inp2):
                 colors.append(com_num)
     #print(colors)
     # Plot network:
+    """
     plt.suptitle('DYNAMIC INTERACTION NETWORK (i.e. fluctuation x time) for %s' % PDB_id_reference)
     plt.title("communities of sites with significant interactions over time (p<%s)" % p_threshold)
     nx.draw_networkx(G, with_labels=True, node_color=colors, node_size=100, edge_color='black', linewidths=0.5, font_size=7, cmap=plt.get_cmap("hsv"))
@@ -1685,7 +1687,7 @@ def network_plot_int_reference(inp1, inp2):
     G=nx.Graph(G) # to unfreeze graph
     G.clear() # to clear for next graph
     plt.close()
-    
+    """
     # collect NET mapping data
     NET_output = []
     for i in range(length_prot):
