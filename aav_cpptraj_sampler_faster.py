@@ -98,7 +98,7 @@ n_chains = ""+n_ch+""
 length_prot = int(l_pr)
 #choreo = ""+coord_yn+""
 choreo = "yes"
-traj_sets = int(n_frames/50)
+traj_sets = int(n_frames/500)
 #subsamples = 10
 #frame_size = 100
 #n_frames = 5000
@@ -141,9 +141,9 @@ def split_traj_files():
     traj_start = 1
     for ts in range(traj_sets):
         if(ts == 0):
-            traj_stop = traj_start+49
+            traj_stop = traj_start+499
         if(ts > 0):
-            traj_stop = traj_start+50
+            traj_stop = traj_start+500
         traj_set_str = str(int(ts))
         f.write("trajout %s_%s.nc onlyframes %s-%s\n" %(traj_file_label,traj_set_str,traj_start,traj_stop))
         traj_start = traj_stop
@@ -158,9 +158,9 @@ def split_traj_files():
     traj_start = 1
     for ts in range(traj_sets):
         if(ts == 0):
-            traj_stop = traj_start+49
+            traj_stop = traj_start+499
         if(ts > 0):
-            traj_stop = traj_start+50
+            traj_stop = traj_start+500
         traj_set_str = str(int(ts))
         f.write("trajout %s_%s.nc onlyframes %s-%s\n" %(traj_file_label,traj_set_str,traj_start,traj_stop))
         traj_start = traj_stop
