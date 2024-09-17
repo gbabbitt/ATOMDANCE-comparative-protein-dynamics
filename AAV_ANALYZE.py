@@ -477,7 +477,9 @@ def parsing():
         # parse non-proteins folder
         for i in range(len(my_list)):
             readPath = my_list[i]
-            filename = readPath[13:-4]
+            filename = readPath.split("/")
+            filename = filename[1]
+            filename = filename[:-4]
             print(filename)
             infile = open(readPath, "r")
             lines = infile.readlines()
@@ -511,8 +513,10 @@ def plotting():
     print(dfDAT)
     myplot1 = (ggplot(dfDAT) + aes(x='complexity', y='maxAC', color = 'log_n_peaksAC') + geom_jitter() + geom_label(label=dfDAT['file_label'], size=7, fill='black') + xlim(-0.2, 1.2) + ylim(0, 1.05) + scale_color_distiller(type="div", palette=9, limits=[1,4])  + labs(title='Correlative Analyses of Various Sound Spectrums', x='melodic complexity (Note Variability Index)', y='rhythmic dominance (max AC)', color= 'harmonic complexity\n(log n AC peaks)\n\n') + theme(panel_background=element_rect(fill='black', alpha=.6)))
     myplot1.save("Spectral_Corr_Analysis_%s.png" % inp, width=10, height=5, dpi=300)
-    myplot2 = (ggplot(dfDAT) + aes(x='complexity', y='maxAC', color = 'log_n_peaksAC') + geom_jitter() + geom_label(label=dfDAT['file_label'], size=7, fill='black') + scale_color_distiller(type="div", palette=9)  + labs(title='Correlative Analyses of Various Sound Spectrums', x='melodic complexity (Note Variability Index)', y='rhythmic dominance (max AC)', color= 'harmonic complexity\n(log n AC peaks)\n\n') + theme(panel_background=element_rect(fill='black', alpha=.6)))
-    myplot2.save("Spectral_Corr_Analysis_%s_autoscale.png" % inp, width=10, height=5, dpi=300)
+    myplot2 = (ggplot(dfDAT) + aes(x='complexity', y='maxAC', color = 'log_n_peaksAC') + geom_jitter() + geom_label(label=dfDAT['file_label'], size=7, fill='black') + scale_color_distiller(type="div", palette=9, limits=[1,4])  + labs(title='Correlative Analyses of Various Sound Spectrums', x='melodic complexity (Note Variability Index)', y='rhythmic dominance (max AC)', color= 'harmonic complexity\n(log n AC peaks)\n\n') + theme(panel_background=element_rect(fill='black', alpha=.6)))
+    myplot2.save("Spectral_Corr_Analysis_%s_autoscaleXY.png" % inp, width=10, height=5, dpi=300)
+    myplot3 = (ggplot(dfDAT) + aes(x='complexity', y='maxAC', color = 'log_n_peaksAC') + geom_jitter() + geom_label(label=dfDAT['file_label'], size=7, fill='black') + scale_color_distiller(type="div", palette=9)  + labs(title='Correlative Analyses of Various Sound Spectrums', x='melodic complexity (Note Variability Index)', y='rhythmic dominance (max AC)', color= 'harmonic complexity\n(log n AC peaks)\n\n') + theme(panel_background=element_rect(fill='black', alpha=.6)))
+    myplot3.save("Spectral_Corr_Analysis_%s_autoscaleXYZ.png" % inp, width=10, height=5, dpi=300)
      
 ###############################################################
 
