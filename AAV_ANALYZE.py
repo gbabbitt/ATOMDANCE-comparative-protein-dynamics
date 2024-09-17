@@ -36,10 +36,10 @@ from plotnine import *
 from pydub import AudioSegment
 # IMPORTANT NOTE - run in base conda env, not in atomdance conda env   
 ################################################################################
-
-inp = input("\nName of mp3 or wav sound file OR batch folder to analyze (e.g. type 'myfile' NOT 'myfile.wav')\n" )
-if not os.path.exists('AAV_analysis'):
-        os.mkdir('AAV_analysis')
+inp0 = input("\nChoose 'full' or 'fast' analysis for NVI index (default = full)\n" )
+inp = input("\nName of sound file OR batch folder to analyze (e.g. type 'myfile' NOT 'myfile.wav')\n" )
+if not os.path.exists('%s_spectral_corr_analysis' % inp):
+        os.mkdir('%s_spectral_corr_analysis' % inp)
 ################################################################################
 #########################   sonogram generator  ################################
 ################################################################################
@@ -84,7 +84,7 @@ def trim_wav():
     # song clip of 10 seconds from starting 
     ftrim = song[start: end] 
     # save file 
-    ftrim.export("AAV_analysis/trimmed_%s" % input1, format="wav") 
+    ftrim.export("%s_spectral_corr_analysis/trimmed_%s" % (inp, input1), format="wav") 
     print("trimmed %s file is created and saved" % input1)
 
 
@@ -111,14 +111,14 @@ def trim_wav_batch():
         # song clip of 10 seconds from starting 
         ftrim = song[start: end] 
         # save file 
-        ftrim.export("AAV_analysis/%s" % filename, format="wav") 
+        ftrim.export("%s_spectral_corr_analysis/%s" % (inp,filename), format="wav") 
         print("trimmed %s is created and saved" % filename)
 
 
 def create_sonogram(): 
     print("generating sonograms for %s" % input1)
     infile = "%s" % input1
-    outfile = "AAV_analysis/%s" % input2
+    outfile = "%s_spectral_corr_analysis/%s" % (inp,input2)
     samplingFrequency, signalData = wavfile.read(infile)
     #print(signalData[:,1])
     #print(samplingFrequency)
@@ -140,10 +140,17 @@ def create_sonogram():
     #print(ls[0].shape)
     shp = ls[0].shape
     global n_cols
-    n_cols = shp[1]
+    if(inp0 == 'full'):
+        n_cols = shp[1]
+    if(inp0 == 'fast' and shp[1] >= 1000):
+        n_cols = 1000
+    if(inp0 == 'fast' and shp[1] < 1000):
+        n_cols = shp[1]   
     print("number of notes (i.e. columns)")
     print(n_cols)
-    with open("AAV_analysis/%s" % input3, 'w') as ffile:
+    if(inp0 == 'fast' and shp[1] >= 1000):
+        print("...NVI will be limited to first 1000 cols")
+    with open("%s_spectral_corr_analysis/%s" % (inp,input3), 'w') as ffile:
         for spectros in ls[0]:
             for spectro in spectros:
                 spectro = round(spectro,4)
@@ -168,11 +175,11 @@ def create_sonogram_batch():
     for i in range(number_files):    
         # Open an mp3 file 
         filename = dir_list[i]
-        print(filename[:-4])
+        #print(filename[:-4])
     
-        infile = "AAV_analysis/%s" % filename
+        infile = "%s_spectral_corr_analysis/%s" % (inp,filename)
         input2 = "%s.png" % filename[:-4]
-        outfile = "AAV_analysis/%s" % input2
+        outfile = "%s_spectral_corr_analysis/%s" % (inp,input2)
         samplingFrequency, signalData = wavfile.read(infile)
         #print(signalData[:,1])
         #print(samplingFrequency)
@@ -195,12 +202,20 @@ def create_sonogram_batch():
         #print(ls[0].shape)
         shp = ls[0].shape
         global n_cols
-        n_cols = shp[1]
+        if(inp0 == 'full'):
+            n_cols = shp[1]
+        if(inp0 == 'fast' and shp[1] >= 1000):
+            n_cols = 1000
+        if(inp0 == 'fast' and shp[1] < 1000):
+            n_cols = shp[1] 
+        print("generating sonogram for %s" % filename)
         print("number of notes (i.e. columns)")
         print(n_cols)
+        if(inp0 == 'fast' and shp[1] >= 1000):
+            print("...NVI will be limited to first 1000 cols")
         n_cols_array.append(n_cols)
         input3 = "%s.dat" % filename[:-4]
-        with open("AAV_analysis/%s" % input3, 'w') as ffile:
+        with open("%s_spectral_corr_analysis/%s" % (inp,input3), 'w') as ffile:
             for spectros in ls[0]:
                 for spectro in spectros:
                     spectro = round(spectro,4)
@@ -214,11 +229,11 @@ def create_sonogram_batch():
         
 def complexity_metric():
     print("calculating complexity via NVI (Sawant et al. 2021 in MEE-BES)")
-    readPath = "AAV_analysis/%s" % input3
-    writePath = "AAV_analysis/%s" % input4
+    readPath = "%s_spectral_corr_analysis/%s" % (inp,input3)
+    writePath = "%s_spectral_corr_analysis/%s" % (inp,input4)
     df_in = pd.read_csv(readPath, delimiter='\t',header=None)
     txt_out = open(writePath, 'w')
-    #print(n_cols)
+    print(n_cols)
     NVIsum = 0
     for i in range(n_cols):
         #print("data in column %s" % i)
@@ -253,9 +268,9 @@ def complexity_metric_batch():
         filename = dir_list[k]
         print(filename[:-4])
         input3 = "%s.dat" % filename[:-4]
-        readPath = "AAV_analysis/%s" % input3
+        readPath = "%s_spectral_corr_analysis/%s" % (inp,input3)
         input4 = "%s.txt" % filename[:-4]
-        writePath = "AAV_analysis/%s" % input4
+        writePath = "%s_spectral_corr_analysis/%s" % (inp,input4)
         df_in = pd.read_csv(readPath, delimiter='\t',header=None)
         txt_out = open(writePath, 'w')
         #print(n_cols)
@@ -283,7 +298,7 @@ def complexity_metric_batch():
 
 def autocorr_metric():
     print("calculating max peak autocorrelation")
-    writePath = "AAV_analysis/%s" % input4
+    writePath = "%s_spectral_corr_analysis/%s" % (inp,input4)
     txt_out = open(writePath, 'a')
     infile = '%s' % input1
     samplingFrequency, signalData = wavfile.read(infile)
@@ -317,7 +332,7 @@ def autocorr_metric():
     #print(lag, MAC)
      
     # autocorrelation plot
-    outfile = "AAV_analysis/%s" % input5
+    outfile = "%s_spectral_corr_analysis/%s" % (inp,input5)
     peak_idx = find_peaks(corr,height=0.05,width=None,distance=10)[0]
     n_peaks = len(peak_idx)
     #print(n_peaks)
@@ -351,9 +366,9 @@ def autocorr_metric_batch():
         filename = dir_list[k]
         print(filename[:-4])
         input4 = "%s.txt" % filename[:-4]
-        writePath = "AAV_analysis/%s" % input4
+        writePath = "%s_spectral_corr_analysis/%s" % (inp,input4)
         txt_out = open(writePath, 'a')
-        infile = "AAV_analysis/%s" % filename
+        infile = "%s_spectral_corr_analysis/%s" % (inp,filename)
         samplingFrequency, signalData = wavfile.read(infile)
         #print(signalData[:,1])
         #print(samplingFrequency)
@@ -386,7 +401,7 @@ def autocorr_metric_batch():
      
         # autocorrelation plot
         input5 = input4 = "%s.jpg" % filename[:-4]
-        outfile = "AAV_analysis/%s" % input5
+        outfile = "%s_spectral_corr_analysis/%s" % (inp,input5)
         peak_idx = find_peaks(corr,height=0.05,width=None,distance=10)[0]
         n_peaks = len(peak_idx)
         #print(n_peaks)
@@ -411,8 +426,8 @@ def complexity_metric_bootstrap():
     NVIarray = []
     for i in range(bootstp):
         print("calculating complexity via NVI - bootstrap %s" % i)
-        readPath = "AAV_analysis/%s" % input3
-        writePath = "AAV_analysis/%s" % input4
+        readPath = "%s_spectral_corr_analysis/%s" % (inp,input3)
+        writePath = "%s_spectral_corr_analysis/%s" % (inp,input4)
         df_in = pd.read_csv(readPath, delimiter='\t',header=None)
         txt_out = open(writePath, 'a')
         #print(n_cols)
@@ -454,9 +469,9 @@ def parsing():
         filename = dir_list[k]
         # change file extension to .txt
         file_name = filename[:-4]
-        my_file = "AAV_analysis/%s.txt" % file_name
+        my_file = "%s_spectral_corr_analysis/%s.txt" % (inp,file_name)
         my_list.append(my_file)
-        writePath = "soundAnalysis_%s.dat" % inp
+        writePath = "Spectral_Corr_Analysis_%s.dat" % inp
         outfile = open(writePath, "w")
         outfile.write("file_label\tcomplexity\tmaxAC\tn_peaksAC\n")
         # parse non-proteins folder
@@ -489,15 +504,15 @@ def parsing():
      
 def plotting():
     print("making plots and stats tests")
-    inDAT = "soundAnalysis_%s.dat" % inp
+    inDAT = "Spectral_Corr_Analysis_%s.dat" % inp
     dfDAT = pd.read_csv(inDAT, sep="\t")
     print(dfDAT)
     dfDAT['log_n_peaksAC'] = np.log10(dfDAT['n_peaksAC'])
     print(dfDAT)
     myplot1 = (ggplot(dfDAT) + aes(x='complexity', y='maxAC', color = 'log_n_peaksAC') + geom_jitter() + geom_label(label=dfDAT['file_label'], size=7, fill='black') + xlim(-0.2, 1.2) + ylim(0, 1.05) + scale_color_distiller(type="div", palette=9, limits=[1,4])  + labs(title='Correlative Analyses of Various Sound Spectrums', x='melodic complexity (Note Variability Index)', y='rhythmic dominance (max AC)', color= 'harmonic complexity\n(log n AC peaks)\n\n') + theme(panel_background=element_rect(fill='black', alpha=.6)))
-    myplot1.save("soundAnalysis_%s.png" % inp, width=10, height=5, dpi=300)
-    myplot2 = (ggplot(dfDAT) + aes(x='complexity', y='maxAC', color = 'log_n_peaksAC') + geom_jitter() + geom_label(label=dfDAT['file_label'], size=7, fill='black') + scale_color_distiller(type="div", palette=9, limits=[1,4])  + labs(title='Correlative Analyses of Various Sound Spectrums', x='melodic complexity (Note Variability Index)', y='rhythmic dominance (max AC)', color= 'harmonic complexity\n(log n AC peaks)\n\n') + theme(panel_background=element_rect(fill='black', alpha=.6)))
-    myplot2.save("soundAnalysis_%s_autoscale.png" % inp, width=10, height=5, dpi=300)
+    myplot1.save("Spectral_Corr_Analysis_%s.png" % inp, width=10, height=5, dpi=300)
+    myplot2 = (ggplot(dfDAT) + aes(x='complexity', y='maxAC', color = 'log_n_peaksAC') + geom_jitter() + geom_label(label=dfDAT['file_label'], size=7, fill='black') + scale_color_distiller(type="div", palette=9)  + labs(title='Correlative Analyses of Various Sound Spectrums', x='melodic complexity (Note Variability Index)', y='rhythmic dominance (max AC)', color= 'harmonic complexity\n(log n AC peaks)\n\n') + theme(panel_background=element_rect(fill='black', alpha=.6)))
+    myplot2.save("Spectral_Corr_Analysis_%s_autoscale.png" % inp, width=10, height=5, dpi=300)
      
 ###############################################################
 
