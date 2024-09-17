@@ -79,8 +79,8 @@ def trim_wav():
     # Open an mp3 file 
     song = AudioSegment.from_file(input1, format="wav") 
     # start and end time 
-    start = 1000
-    end = -1000
+    start = 2000
+    end = -2000
     # song clip of 10 seconds from starting 
     ftrim = song[start: end] 
     # save file 
@@ -106,8 +106,8 @@ def trim_wav_batch():
         else:  # else if .wav
             song = AudioSegment.from_file("%s/%s" % (inp,filename), format="wav") 
         # start and end time 
-        start = 3000
-        end = -3000
+        start = 2000
+        end = -2000
         # song clip of 10 seconds from starting 
         ftrim = song[start: end] 
         # save file 
@@ -153,7 +153,7 @@ def create_sonogram():
             # one row written 
             ffile.write("\n")
         ffile.close
-
+    plt.close()
 
 def create_sonogram_batch(): 
     print("generating sonograms for %s folder" % inp)
@@ -180,6 +180,7 @@ def create_sonogram_batch():
         # generate spectrogram
         if(signalData.ndim != 1):
             signalData = signalData[:,1]
+        #print(len(signalData))
         plt.specgram(signalData, Fs=samplingFrequency,NFFT=2048)
  
         # Set the title of the plot, xlabel and ylabel
@@ -209,7 +210,7 @@ def create_sonogram_batch():
                 # one row written 
                 ffile.write("\n")
             ffile.close
-    
+        plt.close()
         
 def complexity_metric():
     print("calculating complexity via NVI (Sawant et al. 2021 in MEE-BES)")
