@@ -79,7 +79,7 @@ def trim_wav():
     # Open an mp3 file 
     song = AudioSegment.from_file(input1, format="wav") 
     # start and end time 
-    start = 2000
+    start = 2000  # note 1000 = 1 second
     end = -2000
     # song clip of 10 seconds from starting 
     ftrim = song[start: end] 
@@ -106,7 +106,7 @@ def trim_wav_batch():
         else:  # else if .wav
             song = AudioSegment.from_file("%s/%s" % (inp,filename), format="wav") 
         # start and end time 
-        start = 2000
+        start = 2000 # note 1000 = 1 second
         end = -2000
         # song clip of 10 seconds from starting 
         ftrim = song[start: end] 
@@ -142,14 +142,14 @@ def create_sonogram():
     global n_cols
     if(inp0 == 'full'):
         n_cols = shp[1]
-    if(inp0 == 'fast' and shp[1] >= 1000):
-        n_cols = 1000
-    if(inp0 == 'fast' and shp[1] < 1000):
+    if(inp0 == 'fast' and shp[1] >= 2000):
+        n_cols = 2000
+    if(inp0 == 'fast' and shp[1] < 2000):
         n_cols = shp[1]   
     print("number of notes (i.e. columns)")
     print(n_cols)
-    if(inp0 == 'fast' and shp[1] >= 1000):
-        print("...NVI will be limited to first 1000 cols")
+    if(inp0 == 'fast' and shp[1] >= 2000):
+        print("...NVI will be limited to first 2000 cols")
     with open("%s_spectral_corr_analysis/%s" % (inp,input3), 'w') as ffile:
         for spectros in ls[0]:
             for spectro in spectros:
@@ -204,15 +204,15 @@ def create_sonogram_batch():
         global n_cols
         if(inp0 == 'full'):
             n_cols = shp[1]
-        if(inp0 == 'fast' and shp[1] >= 1000):
-            n_cols = 1000
-        if(inp0 == 'fast' and shp[1] < 1000):
+        if(inp0 == 'fast' and shp[1] >= 2000):
+            n_cols = 2000
+        if(inp0 == 'fast' and shp[1] < 2000):
             n_cols = shp[1] 
         print("generating sonogram for %s" % filename)
         print("number of notes (i.e. columns)")
         print(n_cols)
-        if(inp0 == 'fast' and shp[1] >= 1000):
-            print("...NVI will be limited to first 1000 cols")
+        if(inp0 == 'fast' and shp[1] >= 2000):
+            print("...NVI will be limited to first 2000 cols")
         n_cols_array.append(n_cols)
         input3 = "%s.dat" % filename[:-4]
         with open("%s_spectral_corr_analysis/%s" % (inp,input3), 'w') as ffile:
