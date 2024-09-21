@@ -192,6 +192,8 @@ def create_sonogram_var(): # run only in base anaconda
             # one row written 
             ffile.write("\n")
         ffile.close
+    plt.close
+    
         
 def create_sonogram_fix(): # run only in base anaconda
     print("generating sonograms for %s" % PDB_id_reference)
@@ -230,7 +232,8 @@ def create_sonogram_fix(): # run only in base anaconda
             # one row written 
             ffile.write("\n")
         ffile.close    
-
+    plt.close
+    
 def complexity_metric_fix():
     print("calculating complexity on fixed interval via NVI (Sawant et al. 2021 in MEE-BES)")
     readPath = "proteinInteraction_movie_%s/mySound_fixInt.txt" % PDB_id_reference

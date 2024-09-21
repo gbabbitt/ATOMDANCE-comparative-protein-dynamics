@@ -77,7 +77,8 @@ def create_sonogram(): # run only in base anaconda
             # one row written 
             ffile.write("\n")
         ffile.close
-        
+    plt.close
+    
 def complexity_metric():
     print("calculating complexity via NVI (Sawant et al. 2021 in MEE-BES)")
     readPath = "%s" % input3
