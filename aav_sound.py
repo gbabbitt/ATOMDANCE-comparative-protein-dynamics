@@ -9,6 +9,7 @@
 
 import getopt, sys # Allows for command line arguments
 import os
+import shutil
 import random as rnd
 #import pytraj as pt
 #import nglview as nv
@@ -362,15 +363,29 @@ def combine_choir():
             #print(inCOM)
             #print(len(inCOM))
             line_count = len(inCOM)
-            for i in range(line_count-1):
-                 # combine/overlay choir files
-                 if(i==0):
-                    wave_file_start = AudioSegment.from_file('coordinatedDynamics_%s/movieFrame_%s/aa_adjusted_choir_fixInt_0.wav' % (PDB_id_reference,m))  
-                 aa3 = str(i+1)
-                 wave_file_next = AudioSegment.from_file('coordinatedDynamics_%s/movieFrame_%s/aa_adjusted_choir_fixInt_%s.wav' % (PDB_id_reference,m,aa3))
-                 wave_file_combined = wave_file_start.overlay(wave_file_next, position=0, loop=True, gain_during_overlay=-4) # overlay
-                 wave_file_start = wave_file_combined                    
-                 wave_file_combined.export('coordinatedDynamics_%s/movieFrame_%s/aa_adjusted_combinedChoirs_fixInt.wav' % (PDB_id_reference,m), format="wav")
+            #print("line count = %s" % line_count)
+            ### if line count > 1
+            if(line_count > 1):
+                for i in range(line_count-1):
+                    # combine/overlay choir files
+                    if(i==0):
+                        wave_file_start = AudioSegment.from_file('coordinatedDynamics_%s/movieFrame_%s/aa_adjusted_choir_fixInt_0.wav' % (PDB_id_reference,m))  
+                    aa3 = str(i+1)
+                    wave_file_next = AudioSegment.from_file('coordinatedDynamics_%s/movieFrame_%s/aa_adjusted_choir_fixInt_%s.wav' % (PDB_id_reference,m,aa3))
+                    wave_file_combined = wave_file_start.overlay(wave_file_next, position=0, loop=True, gain_during_overlay=-4) # overlay
+                    wave_file_start = wave_file_combined                    
+                    wave_file_combined.export('coordinatedDynamics_%s/movieFrame_%s/aa_adjusted_combinedChoirs_fixInt.wav' % (PDB_id_reference,m), format="wav")
+            ### if line count == 1 then copy existing .wav file as combinedChoirs.wav
+            if(line_count == 1):
+                src_file = 'coordinatedDynamics_%s/movieFrame_%s/aa_adjusted_choir_fixInt_0.wav' % (PDB_id_reference,m)
+                dst_file =  'coordinatedDynamics_%s/movieFrame_%s/aa_adjusted_combinedChoirs_fixInt.wav' % (PDB_id_reference,m)
+                shutil.copy(src_file, dst_file)
+            ### if line count == 0 then create empty .wav file
+            if(line_count == 0):
+                # Create a 1-second silent audio segment
+                silent_audio = AudioSegment.silent(duration=250)  # Duration in milliseconds
+                silent_audio.export('coordinatedDynamics_%s/movieFrame_%s/aa_adjusted_combinedChoirs_fixInt.wav' % (PDB_id_reference,m), format="wav")
+                
     for m in range(m_frames):          
         print("combining choir sections for variable interval %s - movie frame %s" % (PDB_id_reference,m))
         with open('coordinatedDynamics_%s/movieFrame_%s/coordinatedDynamics_query_communities_stacked.txt' % (PDB_id_reference,m), 'r') as f_in:
@@ -378,16 +393,31 @@ def combine_choir():
             #print(inCOM)
             #print(len(inCOM))
             line_count = len(inCOM)
-            for i in range(line_count-1):
-                 # combine/overlay choir files
-                 if(i==0):
-                     wave_file_start = AudioSegment.from_file('coordinatedDynamics_%s/movieFrame_%s/aa_adjusted_choir_0.wav' % (PDB_id_reference,m))  
-                 aa3 = str(i+1)
-                 wave_file_next = AudioSegment.from_file('coordinatedDynamics_%s/movieFrame_%s/aa_adjusted_choir_%s.wav' % (PDB_id_reference,m,aa3))
-                 wave_file_combined = wave_file_start.overlay(wave_file_next, position=0, loop=True, gain_during_overlay=-4) # overlay
-                 wave_file_start = wave_file_combined                    
-                 wave_file_combined.export('coordinatedDynamics_%s/movieFrame_%s/aa_adjusted_combinedChoirs.wav' % (PDB_id_reference,m), format="wav")
-              
+            ### if line count > 1
+            if(line_count > 1):
+                for i in range(line_count-1):
+                    # combine/overlay choir files
+                    if(i==0):
+                        wave_file_start = AudioSegment.from_file('coordinatedDynamics_%s/movieFrame_%s/aa_adjusted_choir_0.wav' % (PDB_id_reference,m))  
+                    aa3 = str(i+1)
+                    wave_file_next = AudioSegment.from_file('coordinatedDynamics_%s/movieFrame_%s/aa_adjusted_choir_%s.wav' % (PDB_id_reference,m,aa3))
+                    wave_file_combined = wave_file_start.overlay(wave_file_next, position=0, loop=True, gain_during_overlay=-4) # overlay
+                    wave_file_start = wave_file_combined                    
+                    wave_file_combined.export('coordinatedDynamics_%s/movieFrame_%s/aa_adjusted_combinedChoirs.wav' % (PDB_id_reference,m), format="wav")
+            ### if line count == 1 then copy existing .wav file as combinedChoirs.wav
+            if(line_count == 1):
+                src_file = 'coordinatedDynamics_%s/movieFrame_%s/aa_adjusted_choir_0.wav' % (PDB_id_reference,m)
+                dst_file =  'coordinatedDynamics_%s/movieFrame_%s/aa_adjusted_combinedChoirs.wav' % (PDB_id_reference,m)
+                shutil.copy(src_file, dst_file)
+            ### if line count == 0 then create empty .wav file
+            if(line_count == 0):
+                # Create a 1-second silent audio segment
+                silent_audio = AudioSegment.silent(duration=250)  # Duration in milliseconds
+                silent_audio.export('coordinatedDynamics_%s/movieFrame_%s/aa_adjusted_combinedChoirs.wav' % (PDB_id_reference,m), format="wav")
+            
+            
+            
+            
 def merge_final_file():
     for m in range(m_frames-1):
         print("final file merge for %s - movie frame %s" % (PDB_id_reference,m))                  
@@ -411,6 +441,8 @@ def merge_final_file():
         wave_file_start = wave_file_merged                   
     wave_file_merged.export('coordinatedDynamics_%s/aa_adjusted_merged_fixInt.wav' % (PDB_id_reference), format="wav")              
         
+
+
 def movie_parse():
     print("setting up chimerax .ctl and .dat files for each movie frame\n")
     if not os.path.exists('ChimeraXvis_%s/NETctl' % (PDB_id_reference)):
