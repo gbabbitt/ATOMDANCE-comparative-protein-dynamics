@@ -37,6 +37,7 @@ from pydub import AudioSegment
 # IMPORTANT NOTE - run in base conda env, not in atomdance conda env   
 ################################################################################
 inp0 = input("\nChoose 'full' or 'fast' analysis for NVI index (default = full)\n" )
+inp00 = input("\nChoose 'trim' if you need to employ audio cutter (recommended for music files) (default = no)\n" )
 inp = input("\nName of sound file OR batch folder to analyze (e.g. type 'myfile' NOT 'myfile.wav')\n" )
 if not os.path.exists('%s_spectral_corr_analysis' % inp):
         os.mkdir('%s_spectral_corr_analysis' % inp)
@@ -53,6 +54,7 @@ input2 = "%s.png" % inp
 input3 = "%s.dat" % inp
 input4 = "%s.txt" % inp
 input5 = "%s.jpg" % inp
+input6 = "%s_signal.jpg" % inp
 
 if os.path.isfile(input1):
     print("user input is a .wav file")
@@ -79,8 +81,12 @@ def trim_wav():
     # Open an mp3 file 
     song = AudioSegment.from_file(input1, format="wav") 
     # start and end time 
-    start = 2000  # note 1000 = 1 second
-    end = -2000
+    if(inp00 == "trim"):
+        start = 2000  # note 1000 = 1 second
+        end = -2000
+    else:
+        start = 100  # note 1000 = 1 second
+        end = -100
     # song clip of 10 seconds from starting 
     ftrim = song[start: end] 
     # save file 
@@ -106,8 +112,12 @@ def trim_wav_batch():
         else:  # else if .wav
             song = AudioSegment.from_file("%s/%s" % (inp,filename), format="wav") 
         # start and end time 
-        start = 2000 # note 1000 = 1 second
-        end = -2000
+        if(inp00 == "trim"):
+            start = 2000  # note 1000 = 1 second
+            end = -2000
+        else:
+            start = 100  # note 1000 = 1 second
+            end = -100
         # song clip of 10 seconds from starting 
         ftrim = song[start: end] 
         # save file 
@@ -119,13 +129,36 @@ def create_sonogram():
     print("generating sonograms for %s" % input1)
     infile = "%s" % input1
     outfile = "%s_spectral_corr_analysis/%s" % (inp,input2)
+    outfile2 = "%s_spectral_corr_analysis/%s" % (inp,input6)
     samplingFrequency, signalData = wavfile.read(infile)
+    #print(signalData)
     #print(signalData[:,1])
-    #print(samplingFrequency)
-    # Matplotlib.pyplot.specgram() function to
-    # generate spectrogram
     if(signalData.ndim != 1):
         signalData = signalData[:,1]
+        
+    # generate signal plot (time domain)
+    mySignal = signalData
+    myIndices = []
+    for k in range(len(mySignal)):
+        myIndex = str(k+1)
+        #print("myIndex %s" % myIndex)
+        myIndices.append(myIndex)
+    myIndices = np.array(myIndices)
+    myIndices = myIndices[::100]
+    mySignal = mySignal[::100]
+    #print(len(mySignal))
+    plt.plot(myIndices, mySignal, c = 'b')
+    plt.xlabel("TIME")
+    plt.ylabel("SIGNAL")
+    plt.xticks([]) 
+    plt.savefig(outfile2)
+    plt.close()
+    
+    #print(samplingFrequency)
+    # Matplotlib.pyplot.specgram() function to
+   
+    
+    # generate spectrogram
     plt.specgram(signalData, Fs=samplingFrequency,NFFT=2048)
  
     # Set the title of the plot, xlabel and ylabel
@@ -172,6 +205,7 @@ def create_sonogram_batch():
     print(number_files)
     dir_list = os.listdir(inp)
     print(dir_list)
+    myIndices = []
     for i in range(number_files):    
         # Open an mp3 file 
         filename = dir_list[i]
@@ -179,14 +213,32 @@ def create_sonogram_batch():
     
         infile = "%s_spectral_corr_analysis/%s" % (inp,filename)
         input2 = "%s.png" % filename[:-4]
+        input6 = "%s_signal.jpg" % filename[:-4]
         outfile = "%s_spectral_corr_analysis/%s" % (inp,input2)
+        outfile2 = "%s_spectral_corr_analysis/%s" % (inp,input6)
         samplingFrequency, signalData = wavfile.read(infile)
         #print(signalData[:,1])
         #print(samplingFrequency)
         # Matplotlib.pyplot.specgram() function to
-        # generate spectrogram
         if(signalData.ndim != 1):
             signalData = signalData[:,1]
+        # generate signal plot (time domain)
+        mySignal = signalData
+        myIndices = []
+        for k in range(len(mySignal)):
+            myIndex = str(k+1)
+            myIndices.append(myIndex)
+        myIndices = np.array(myIndices)
+        #print(mySignal.ndim)
+        #print(myIndices.ndim)
+        plt.plot(myIndices, mySignal, c = 'b')
+        plt.xlabel("TIME")
+        plt.ylabel("SIGNAL")
+        plt.xticks([]) 
+        plt.savefig(outfile2)
+        plt.close()
+        
+        # generate spectrogram
         #print(len(signalData))
         plt.specgram(signalData, Fs=samplingFrequency,NFFT=2048)
  
@@ -297,7 +349,7 @@ def complexity_metric_batch():
         txt_out.close()
 
 def autocorr_metric():
-    print("calculating max peak autocorrelation")
+    print("calculating max and N peaks in  autocorrelation")
     writePath = "%s_spectral_corr_analysis/%s" % (inp,input4)
     txt_out = open(writePath, 'a')
     infile = '%s' % input1
@@ -330,12 +382,36 @@ def autocorr_metric():
     #print(lags)
     MAC = np.max(corr)
     #print(lag, MAC)
-     
-    # autocorrelation plot
+    
+    # autocorrelation plot and diversity/evenness index
     outfile = "%s_spectral_corr_analysis/%s" % (inp,input5)
     peak_idx = find_peaks(corr,height=0.05,width=None,distance=10)[0]
+    
+    # calc diversity
     n_peaks = len(peak_idx)
-    #print(n_peaks)
+    print("n_peaks")
+    print(n_peaks)
+    r_values = corr[peak_idx]
+    #print("r_values")
+    #print(r_values)
+    r_sum = np.sum(r_values)
+    r_sums = np.repeat(r_sum, n_peaks)
+    norm_r_values = np.divide(r_values, r_sums)
+    #print("norm_r_values")
+    #print(norm_r_values)
+    # Shannon-Weiner Diversity
+    H = 0
+    for p in range(n_peaks):
+        r_value = r_values[p]
+        H = H + r_value*np.log(r_value)
+    H = -H
+    print("diversity")
+    print(H)
+    J = H/np.log(n_peaks)
+    print("evenness")
+    print(J)
+        
+    # ACF plot
     plt.title("autocorrelation for %s" % input1)
     plt.xlabel("time lag")
     plt.ylabel("ACF")
@@ -350,6 +426,8 @@ def autocorr_metric():
     txt_out.write("max autocorrelation = %s\n" % MAC)
     txt_out.write("occurring with lag value of %s\n" % lag)
     txt_out.write("number ofdistinct autocorrelation peaks = %s\n" % n_peaks)
+    txt_out.write("Shannon-Weiner Diversity Index = %s\n" % H)
+    txt_out.write("Evenness Index = %s\n" % J)
     txt_out.write("calculated via scipy signal package\n")
     txt_out.close()
     
@@ -399,12 +477,35 @@ def autocorr_metric_batch():
         MAC = np.max(corr)
         #print(lag, MAC)
      
-        # autocorrelation plot
+        # autocorrelation plot and Shannon-Weiner diversity/evenness
         input5 = input4 = "%s.jpg" % filename[:-4]
         outfile = "%s_spectral_corr_analysis/%s" % (inp,input5)
         peak_idx = find_peaks(corr,height=0.05,width=None,distance=10)[0]
+        # calc diversity
         n_peaks = len(peak_idx)
-        #print(n_peaks)
+        print("n_peaks")
+        print(n_peaks)
+        r_values = corr[peak_idx]
+        #print("r_values")
+        #print(r_values)
+        r_sum = np.sum(r_values)
+        r_sums = np.repeat(r_sum, n_peaks)
+        norm_r_values = np.divide(r_values, r_sums)
+        #print("norm_r_values")
+        #print(norm_r_values)
+        # Shannon-Weiner Diversity
+        H = 0
+        for p in range(n_peaks):
+            r_value = r_values[p]
+            H = H + r_value*np.log(r_value)
+        H = -H
+        print("diversity")
+        print(H)
+        J = H/np.log(n_peaks)
+        print("evenness")
+        print(J)
+        
+        # ACF plot
         plt.title("autocorrelation for %s" % input1)
         plt.xlabel("time lag")
         plt.ylabel("ACF")
@@ -419,6 +520,8 @@ def autocorr_metric_batch():
         txt_out.write("max autocorrelation = %s\n" % MAC)
         txt_out.write("occurring with lag value of %s\n" % lag)
         txt_out.write("number ofdistinct autocorrelation peaks = %s\n" % n_peaks)
+        txt_out.write("Shannon-Weiner Diversity Index = %s\n" % H)
+        txt_out.write("Evenness Index = %s\n" % J)
         txt_out.write("calculated via scipy signal package\n")
         txt_out.close()
 
@@ -473,7 +576,7 @@ def parsing():
         my_list.append(my_file)
         writePath = "Spectral_Corr_Analysis_%s.dat" % inp
         outfile = open(writePath, "w")
-        outfile.write("file_label\tcomplexity\tmaxAC\tn_peaksAC\n")
+        outfile.write("file_label\tcomplexity\tmaxAC\tn_peaksAC\tdiversity\tevenness\n")
         # parse non-proteins folder
         for i in range(len(my_list)):
             readPath = my_list[i]
@@ -498,9 +601,16 @@ def parsing():
                 # get n peaks
                 if(re.match("number", line)):
                     #print("found n peaks")
-                    NPEAKS = line[42:]    
+                    NPEAKS = line[42:]
+                if(re.match("Shannon-Weiner", line)):
+                    #print("found n peaks")
+                    DIV = line[33:]
+                if(re.match("Evenness", line)):
+                    #print("found n peaks")
+                    EVE = line[17:]
+                    
             # write to .dat file
-            outfile.write("%s\t%s\t%s\t%s\n" % (filename, NVI, MAC, NPEAKS))
+            outfile.write("%s\t%s\t%s\t%s\t%s\t%s\n" % (filename, NVI, MAC, NPEAKS, DIV, EVE))
           
         outfile.close    
      
@@ -510,13 +620,17 @@ def plotting():
     dfDAT = pd.read_csv(inDAT, sep="\t")
     print(dfDAT)
     dfDAT['log_n_peaksAC'] = np.log10(dfDAT['n_peaksAC'])
+    minEVE = min(dfDAT['evenness'])
+    maxEVE = max(dfDAT['evenness'])
+    dfDAT['minmax_evenness'] = dfDAT['evenness'] - minEVE/(maxEVE - minEVE)
+    dfDAT['log_evenness'] = np.log10(dfDAT['evenness'])
     print(dfDAT)
-    myplot1 = (ggplot(dfDAT) + aes(x='complexity', y='maxAC', color = 'log_n_peaksAC') + geom_jitter() + geom_label(label=dfDAT['file_label'], size=7, fill='black') + xlim(-0.2, 1.2) + ylim(0, 1.05) + scale_color_distiller(type="div", palette=9, limits=[1,4])  + labs(title='Correlative Analyses of Various Sound Spectrums', x='melodic complexity (Note Variability Index)', y='rhythmic dominance (max AC)', color= 'harmonic complexity\n(log n AC peaks)\n\n') + theme(panel_background=element_rect(fill='black', alpha=.6)))
-    myplot1.save("Spectral_Corr_Analysis_%s.png" % inp, width=10, height=5, dpi=300)
-    myplot2 = (ggplot(dfDAT) + aes(x='complexity', y='maxAC', color = 'log_n_peaksAC') + geom_jitter() + geom_label(label=dfDAT['file_label'], size=7, fill='black') + scale_color_distiller(type="div", palette=9, limits=[1,4])  + labs(title='Correlative Analyses of Various Sound Spectrums', x='melodic complexity (Note Variability Index)', y='rhythmic dominance (max AC)', color= 'harmonic complexity\n(log n AC peaks)\n\n') + theme(panel_background=element_rect(fill='black', alpha=.6)))
-    myplot2.save("Spectral_Corr_Analysis_%s_autoscaleXY.png" % inp, width=10, height=5, dpi=300)
-    myplot3 = (ggplot(dfDAT) + aes(x='complexity', y='maxAC', color = 'log_n_peaksAC') + geom_jitter() + geom_label(label=dfDAT['file_label'], size=7, fill='black') + scale_color_distiller(type="div", palette=9)  + labs(title='Correlative Analyses of Various Sound Spectrums', x='melodic complexity (Note Variability Index)', y='rhythmic dominance (max AC)', color= 'harmonic complexity\n(log n AC peaks)\n\n') + theme(panel_background=element_rect(fill='black', alpha=.6)))
-    myplot3.save("Spectral_Corr_Analysis_%s_autoscaleXYZ.png" % inp, width=10, height=5, dpi=300)
+    myplot1 = (ggplot(dfDAT) + aes(x='complexity', y='maxAC', color = 'log_n_peaksAC') + geom_jitter() + geom_label(label=dfDAT['file_label'], size=7, fill='black') + xlim(-0.2, 1.2) + ylim(0, 1.05) + scale_color_distiller(type="div", palette=9, limits=[1,4])  + labs(title='Correlative Analyses of Various Sound Spectrums', x='acoustic complexity (Note Variability Index)', y='signal strength (max AC)', color= 'periodic complexity\n(log n AC peaks)\n\n') + theme(panel_background=element_rect(fill='black', alpha=.6)))
+    myplot1.save("Spectral_Corr_Analysis_%s_signalStrength.png" % inp, width=10, height=5, dpi=300)
+    myplot2 = (ggplot(dfDAT) + aes(x='complexity', y='minmax_evenness', color = 'log_n_peaksAC') + geom_jitter() + geom_label(label=dfDAT['file_label'], size=7, fill='black')+ xlim(-0.2, 1.2) + ylim(0, maxEVE)+ scale_color_distiller(type="div", palette=9, limits=[1,4])  + labs(title='Correlative Analyses of Various Sound Spectrums', x='acoustic complexity (Note Variability Index)', y='periodic consistency (normalized AC peak evenness)', color= 'periodic complexity\n(log n AC peaks)\n\n') + theme(panel_background=element_rect(fill='black', alpha=.6)))
+    myplot2.save("Spectral_Corr_Analysis_%s_periodicity.png" % inp, width=10, height=5, dpi=300)
+    myplot3 = (ggplot(dfDAT) + aes(x='complexity', y='minmax_evenness', color = 'log_n_peaksAC') + geom_jitter() + geom_label(label=dfDAT['file_label'], size=7, fill='black') + scale_color_distiller(type="div", palette=9)  + labs(title='Correlative Analyses of Various Sound Spectrums', x='acoustic complexity (Note Variability Index)', y='periodic consistency (normalized AC peak evenness)', color= 'periodic complexity\n(log n AC peaks)\n\n') + theme(panel_background=element_rect(fill='black', alpha=.6)))
+    myplot3.save("Spectral_Corr_Analysis_%s_periodicity_autoscale.png" % inp, width=10, height=5, dpi=300)
      
 ###############################################################
 
