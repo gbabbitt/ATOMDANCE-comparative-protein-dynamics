@@ -486,7 +486,10 @@ def autocorr_metric_batch():
         meanLL = np.mean(lag_lengths)
         for q in range(len(lag_lengths)):
             evenness = evenness + (lag_length - meanLL)**2
-        evenness = evenness/(n_peaks - 1)
+        if(n_peaks == 0 or n_peaks == 1):
+            evenness = 0
+        else:
+            evenness = evenness/(n_peaks - 1)
         
         # ACF plot
         plt.title("autocorrelation for %s" % input1)
