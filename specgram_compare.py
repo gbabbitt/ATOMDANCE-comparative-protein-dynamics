@@ -38,7 +38,7 @@ def concat_grps():
     print("making file for boxplots") 
     writePath = "data_boxplots_%s.dat" % folder_list
     outfile = open(writePath, "w")
-    outfile.write("sound_type\tcomplexity\tmaxAC\tn_peaksAC\tevenness\n")
+    outfile.write("sound_type\tcomplexity\tmaxAC\tn_peaksAC\tevenness\tmemory\n")
     for i in range(len(folder_list)):
         myFolder = folder_list[i]
         dir_list = os.listdir(myFolder)
@@ -72,9 +72,11 @@ def concat_grps():
                     if(re.match("Evenness", line)):
                     #print("found n peaks")
                         EVE = line[17:]    
-                        
+                    if(re.match("memory", line)):
+                        #print("found n peaks")
+                        MEM = line[15:]   
                 #     write to .dat file
-            outfile.write("%s\t%s\t%s\t%s\t%s\n" % (myFolder, NVI, MAC, NPEAKS, EVE))
+            outfile.write("%s\t%s\t%s\t%s\t%s\t%s\n" % (myFolder, NVI, MAC, NPEAKS, EVE, MEM))
                 
             
 def bar_plots():
@@ -91,11 +93,11 @@ def bar_plots():
     model1 = ols('log_n_peaksAC ~ sound_type', data=dfDAT).fit()
     mytest1 = sm.stats.anova_lm(model1, typ=2)
     print(mytest1)
-    outfile.write('\nANALYSIS ON N DISTINCT PEAK COUNTS - PERIODIC LAYERING\n')
+    outfile.write('\nANALYSIS ON N DISTINCT PEAK COUNTS - PERIODICITY\n')
     outfile.write("groups compared are %s\n" % folder_list)
     outfile.write(str(mytest1))
-    myplot = (ggplot(dfDAT, aes(x="sound_type", y="log_n_peaksAC", fill="sound_type")) + geom_boxplot() + labs(title='ANOVA', x='category', y='periodic complexity (log n AC peaks)') + theme(panel_background=element_rect(fill='black', alpha=.2)))
-    myplot.save("data_boxplots_periodicLayering_%s.png" % folder_list, width=10, height=5, dpi=300)
+    myplot = (ggplot(dfDAT, aes(x="sound_type", y="log_n_peaksAC", fill="sound_type")) + geom_boxplot() + labs(title='ANOVA', x='category', y='periodicity(log n AC peaks)') + theme(panel_background=element_rect(fill='black', alpha=.2)))
+    myplot.save("data_boxplots_periodicity_%s.png" % folder_list, width=10, height=5, dpi=300)
     
     ### NVI complexity ######
     model2 = ols('complexity ~ sound_type', data=dfDAT).fit()
@@ -111,21 +113,31 @@ def bar_plots():
     model3 = ols('maxAC ~ sound_type', data=dfDAT).fit()
     mytest3 = sm.stats.anova_lm(model3, typ=2)
     print(mytest3)
-    outfile.write('\nANALYSIS ON MAX AC - SIGNAL STRENGTH\n')
+    outfile.write('\nANALYSIS ON SUBMAXIMAL AC - 1st ORDER MEMORY\n')
     outfile.write("groups compared are %s\n" % folder_list)
     outfile.write(str(mytest3))
-    myplot = (ggplot(dfDAT, aes(x="sound_type", y="maxAC", fill="sound_type")) + geom_boxplot() + labs(title='ANOVA', x='category', y='signal strength (max AC)') + theme(panel_background=element_rect(fill='black', alpha=.2)))
-    myplot.save("data_boxplots_signalStrength_%s.png" % folder_list, width=10, height=5, dpi=300)
-    
-    ### max AC ######
-    model4 = ols('log_evenness ~ sound_type', data=dfDAT).fit()
+    myplot = (ggplot(dfDAT, aes(x="sound_type", y="maxAC", fill="sound_type")) + geom_boxplot() + labs(title='ANOVA', x='category', y='1st order memory (submaximal AC)') + theme(panel_background=element_rect(fill='black', alpha=.2)))
+    myplot.save("data_boxplots_shortMemory_%s.png" % folder_list, width=10, height=5, dpi=300)
+        
+    ### persistence ######
+    model4 = ols('memory ~ sound_type', data=dfDAT).fit()
     mytest4 = sm.stats.anova_lm(model4, typ=2)
     print(mytest4)
-    outfile.write('\nANALYSIS ON ACF LAG INTERVALS - PERIODIC EVENNESS\n')
+    outfile.write('\nANALYSIS ON LONG MEMORY (2*abs(H-0.5)) - PERSISTENCE\n')
     outfile.write("groups compared are %s\n" % folder_list)
     outfile.write(str(mytest4))
-    myplot = (ggplot(dfDAT, aes(x="sound_type", y="log_evenness", fill="sound_type")) + geom_boxplot() + labs(title='ANOVA', x='category', y='periodic consistency (evenness AC peaks)') + theme(panel_background=element_rect(fill='black', alpha=.2)))
-    myplot.save("data_boxplots_periodicEvenness_%s.png" % folder_list, width=10, height=5, dpi=300)
+    myplot = (ggplot(dfDAT, aes(x="sound_type", y="memory", fill="sound_type")) + geom_boxplot() + labs(title='ANOVA', x='category', y='long term memory (persistence)') + theme(panel_background=element_rect(fill='black', alpha=.2)))
+    myplot.save("data_boxplots_longMemory_%s.png" % folder_list, width=10, height=5, dpi=300)
+    
+    ### log evenness ######
+    model5 = ols('log_evenness ~ sound_type', data=dfDAT).fit()
+    mytest5 = sm.stats.anova_lm(model5, typ=2)
+    print(mytest5)
+    outfile.write('\nANALYSIS ON ACF LAG INTERVALS - PERIODIC EVENNESS\n')
+    outfile.write("groups compared are %s\n" % folder_list)
+    outfile.write(str(mytest5))
+    myplot = (ggplot(dfDAT, aes(x="sound_type", y="log_evenness", fill="sound_type")) + geom_boxplot() + labs(title='ANOVA', x='category', y='periodicity (evenness AC peaks)') + theme(panel_background=element_rect(fill='black', alpha=.2)))
+    myplot.save("data_boxplots_periodicity2_%s.png" % folder_list, width=10, height=5, dpi=300)
     
     outfile.close
 ###############################################################
