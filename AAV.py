@@ -612,20 +612,31 @@ class Ui_Dialog(object):
         my_frames = self.horizontalSlider_2.value()*5000
         
         print("setting total number of frames to %s" % my_frames)
-        if(my_frames <= 5000 and n_sites <= 300):
-            cmd9 = "python3 aav_cpptraj_sampler.py"
-            os.system(cmd9)
-        if(my_frames > 5000 and my_frames <= 50000 and n_sites <= 300):
+        if(my_frames == 5000):
+            if(n_sites <= 400):
+                cmd9 = "python3 aav_cpptraj_sampler.py"
+                os.system(cmd9)
+            if(n_sites > 400 and n_sites <= 600):
+                cmd9 = "python3 aav_cpptraj_sampler_fast.py"
+                os.system(cmd9)
+            if(n_sites > 600 and n_sites <= 800):
+                cmd9 = "python3 aav_cpptraj_sampler_faster.py"
+                os.system(cmd9)
+            if(n_sites > 800):
+                cmd9 = "python3 aav_cpptraj_sampler_fastest.py"
+                os.system(cmd9)    
+            cmd10 = "python3 aav_cpptraj_sampler_all.py"
+            os.system(cmd10)
+        if(my_frames > 5000 and my_frames <= 11000):
             cmd9 = "python3 aav_cpptraj_sampler_fast.py"
             os.system(cmd9)
-        if(my_frames > 5000 and my_frames <= 50000 and n_sites > 300 and n_sites <= 500):
+        if(my_frames > 11000 and my_frames <= 16000):
             cmd9 = "python3 aav_cpptraj_sampler_faster.py"
             os.system(cmd9)
-        if(my_frames > 50000 or n_sites > 500):
+        if(my_frames > 16000):
             cmd9 = "python3 aav_cpptraj_sampler_fastest.py"
-            os.system(cmd9)    
-        cmd10 = "python3 aav_cpptraj_sampler_all.py"
-        os.system(cmd10)
+            os.system(cmd9)     
+        
         # setting for loop to set value of progress bar 
         for i in range(101): 
             time.sleep(0.05) 
