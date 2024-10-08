@@ -89,11 +89,15 @@ for x in range(len(infile_lines)):
     #    print("my Production Run Time is",TIMEid)
 
 
-# set sampling interval
-INTsamp=200
+# set sampling interval to generate 5000 frames
+myNS = TIMEprod/1000000
+INTsamp = int(TIMEprod/5000)
+#INTsamp=200
+print("my sampling interval is every %s frames" % str(INTsamp))
 
 TEMPid = 298
 print("my Production Run Temperature is",TEMPid)
+
 
 writePath= "./MDsimulationLOG.txt"
 with open(writePath, 'w') as f_out:
