@@ -246,14 +246,14 @@ class Ui_Dialog(object):
         self.horizontalSlider = QtWidgets.QSlider(Dialog)
         self.horizontalSlider.setGeometry(QtCore.QRect(240, 180, 160, 18))
         self.horizontalSlider.setMinimum(1)
-        self.horizontalSlider.setMaximum(20)
+        self.horizontalSlider.setMaximum(100)
         self.horizontalSlider.setOrientation(QtCore.Qt.Horizontal)
         self.horizontalSlider.setObjectName("horizontalSlider")
         self.horizontalSlider_2 = QtWidgets.QSlider(Dialog)
         self.horizontalSlider_2.setGeometry(QtCore.QRect(240, 200, 160, 18))
         self.horizontalSlider_2.setMinimumSize(QtCore.QSize(160, 0))
         self.horizontalSlider_2.setMinimum(1)
-        self.horizontalSlider_2.setMaximum(20)
+        self.horizontalSlider_2.setMaximum(100)
         self.horizontalSlider_2.setOrientation(QtCore.Qt.Horizontal)
         self.horizontalSlider_2.setObjectName("horizontalSlider_2")
         self.label_17 = QtWidgets.QLabel(Dialog)
@@ -339,8 +339,8 @@ class Ui_Dialog(object):
         self.checkBox_6.setText(_translate("Dialog", "use 2 available GPU\'s"))
         self.horizontalSlider.setWhatsThis(_translate("Dialog", "<html><head/><body><p>equilibrationSlider</p></body></html>"))
         self.horizontalSlider_2.setWhatsThis(_translate("Dialog", "<html><head/><body><p>productionSlider</p></body></html>"))
-        self.label_17.setText(_translate("Dialog", "<html><head/><body><p>20ns equilibration</p></body></html>"))
-        self.label_18.setText(_translate("Dialog", "<html><head/><body><p>20ns production</p></body></html>"))
+        self.label_17.setText(_translate("Dialog", "<html><head/><body><p>100ns equilibration</p></body></html>"))
+        self.label_18.setText(_translate("Dialog", "<html><head/><body><p>100ns production</p></body></html>"))
         self.label_19.setText(_translate("Dialog", "<html><head/><body><p>1ns</p></body></html>"))
         self.label_20.setText(_translate("Dialog", "<html><head/><body><p>1ns</p></body></html>"))
 
@@ -361,7 +361,8 @@ class Ui_Dialog(object):
                     
         # write control files for analyses
         print("writing control file")
-        n_frames = 5000*int(prod_len) # MD frames/nanosecond
+        #n_frames = 5000*int(prod_len) # MD frames/nanosecond
+        n_frames = 5000
         n_subsamples = self.lineEdit_5.text()
         #print(n_subsamples)
         frs_subsample = self.lineEdit_4.text()
@@ -607,35 +608,13 @@ class Ui_Dialog(object):
     def runCPPTRAJ(self):
         import time
         n_sites = int(self.lineEdit_2.text())
+        print("number of protein sites to be analyzed is %s" % n_sites)
         # start subsampling
         print("starting trajectory subsampling")
         my_frames = self.horizontalSlider_2.value()*5000
-        
         print("setting total number of frames to %s" % my_frames)
-        if(my_frames == 5000):
-            if(n_sites <= 400):
-                cmd9 = "python3 aav_cpptraj_sampler.py"
-                os.system(cmd9)
-            if(n_sites > 400 and n_sites <= 600):
-                cmd9 = "python3 aav_cpptraj_sampler_fast.py"
-                os.system(cmd9)
-            if(n_sites > 600 and n_sites <= 800):
-                cmd9 = "python3 aav_cpptraj_sampler_faster.py"
-                os.system(cmd9)
-            if(n_sites > 800):
-                cmd9 = "python3 aav_cpptraj_sampler_fastest.py"
-                os.system(cmd9)    
-            cmd10 = "python3 aav_cpptraj_sampler_all.py"
-            os.system(cmd10)
-        if(my_frames > 5000 and my_frames <= 11000):
-            cmd9 = "python3 aav_cpptraj_sampler_fast.py"
-            os.system(cmd9)
-        if(my_frames > 11000 and my_frames <= 16000):
-            cmd9 = "python3 aav_cpptraj_sampler_faster.py"
-            os.system(cmd9)
-        if(my_frames > 16000):
-            cmd9 = "python3 aav_cpptraj_sampler_fastest.py"
-            os.system(cmd9)     
+        cmd = "python3 aav_cpptraj_sampler.py"
+        os.system(cmd)
         
         # setting for loop to set value of progress bar 
         for i in range(101): 
@@ -643,7 +622,7 @@ class Ui_Dialog(object):
             # setting value to progress bar 
             self.progressBar.setValue(i)
         print("\ntrajectory subsampling is complete\n")
-        
+           
     def runANALYSES(self):
         print("\nstarting analyses and sound/movie file generation\n")    
         cmd = "python3 aav_analyzer.py"
