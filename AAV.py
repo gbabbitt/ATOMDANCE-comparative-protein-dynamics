@@ -613,9 +613,10 @@ class Ui_Dialog(object):
         print("starting trajectory subsampling")
         my_frames = self.horizontalSlider_2.value()*5000
         print("setting total number of frames to %s" % my_frames)
-        cmd = "python3 aav_cpptraj_sampler.py"
-        os.system(cmd)
-        
+        cmd1 = "python3 aav_cpptraj_sampler.py"
+        os.system(cmd1)
+        cmd2 = "python3 aav_cpptraj_sampler_all.py"
+        os.system(cmd2)
         # setting for loop to set value of progress bar 
         for i in range(101): 
             time.sleep(0.05) 
