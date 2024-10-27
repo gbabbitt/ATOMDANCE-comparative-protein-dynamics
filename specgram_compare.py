@@ -38,7 +38,8 @@ def concat_grps():
     print("making file for boxplots") 
     writePath = "data_boxplots_%s.dat" % folder_list
     outfile = open(writePath, "w")
-    outfile.write("sound_type\tcomplexity\tmaxAC\tn_peaksAC\tevenness\tmemory\n")
+    #outfile.write("sound_type\tcomplexity\tmaxAC\tn_peaksAC\tevenness\tmemory\n")
+    outfile.write("sound_type\tNVI\torder_1_AC\tn_peaksAC\tevenness\tmemory\tHurst_exp\torderAR\torderAR_AC\tADF_stat\tdom_freq\n")
     for i in range(len(folder_list)):
         myFolder = folder_list[i]
         dir_list = os.listdir(myFolder)
@@ -62,22 +63,38 @@ def concat_grps():
                         #print("found NVI")
                         NVI = line[31:]
                     # get max autocorr
-                    if(re.match("max", line)):
+                    if(re.match("first", line)):
                         #print("found max autocorr")
-                        MAC = line[22:]
+                        MAC = line[30:]
                     # get n peaks
                     if(re.match("number", line)):
                         #print("found n peaks")
-                        NPEAKS = line[42:]
+                        NPEAKS = line[43:]
                     if(re.match("Evenness", line)):
-                    #print("found n peaks")
-                        EVE = line[17:]    
+                        #print("found n peaks")
+                        EVE = line[17:]
                     if(re.match("memory", line)):
                         #print("found n peaks")
-                        MEM = line[15:]   
-                #     write to .dat file
-            outfile.write("%s\t%s\t%s\t%s\t%s\t%s\n" % (myFolder, NVI, MAC, NPEAKS, EVE, MEM))
-                
+                        MEM = line[15:]
+                    if(re.match("Hurst", line)):
+                        #print("found n peaks")
+                        HURST = line[17:]   
+                    if(re.match("AR", line)):
+                        #print("found n peaks")
+                        AR = line[36:]
+                    if(re.match("AC", line)):
+                        #print("found n peaks")
+                        AR_AC = line[26:]
+                    if(re.match("ADF", line)):
+                        #print("found n peaks")
+                        ADF_stat = line[36:]    
+                    if(re.match("dominant", line)):
+                        #print("found n peaks")
+                        dom_freq = line[26:]      
+            # write to .dat file
+            #outfile.write("%s\t%s\t%s\t%s\t%s\t%s\n" % (myFolder, NVI, MAC, NPEAKS, EVE, MEM))
+            outfile.write("%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n" % (myFolder, NVI, MAC, NPEAKS, EVE, MEM, HURST, AR, AR_AC,ADF_stat, dom_freq))
+    outfile.close     
             
 def bar_plots():
     print("making plots and stats tests")    
@@ -86,59 +103,110 @@ def bar_plots():
     inDAT = "data_boxplots_%s.dat" % folder_list
     dfDAT = pd.read_csv(inDAT, sep="\t")
     dfDAT['log_n_peaksAC'] = np.log10(dfDAT['n_peaksAC'])
-    dfDAT['log_evenness'] = np.log10(dfDAT['evenness'])
+    #dfDAT['log_evenness'] = np.log10(dfDAT['evenness'])
     print(dfDAT)
     
     ### log N peaks ######
     model1 = ols('log_n_peaksAC ~ sound_type', data=dfDAT).fit()
     mytest1 = sm.stats.anova_lm(model1, typ=2)
     print(mytest1)
-    outfile.write('\nANALYSIS ON N DISTINCT PEAK COUNTS - PERIODICITY\n')
+    outfile.write('\nANALYSIS ON N DISTINCT PEAK COUNTS - log N PEAKS on ACF\n')
     outfile.write("groups compared are %s\n" % folder_list)
     outfile.write(str(mytest1))
     myplot = (ggplot(dfDAT, aes(x="sound_type", y="log_n_peaksAC", fill="sound_type")) + geom_boxplot() + labs(title='ANOVA', x='category', y='periodicity(log n AC peaks)') + theme(panel_background=element_rect(fill='black', alpha=.2)))
-    myplot.save("data_boxplots_periodicity_%s.png" % folder_list, width=10, height=5, dpi=300)
+    myplot.save("data_boxplots_log_n_peaksAC_%s.png" % folder_list, width=10, height=5, dpi=300)
     
     ### NVI complexity ######
-    model2 = ols('complexity ~ sound_type', data=dfDAT).fit()
+    model2 = ols('NVI ~ sound_type', data=dfDAT).fit()
     mytest2 = sm.stats.anova_lm(model2, typ=2)
     print(mytest2)
     outfile.write('\nANALYSIS ON NVI - ACOUSTIC COMPLEXITY\n')
     outfile.write("groups compared are %s\n" % folder_list)
     outfile.write(str(mytest2))
-    myplot = (ggplot(dfDAT, aes(x="sound_type", y="complexity", fill="sound_type")) + geom_boxplot() + labs(title='ANOVA', x='category', y='acoustic complexity (NVI)') + theme(panel_background=element_rect(fill='black', alpha=.2)))
-    myplot.save("data_boxplots_acousticComplexity_%s.png"% folder_list, width=10, height=5, dpi=300)
+    myplot = (ggplot(dfDAT, aes(x="sound_type", y="NVI", fill="sound_type")) + geom_boxplot() + labs(title='ANOVA', x='category', y='acoustic complexity (NVI)') + theme(panel_background=element_rect(fill='black', alpha=.2)))
+    myplot.save("data_boxplots_NVI_%s.png"% folder_list, width=10, height=5, dpi=300)
     
     ### max AC ######
-    model3 = ols('maxAC ~ sound_type', data=dfDAT).fit()
+    model3 = ols('order_1_AC ~ sound_type', data=dfDAT).fit()
     mytest3 = sm.stats.anova_lm(model3, typ=2)
     print(mytest3)
-    outfile.write('\nANALYSIS ON SUBMAXIMAL AC - 1st ORDER MEMORY\n')
+    outfile.write('\nANALYSIS ON 1st ORDER MEMORY\n')
     outfile.write("groups compared are %s\n" % folder_list)
     outfile.write(str(mytest3))
-    myplot = (ggplot(dfDAT, aes(x="sound_type", y="maxAC", fill="sound_type")) + geom_boxplot() + labs(title='ANOVA', x='category', y='1st order memory (submaximal AC)') + theme(panel_background=element_rect(fill='black', alpha=.2)))
-    myplot.save("data_boxplots_shortMemory_%s.png" % folder_list, width=10, height=5, dpi=300)
+    myplot = (ggplot(dfDAT, aes(x="sound_type", y="order_1_AC", fill="sound_type")) + geom_boxplot() + labs(title='ANOVA', x='category', y='1st order memory (submaximal AC)') + theme(panel_background=element_rect(fill='black', alpha=.2)))
+    myplot.save("data_boxplots_firstOrderAC_%s.png" % folder_list, width=10, height=5, dpi=300)
         
-    ### persistence ######
+    ### memory persistence ######
     model4 = ols('memory ~ sound_type', data=dfDAT).fit()
     mytest4 = sm.stats.anova_lm(model4, typ=2)
     print(mytest4)
-    outfile.write('\nANALYSIS ON LONG MEMORY (2*abs(H-0.5)) - PERSISTENCE\n')
+    outfile.write('\nANALYSIS ON MEMORY (2*abs(H-0.5)) - MEMORY PERSISTENCE\n')
     outfile.write("groups compared are %s\n" % folder_list)
     outfile.write(str(mytest4))
     myplot = (ggplot(dfDAT, aes(x="sound_type", y="memory", fill="sound_type")) + geom_boxplot() + labs(title='ANOVA', x='category', y='long term memory (persistence)') + theme(panel_background=element_rect(fill='black', alpha=.2)))
-    myplot.save("data_boxplots_longMemory_%s.png" % folder_list, width=10, height=5, dpi=300)
+    myplot.save("data_boxplots_memory_%s.png" % folder_list, width=10, height=5, dpi=300)
     
-    ### log evenness ######
-    model5 = ols('log_evenness ~ sound_type', data=dfDAT).fit()
+    ### evenness index ######
+    model5 = ols('evenness ~ sound_type', data=dfDAT).fit()
     mytest5 = sm.stats.anova_lm(model5, typ=2)
     print(mytest5)
     outfile.write('\nANALYSIS ON ACF LAG INTERVALS - PERIODIC EVENNESS\n')
     outfile.write("groups compared are %s\n" % folder_list)
     outfile.write(str(mytest5))
-    myplot = (ggplot(dfDAT, aes(x="sound_type", y="log_evenness", fill="sound_type")) + geom_boxplot() + labs(title='ANOVA', x='category', y='periodicity (evenness AC peaks)') + theme(panel_background=element_rect(fill='black', alpha=.2)))
-    myplot.save("data_boxplots_periodicity2_%s.png" % folder_list, width=10, height=5, dpi=300)
+    myplot = (ggplot(dfDAT, aes(x="sound_type", y="evenness", fill="sound_type")) + geom_boxplot() + labs(title='ANOVA', x='category', y='periodicity (evenness AC peaks)') + theme(panel_background=element_rect(fill='black', alpha=.2)))
+    myplot.save("data_boxplots_evenness_%s.png" % folder_list, width=10, height=5, dpi=300)
     
+    
+    ### Hurst exponent #######
+    model6 = ols('Hurst_exp ~ sound_type', data=dfDAT).fit()
+    mytest6 = sm.stats.anova_lm(model6, typ=2)
+    print(mytest6)
+    outfile.write('\nANALYSIS ON Hurst Exponent - trending / anti-trending\n')
+    outfile.write("groups compared are %s\n" % folder_list)
+    outfile.write(str(mytest6))
+    myplot = (ggplot(dfDAT, aes(x="sound_type", y="Hurst_exp", fill="sound_type")) + geom_boxplot() + labs(title='ANOVA', x='category', y='Hurst exponent (trending / anti-trending)') + theme(panel_background=element_rect(fill='black', alpha=.2)))
+    myplot.save("data_boxplots_Hurst_exp_%s.png" % folder_list, width=10, height=5, dpi=300)
+    
+    ### order of AR ######
+    model7 = ols('orderAR ~ sound_type', data=dfDAT).fit()
+    mytest7 = sm.stats.anova_lm(model7, typ=2)
+    print(mytest7)
+    outfile.write('\nANALYSIS ON ORDER OF AUTOREGRESSION - GREATEST SIGNIFICANT LAG VALUE\n')
+    outfile.write("groups compared are %s\n" % folder_list)
+    outfile.write(str(mytest7))
+    myplot = (ggplot(dfDAT, aes(x="sound_type", y="orderAR", fill="sound_type")) + geom_boxplot() + labs(title='ANOVA', x='category', y='order of AR (greatest signif lag)') + theme(panel_background=element_rect(fill='black', alpha=.2)))
+    myplot.save("data_boxplots_orderAR_%s.png" % folder_list, width=10, height=5, dpi=300)
+    
+    ### AC at order od AR ####
+    model8 = ols('orderAR_AC ~ sound_type', data=dfDAT).fit()
+    mytest8 = sm.stats.anova_lm(model8, typ=2)
+    print(mytest8)
+    outfile.write('\nANALYSIS ON AC at ORDER OF AUTOREGRESSION - AC value at LAG\n')
+    outfile.write("groups compared are %s\n" % folder_list)
+    outfile.write(str(mytest8))
+    myplot = (ggplot(dfDAT, aes(x="sound_type", y="orderAR_AC", fill="sound_type")) + geom_boxplot() + labs(title='ANOVA', x='category', y='AC at order of autoregression') + theme(panel_background=element_rect(fill='black', alpha=.2)))
+    myplot.save("data_boxplots_orderAR_AC_%s.png" % folder_list, width=10, height=5, dpi=300)
+    
+    ### ADF statistic ####
+    model9 = ols('ADF_stat ~ sound_type', data=dfDAT).fit()
+    mytest9 = sm.stats.anova_lm(model9, typ=2)
+    print(mytest9)
+    outfile.write('\nANALYSIS ON ADF test statistic - STATIONARITY\n')
+    outfile.write("groups compared are %s\n" % folder_list)
+    outfile.write(str(mytest9))
+    myplot = (ggplot(dfDAT, aes(x="sound_type", y="ADF_stat", fill="sound_type")) + geom_boxplot() + labs(title='ANOVA', x='category', y='stationarity (ADF statistic)') + theme(panel_background=element_rect(fill='black', alpha=.2)))
+    myplot.save("data_boxplots_ADF_stat_%s.png" % folder_list, width=10, height=5, dpi=300)
+    
+    ### dominant frequency (Hz) ####
+    model10 = ols('dom_freq ~ sound_type', data=dfDAT).fit()
+    mytest10 = sm.stats.anova_lm(model10, typ=2)
+    print(mytest10)
+    outfile.write('\nANALYSIS ON DOMINANT FREQUENCY (Hz)\n')
+    outfile.write("groups compared are %s\n" % folder_list)
+    outfile.write(str(mytest10))
+    myplot = (ggplot(dfDAT, aes(x="sound_type", y="dom_freq", fill="sound_type")) + geom_boxplot() + labs(title='ANOVA', x='category', y='dominant frequency (Hz)') + theme(panel_background=element_rect(fill='black', alpha=.2)))
+    myplot.save("data_boxplots_dom_freq_%s.png" % folder_list, width=10, height=5, dpi=300)
+       
     outfile.close
 ###############################################################
 ###############################################################
