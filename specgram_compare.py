@@ -26,12 +26,19 @@ import scipy as sp
 from plotnine import *
 import statsmodels.api as sm
 from statsmodels.formula.api import ols
-
+# machine learning LDA classifier
+from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score
+# machine learning SVM classifier
+from sklearn import svm
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score
 ###############################################################################
 ###############################################################################
-inp = input("\nEnter space delimited list of folder names to compare (e.g. folder1 folder2 ...folderN\n\n")
-folder_list = inp.split()
-#folder_list = ['samples_Classical','samples_Reich','samples_Part']
+#inp = input("\nEnter space delimited list of folder names to compare (e.g. folder1 folder2 ...folderN\n\n")
+#folder_list = inp.split()
+folder_list = ['natural_sounds','noise_samples','protein_examples','technology_sounds']
 ##############################################################################
 ###############################################################################
 def concat_grps():
@@ -103,7 +110,7 @@ def bar_plots():
     inDAT = "data_boxplots_%s.dat" % folder_list
     dfDAT = pd.read_csv(inDAT, sep="\t")
     dfDAT['log_n_peaksAC'] = np.log10(dfDAT['n_peaksAC'])
-    #dfDAT['log_evenness'] = np.log10(dfDAT['evenness'])
+    dfDAT['log_evenness'] = np.log10(dfDAT['evenness'])
     print(dfDAT)
     
     ### log N peaks ######
@@ -153,7 +160,7 @@ def bar_plots():
     outfile.write('\nANALYSIS ON ACF LAG INTERVALS - PERIODIC EVENNESS\n')
     outfile.write("groups compared are %s\n" % folder_list)
     outfile.write(str(mytest5))
-    myplot = (ggplot(dfDAT, aes(x="sound_type", y="evenness", fill="sound_type")) + geom_boxplot() + labs(title='ANOVA', x='category', y='periodicity (evenness AC peaks)') + theme(panel_background=element_rect(fill='black', alpha=.2)))
+    myplot = (ggplot(dfDAT, aes(x="sound_type", y="log_evenness", fill="sound_type")) + geom_boxplot() + labs(title='ANOVA', x='category', y='periodicity (log evenness AC peaks)') + theme(panel_background=element_rect(fill='black', alpha=.2)))
     myplot.save("data_boxplots_evenness_%s.png" % folder_list, width=10, height=5, dpi=300)
     
     
@@ -208,13 +215,60 @@ def bar_plots():
     myplot.save("data_boxplots_dom_freq_%s.png" % folder_list, width=10, height=5, dpi=300)
        
     outfile.close
+
+def LDA():
+    print("\nconducting LDA on %s\n" % folder_list) 
+    readPath = "data_boxplots_%s.dat" % folder_list
+    writePath = "stats_classifiers_%s.dat" % folder_list
+    outfile = open(writePath, "w")
+    df = pd.read_csv(readPath, delimiter='\t',header=0)
+    print(df)
+    y = df.sound_type
+    X = df.drop('sound_type', axis=1)
+    # Split the data into training and test sets
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
+    # Create and train the LDA classifier
+    lda = LinearDiscriminantAnalysis()
+    lda.fit(X_train, y_train)
+    # Make predictions on the test set
+    y_pred = lda.predict(X_test)
+    # Evaluate the model
+    accuracy = accuracy_score(y_test, y_pred)
+    print("LDA accuracy:", accuracy)
+    outfile.write("\nLDA accuracy: %s\n" % accuracy)    
+    outfile.close
+
+def SVM():
+    print("\nconducting SVM on %s\n" % folder_list) 
+    readPath = "data_boxplots_%s.dat" % folder_list
+    writePath = "stats_classifiers_%s.dat" % folder_list
+    outfile = open(writePath, "a")
+    df = pd.read_csv(readPath, delimiter='\t',header=0)
+    #print(df)
+    y = df.sound_type
+    X = df.drop('sound_type', axis=1)
+    # Split data into training and testing sets
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
+    # Create an SVM classifier
+    clf = svm.SVC()
+    # Fit the model to the training data
+    clf.fit(X_train, y_train)
+    # Make predictions on the test data
+    y_pred = clf.predict(X_test)
+    # Calculate accuracy
+    accuracy = accuracy_score(y_test, y_pred)
+    print("SVM accuracy:", accuracy)
+    outfile.write("\nSVM accuracy: %s\n" % accuracy)    
+    outfile.close
 ###############################################################
 ###############################################################
 
 def main():
     concat_grps()
     bar_plots()
-    
+    LDA()
+    SVM()
+    print("\ncomparative analyses are completed\n")
 ###############################################################
 if __name__ == '__main__':
     main()
