@@ -43,7 +43,7 @@ from sklearn.metrics import accuracy_score
 ###############################################################################
 #inp = input("\nEnter space delimited list of folder names to compare (e.g. folder1 folder2 ...folderN\n\n")
 #folder_list = inp.split()
-folder_list = ['natural_sounds','noise_samples','protein_examples','technology_sounds']
+folder_list = ['music_popular','music_medullaLP_Bjork','human_speech']
 ##############################################################################
 ###############################################################################
 def concat_grps():
@@ -222,25 +222,31 @@ def bar_plots():
     outfile.close
 
 def LDA():
-    print("\nconducting LDA on %s\n" % folder_list) 
+    print("\nconducting LDA on %s (200 bootstraps)\n" % folder_list) 
     readPath = "data_boxplots_%s.dat" % folder_list
     writePath = "stats_classifiers_%s.dat" % folder_list
     outfile = open(writePath, "w")
-    df = pd.read_csv(readPath, delimiter='\t',header=0)
-    print(df)
-    y = df.sound_type
-    X = df.drop('sound_type', axis=1)
-    # Split the data into training and test sets
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
-    # Create and train the LDA classifier
-    lda = LinearDiscriminantAnalysis()
-    lda.fit(X_train, y_train)
-    # Make predictions on the test set
-    y_pred = lda.predict(X_test)
-    # Evaluate the model
-    accuracy = accuracy_score(y_test, y_pred)
-    print("LDA accuracy:", accuracy)
-    outfile.write("\nLDA accuracy: %s\n" % accuracy)    
+    acc_vals = []
+    for i in range(200):
+       df = pd.read_csv(readPath, delimiter='\t',header=0)
+       #print(df)
+       y = df.sound_type
+       X = df.drop('sound_type', axis=1)
+       # Split the data into training and test sets
+       X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
+       # Create and train the LDA classifier
+       lda = LinearDiscriminantAnalysis()
+       lda.fit(X_train, y_train)
+       # Make predictions on the test set
+       y_pred = lda.predict(X_test)
+       # Evaluate the model
+       accuracy = accuracy_score(y_test, y_pred)
+       #print("LDA accuracy:", accuracy)
+       acc_vals.append(accuracy)
+    acc_mean = np.average(acc_vals)
+    acc_sd = np.std(acc_vals)
+    print("\nLDA accuracy: %s +- %s\n" % (acc_mean, acc_sd)) 
+    outfile.write("\nLDA accuracy: %s +- %s\n" % (acc_mean, acc_sd))    
     outfile.close
 
 def SVM():
@@ -255,7 +261,7 @@ def SVM():
     # Split data into training and testing sets
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
     # Create an SVM classifier
-    clf = svm.SVC()
+    clf = svm.SVC(kernel='rbf') # linear, rbf, sigmoid or poly
     # Fit the model to the training data
     clf.fit(X_train, y_train)
     # Make predictions on the test data
@@ -267,33 +273,40 @@ def SVM():
     outfile.close
     
 def RF():
-    print("\nconducting SVM on %s\n" % folder_list) 
+    print("\nconducting RF (random forest) on %s (200 bootstraps)\n" % folder_list) 
     readPath = "data_boxplots_%s.dat" % folder_list
     writePath = "stats_classifiers_%s.dat" % folder_list
     outfile = open(writePath, "a")
-    df = pd.read_csv(readPath, delimiter='\t',header=0)
-    print(df)
-    y = df.sound_type
-    X = df.drop('sound_type', axis=1)
-    # Split into training and testing sets
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-    # Create a Random Forest Classifier
-    clf = RandomForestClassifier(n_estimators=100, random_state=42)
-    # Fit the model to the training data
-    clf.fit(X_train, y_train)
-    # Make predictions on the test data
-    y_pred = clf.predict(X_test)
-    # Get feature importances
-    feature_importances = clf.feature_importances_
+    acc_vals = []
+    for i in range(200):
+        df = pd.read_csv(readPath, delimiter='\t',header=0)
+        #print(df)
+        y = df.sound_type
+        X = df.drop('sound_type', axis=1)
+        # Split into training and testing sets
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
+        # Create a Random Forest Classifier
+        clf = RandomForestClassifier(n_estimators=500)
+        # Fit the model to the training data
+        clf.fit(X_train, y_train)
+        # Make predictions on the test data
+        y_pred = clf.predict(X_test)
+        # Get feature importances
+        feature_importances = clf.feature_importances_
+        # Evaluate the model
+        accuracy = accuracy_score(y_test, y_pred)
+        #print("RF accuracy:", accuracy)
+        acc_vals.append(accuracy)
+    acc_mean = np.average(acc_vals)
+    acc_sd = np.std(acc_vals)
+    print("\nRF accuracy: %s +- %s\n" % (acc_mean, acc_sd)) 
+    outfile.write("\nRFaccuracy: %s +- %s\n" % (acc_mean, acc_sd))    
+    outfile.close
+    
     # Create a DataFrame for visualization
     importance_df = pd.DataFrame({"Feature": X.columns, "Importance": feature_importances})
     importance_df = importance_df.sort_values("Importance", ascending=False)
     print(importance_df)
-    # Evaluate the model
-    accuracy = accuracy_score(y_test, y_pred)
-    print("RF accuracy:", accuracy)
-    outfile.write("\nRF accuracy: %s\n" % accuracy)    
-    outfile.close
     # Plot feature importances
     myplot = (ggplot(importance_df, aes(x='Feature', y='Importance')) + geom_bar(stat = "identity") + labs(title='Feature Importance from Random Forest Model', x='Feature', y='Importance') + theme(panel_background=element_rect(fill='black', alpha=.2)))
     myplot.save("data_RF_featureImportance_%s.png" % folder_list, width=10, height=5, dpi=300)
@@ -305,7 +318,7 @@ def main():
     concat_grps()
     bar_plots()
     LDA()
-    SVM()
+    #SVM()
     RF()
     print("\ncomparative analyses are completed\n")
 ###############################################################
