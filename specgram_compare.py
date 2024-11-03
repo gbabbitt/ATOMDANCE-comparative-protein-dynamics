@@ -34,6 +34,11 @@ from sklearn.metrics import accuracy_score
 from sklearn import svm
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
+# machine learning Random Forest classifier
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score
+
 ###############################################################################
 ###############################################################################
 #inp = input("\nEnter space delimited list of folder names to compare (e.g. folder1 folder2 ...folderN\n\n")
@@ -260,6 +265,39 @@ def SVM():
     print("SVM accuracy:", accuracy)
     outfile.write("\nSVM accuracy: %s\n" % accuracy)    
     outfile.close
+    
+def RF():
+    print("\nconducting SVM on %s\n" % folder_list) 
+    readPath = "data_boxplots_%s.dat" % folder_list
+    writePath = "stats_classifiers_%s.dat" % folder_list
+    outfile = open(writePath, "a")
+    df = pd.read_csv(readPath, delimiter='\t',header=0)
+    print(df)
+    y = df.sound_type
+    X = df.drop('sound_type', axis=1)
+    # Split into training and testing sets
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+    # Create a Random Forest Classifier
+    clf = RandomForestClassifier(n_estimators=100, random_state=42)
+    # Fit the model to the training data
+    clf.fit(X_train, y_train)
+    # Make predictions on the test data
+    y_pred = clf.predict(X_test)
+    # Get feature importances
+    feature_importances = clf.feature_importances_
+    # Create a DataFrame for visualization
+    importance_df = pd.DataFrame({"Feature": X.columns, "Importance": feature_importances})
+    importance_df = importance_df.sort_values("Importance", ascending=False)
+    print(importance_df)
+    # Evaluate the model
+    accuracy = accuracy_score(y_test, y_pred)
+    print("RF accuracy:", accuracy)
+    outfile.write("\nRF accuracy: %s\n" % accuracy)    
+    outfile.close
+    # Plot feature importances
+    myplot = (ggplot(importance_df, aes(x='Feature', y='Importance')) + geom_bar(stat = "identity") + labs(title='Feature Importance from Random Forest Model', x='Feature', y='Importance') + theme(panel_background=element_rect(fill='black', alpha=.2)))
+    myplot.save("data_RF_featureImportance_%s.png" % folder_list, width=10, height=5, dpi=300)
+    
 ###############################################################
 ###############################################################
 
@@ -268,6 +306,7 @@ def main():
     bar_plots()
     LDA()
     SVM()
+    RF()
     print("\ncomparative analyses are completed\n")
 ###############################################################
 if __name__ == '__main__':
