@@ -26,6 +26,8 @@ import scipy as sp
 from plotnine import *
 import statsmodels.api as sm
 from statsmodels.formula.api import ols
+# normalization
+from sklearn.preprocessing import MinMaxScaler
 # machine learning LDA classifier
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 from sklearn.model_selection import train_test_split
@@ -41,9 +43,9 @@ from sklearn.metrics import accuracy_score
 
 ###############################################################################
 ###############################################################################
-#inp = input("\nEnter space delimited list of folder names to compare (e.g. folder1 folder2 ...folderN\n\n")
-#folder_list = inp.split()
-folder_list = ['music_popular','music_medullaLP_Bjork','human_speech']
+inp = input("\nEnter space delimited list of folder names to compare (e.g. folder1 folder2 ...folderN\n\n")
+folder_list = inp.split()
+#folder_list = ['music_popular','music_medullaLP_Bjork','human_speech','animal_vocalizations']
 ##############################################################################
 ###############################################################################
 def concat_grps():
@@ -222,16 +224,18 @@ def bar_plots():
     outfile.close
 
 def LDA():
-    print("\nconducting LDA on %s (200 bootstraps)\n" % folder_list) 
+    print("\nconducting LDA on %s (100 bootstraps)\n" % folder_list) 
     readPath = "data_boxplots_%s.dat" % folder_list
     writePath = "stats_classifiers_%s.dat" % folder_list
     outfile = open(writePath, "w")
     acc_vals = []
-    for i in range(200):
+    scaler = MinMaxScaler()
+    for i in range(100):
        df = pd.read_csv(readPath, delimiter='\t',header=0)
        #print(df)
        y = df.sound_type
        X = df.drop('sound_type', axis=1)
+       X = pd.DataFrame(scaler.fit_transform(X), columns=X.columns) # MinMax scaling
        # Split the data into training and test sets
        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
        # Create and train the LDA classifier
@@ -249,40 +253,21 @@ def LDA():
     outfile.write("\nLDA accuracy: %s +- %s\n" % (acc_mean, acc_sd))    
     outfile.close
 
-def SVM():
-    print("\nconducting SVM on %s\n" % folder_list) 
-    readPath = "data_boxplots_%s.dat" % folder_list
-    writePath = "stats_classifiers_%s.dat" % folder_list
-    outfile = open(writePath, "a")
-    df = pd.read_csv(readPath, delimiter='\t',header=0)
-    #print(df)
-    y = df.sound_type
-    X = df.drop('sound_type', axis=1)
-    # Split data into training and testing sets
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
-    # Create an SVM classifier
-    clf = svm.SVC(kernel='rbf') # linear, rbf, sigmoid or poly
-    # Fit the model to the training data
-    clf.fit(X_train, y_train)
-    # Make predictions on the test data
-    y_pred = clf.predict(X_test)
-    # Calculate accuracy
-    accuracy = accuracy_score(y_test, y_pred)
-    print("SVM accuracy:", accuracy)
-    outfile.write("\nSVM accuracy: %s\n" % accuracy)    
-    outfile.close
-    
 def RF():
-    print("\nconducting RF (random forest) on %s (200 bootstraps)\n" % folder_list) 
+    print("\nconducting RF (random forest) on %s (100 bootstraps)\n" % folder_list) 
     readPath = "data_boxplots_%s.dat" % folder_list
     writePath = "stats_classifiers_%s.dat" % folder_list
     outfile = open(writePath, "a")
     acc_vals = []
-    for i in range(200):
+    feature_scores = []
+    X_labels = []
+    scaler = MinMaxScaler()
+    for i in range(100):
         df = pd.read_csv(readPath, delimiter='\t',header=0)
         #print(df)
         y = df.sound_type
         X = df.drop('sound_type', axis=1)
+        X = pd.DataFrame(scaler.fit_transform(X), columns=X.columns) # MinMax scaling
         # Split into training and testing sets
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
         # Create a Random Forest Classifier
@@ -293,6 +278,8 @@ def RF():
         y_pred = clf.predict(X_test)
         # Get feature importances
         feature_importances = clf.feature_importances_
+        feature_scores.append(feature_importances)
+        X_labels.append(X.columns)
         # Evaluate the model
         accuracy = accuracy_score(y_test, y_pred)
         #print("RF accuracy:", accuracy)
@@ -302,23 +289,35 @@ def RF():
     print("\nRF accuracy: %s +- %s\n" % (acc_mean, acc_sd)) 
     outfile.write("\nRFaccuracy: %s +- %s\n" % (acc_mean, acc_sd))    
     outfile.close
-    
+    #print(feature_importances)
+    feature_scores = pd.DataFrame(feature_scores)
+    #print(feature_scores)
+    feature_means = feature_scores.mean()
+    #print(feature_means)
+    feature_sem = feature_scores.sem()
+    #print(feature_sem)
+    #print(X.columns)
+    ylim_neg = feature_means - 2*feature_sem
+    ylim_pos = feature_means + 2*feature_sem
+    #print(feature_means)
+    #print(ylim_neg)
+    #print(ylim_pos)
     # Create a DataFrame for visualization
-    importance_df = pd.DataFrame({"Feature": X.columns, "Importance": feature_importances})
-    importance_df = importance_df.sort_values("Importance", ascending=False)
-    print(importance_df)
+    importance_df = pd.DataFrame({"Feature": X.columns, "Importance": feature_means})
+    #importance_df = importance_df.sort_values("Importance", ascending=False)
+    #print(importance_df)
+    grp_color = ('red','orange','yellow','green','cyan','blue','violet','brown','gray','white')
     # Plot feature importances
-    myplot = (ggplot(importance_df, aes(x='Feature', y='Importance')) + geom_bar(stat = "identity") + labs(title='Feature Importance from Random Forest Model', x='Feature', y='Importance') + theme(panel_background=element_rect(fill='black', alpha=.2)))
+    myplot = (ggplot(importance_df, aes(x='Feature', y='Importance')) + geom_bar(stat = "identity", fill = grp_color) + geom_errorbar(ymin=ylim_neg, ymax=ylim_pos) + labs(title='Feature Importance from Random Forest Model (500 trees, 100 bootstraps)', x='Feature', y='Importance (+- 2 SEM)') + theme(panel_background=element_rect(fill='black', alpha=.2)))
     myplot.save("data_RF_featureImportance_%s.png" % folder_list, width=10, height=5, dpi=300)
-    
+    myplot.show()
 ###############################################################
 ###############################################################
 
 def main():
     concat_grps()
     bar_plots()
-    LDA()
-    #SVM()
+    #LDA()
     RF()
     print("\ncomparative analyses are completed\n")
 ###############################################################
