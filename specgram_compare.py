@@ -433,7 +433,7 @@ def RF():
                 i += 1
                 plt.xlabel(feature1, fontsize=18)
                 plt.ylabel(feature2, fontsize=18)
-                plt.legend([folder_list[0], folder_list[1]], loc='best', fontsize=18)
+                #plt.legend([folder_list[0], folder_list[1]], loc='best', fontsize=18)
         plt.tight_layout()
         plt.savefig('data_RF_StrongestFeatures_%s.png' % folder_list, dpi = 300, bbox_inches='tight', pad_inches=1)
         plt.show() # always put after savefig uelse figure will be blank
