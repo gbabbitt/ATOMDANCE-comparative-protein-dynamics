@@ -236,7 +236,7 @@ def LDA():
     print("\nconducting LDA on %s (100 bootstraps)\n" % folder_list) 
     readPath = "data_boxplots_%s.dat" % folder_list
     writePath = "stats_classifiers_%s.dat" % folder_list
-    outfile = open(writePath, "w")
+    outfile = open(writePath, "a")
     acc_vals = []
     scaler = MinMaxScaler()
     for i in range(100):
@@ -266,7 +266,7 @@ def RF():
     print("\nconducting RF (random forest) on %s (100 bootstraps)\n" % folder_list) 
     readPath = "data_boxplots_%s.dat" % folder_list
     writePath = "stats_classifiers_%s.dat" % folder_list
-    outfile = open(writePath, "a")
+    outfile = open(writePath, "w")
     acc_vals = []
     feature_scores = []
     X_labels = []
@@ -297,7 +297,6 @@ def RF():
     acc_sd = np.std(acc_vals)
     print("\nRF accuracy: %s +- %s\n" % (acc_mean, acc_sd)) 
     outfile.write("\nRFaccuracy: %s +- %s\n" % (acc_mean, acc_sd))    
-    outfile.close
     #print(feature_importances)
     feature_scores = pd.DataFrame(feature_scores)
     #print(feature_scores)
@@ -315,7 +314,9 @@ def RF():
     importance_df = pd.DataFrame({"Feature": X.columns, "Importance": feature_means})
     #importance_df = importance_df.sort_values("Importance", ascending=False)
     print(importance_df)
-    
+    outfile.write("\nfeature importances:\n")
+    outfile.write("\n%s\n" % (importance_df))
+    outfile.close
     # Plot feature importances
     grp_color = ('red','orange','yellow','green','cyan','blue','violet','brown','gray','white')
     myplot = (ggplot(importance_df, aes(x='Feature', y='Importance')) + geom_bar(stat = "identity", fill = grp_color) + geom_errorbar(ymin=ylim_neg, ymax=ylim_pos) + labs(title='Feature Importance from Random Forest Model (500 trees, 100 bootstraps)', x='Feature', y='Importance (+- 2 SEM)') + theme(panel_background=element_rect(fill='black', alpha=.2)))
@@ -373,11 +374,12 @@ def RF():
             y_min, y_max = X[:, 1].min() - .5, X[:, 1].max() + .5
             xx, yy = np.meshgrid(np.arange(x_min, x_max, h),
                 np.arange(y_min, y_max, h))
-
+            
             # just plot the dataset first
             cm = plt.cm.Spectral  # background
-            cm_bright = ListedColormap(['#FF0000', '#0000FF'])
-            #cm_bright = plt.cm.gist_rainbow  # data points
+            cm_bright = ListedColormap(['red', 'blue'])
+            #cm_bright = plt.cm.Set1  # data points
+            
             ax = plt.subplot(len(datasets), len(classifiers) + 1, i)
             if ds_cnt == 0:
                 ax.set_title("Input data", fontsize=24)
@@ -385,7 +387,7 @@ def RF():
             ax.scatter(X_train[:, 0], X_train[:, 1], c=y_train, cmap=cm_bright,
                    edgecolors='k', s=120)
             # Plot the testing points
-            ax.scatter(X_test[:, 0], X_test[:, 1], c=y_test, cmap=cm_bright, alpha=0.6,
+            ax.scatter(X_test[:, 0], X_test[:, 1], c=y_test, cmap=cm_bright,
                    edgecolors='k', s=120)
             ax.set_xlim(xx.min(), xx.max())
             ax.set_ylim(yy.min(), yy.max())
@@ -394,7 +396,8 @@ def RF():
             i += 1
             plt.xlabel(feature1, fontsize=18)
             plt.ylabel(feature2, fontsize=18)
-            plt.legend([folder_list[0], folder_list[1]], loc='best', fontsize=18)
+           
+            
             # iterate over classifiers
             for name, clf in zip(names, classifiers):
                 ax = plt.subplot(len(datasets), len(classifiers) + 1, i)
@@ -403,7 +406,8 @@ def RF():
                     train_test_split(X, y, test_size=.3)
                 clf.fit(X_train, y_train)
                 score = clf.score(X_test, y_test)
-
+                cm = plt.cm.Spectral  # background
+                cm_bright = ListedColormap(['red', 'blue'])
                 # Plot the decision boundary. For that, we will assign a color to each
                 # point in the mesh [x_min, x_max]x[y_min, y_max].
                 if hasattr(clf, "decision_function"):
@@ -414,14 +418,29 @@ def RF():
                 # Put the result into a color plot
                 Z = Z.reshape(xx.shape)
                 ax.contourf(xx, yy, Z, cmap=cm, alpha=.8)
-
+                print("y training set = %s" % y_train)
+                print("y test set = %s" %y_test)
+                zero_train_indices = np.where(y_train == 0)
+                zero_test_indices = np.where(y_test == 0)
+                one_train_indices = np.where(y_train == 1)
+                one_test_indices = np.where(y_test == 1)
+                #print(X_train)
                 # Plot the training points
-                ax.scatter(X_train[:, 0], X_train[:, 1], c=y_train, cmap=cm_bright,
+                myX_train = X_train[:, 0]
+                myY_train = X_train[:, 1]
+                myX_test = X_test[:, 0]
+                myY_test = X_test[:, 1]
+                ax.scatter(myX_train[zero_train_indices], myY_train[zero_train_indices], c="darkred", marker='o', label=("train %s" % folder_list[0]),
                        edgecolors='k', s=120)
                 # Plot the testing points
-                ax.scatter(X_test[:, 0], X_test[:, 1], c=y_test, cmap=cm_bright,
+                ax.scatter(myX_test[zero_test_indices], myY_test[zero_test_indices], c="darkred", marker='s', label=("test %s" % folder_list[0]),
                        edgecolors='k', alpha=0.6, s=120)
-
+                # Plot the training points
+                ax.scatter(myX_train[one_train_indices], myY_train[one_train_indices], c="navy", marker='o', label=("train %s" % folder_list[1]),
+                       edgecolors='k', s=120)
+                # Plot the testing points
+                ax.scatter(myX_test[one_test_indices],  myY_test[one_test_indices], c="navy", marker='s', label=("test %s" % folder_list[1]),
+                       edgecolors='k', alpha=0.6, s=120)
                 ax.set_xlim(xx.min(), xx.max())
                 ax.set_ylim(yy.min(), yy.max())
                 ax.set_xticks(())
@@ -433,11 +452,11 @@ def RF():
                 i += 1
                 plt.xlabel(feature1, fontsize=18)
                 plt.ylabel(feature2, fontsize=18)
-                #plt.legend([folder_list[0], folder_list[1]], loc='best', fontsize=18)
-        plt.tight_layout()
-        plt.savefig('data_RF_StrongestFeatures_%s.png' % folder_list, dpi = 300, bbox_inches='tight', pad_inches=1)
-        plt.show() # always put after savefig uelse figure will be blank
-    
+                plt.legend(loc='best', fontsize=18)
+            plt.tight_layout()
+            plt.savefig('data_RF_StrongestFeatures_%s.png' % folder_list, dpi = 300, bbox_inches='tight', pad_inches=1)
+            plt.show() # always put after savefig uelse figure will be blank
+            plt.close()
     
      
 ###############################################################
@@ -446,8 +465,8 @@ def RF():
 def main():
     concat_grps()
     bar_plots()
-    #LDA()
     RF()
+    #LDA()
     print("\ncomparative analyses are completed\n")
 ###############################################################
 if __name__ == '__main__':
