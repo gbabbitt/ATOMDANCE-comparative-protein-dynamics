@@ -63,6 +63,9 @@ def concat_grps():
     outfile = open(writePath, "w")
     #outfile.write("sound_type\tcomplexity\tmaxAC\tn_peaksAC\tevenness\tmemory\n")
     outfile.write("sound_type\tNVI\torder_1_AC\tn_peaksAC\tevenness\tmemory\tHurst_exp\torderAR\torderAR_AC\tADF_stat\tdom_freq\n")
+    # optional drop order 1 AC
+    #outfile.write("sound_type\tNVI\tn_peaksAC\tevenness\tmemory\tHurst_exp\torderAR\torderAR_AC\tADF_stat\tdom_freq\n")
+    
     for i in range(len(folder_list)):
         myFolder = folder_list[i]
         dir_list = os.listdir(myFolder)
@@ -117,6 +120,8 @@ def concat_grps():
             # write to .dat file
             #outfile.write("%s\t%s\t%s\t%s\t%s\t%s\n" % (myFolder, NVI, MAC, NPEAKS, EVE, MEM))
             outfile.write("%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n" % (myFolder, NVI, MAC, NPEAKS, EVE, MEM, HURST, AR, AR_AC,ADF_stat, dom_freq))
+            # option drop order 1 AC
+            #outfile.write("%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n" % (myFolder, NVI, NPEAKS, EVE, MEM, HURST, AR, AR_AC,ADF_stat, dom_freq))
     outfile.close     
             
 def bar_plots():
@@ -148,7 +153,7 @@ def bar_plots():
     outfile.write(str(mytest2))
     myplot = (ggplot(dfDAT, aes(x="sound_type", y="NVI", fill="sound_type")) + geom_boxplot() + labs(title='ANOVA', x='category', y='acoustic complexity (NVI)') + theme(panel_background=element_rect(fill='black', alpha=.2)))
     myplot.save("data_boxplots_NVI_%s.png"% folder_list, width=10, height=5, dpi=300)
-    
+    #"""
     ### max AC ######
     model3 = ols('order_1_AC ~ sound_type', data=dfDAT).fit()
     mytest3 = sm.stats.anova_lm(model3, typ=2)
@@ -158,7 +163,7 @@ def bar_plots():
     outfile.write(str(mytest3))
     myplot = (ggplot(dfDAT, aes(x="sound_type", y="order_1_AC", fill="sound_type")) + geom_boxplot() + labs(title='ANOVA', x='category', y='1st order memory (submaximal AC)') + theme(panel_background=element_rect(fill='black', alpha=.2)))
     myplot.save("data_boxplots_firstOrderAC_%s.png" % folder_list, width=10, height=5, dpi=300)
-        
+    #"""    
     ### memory persistence ######
     model4 = ols('memory ~ sound_type', data=dfDAT).fit()
     mytest4 = sm.stats.anova_lm(model4, typ=2)
@@ -319,6 +324,7 @@ def RF():
     outfile.close
     # Plot feature importances
     grp_color = ('red','orange','yellow','green','cyan','blue','violet','brown','gray','white')
+    #grp_color = ('red','orange','yellow','green','cyan','blue','violet','brown','gray') # option drop order 1 AC
     myplot = (ggplot(importance_df, aes(x='Feature', y='Importance')) + geom_bar(stat = "identity", fill = grp_color) + geom_errorbar(ymin=ylim_neg, ymax=ylim_pos) + labs(title='Feature Importance from Random Forest Model (500 trees, 100 bootstraps)', x='Feature', y='Importance (+- 2 SEM)') + theme(panel_background=element_rect(fill='black', alpha=.2)))
     myplot.save("data_RF_featureImportance_%s.png" % folder_list, width=10, height=5, dpi=300)
     myplot.show()
@@ -336,6 +342,7 @@ def RF():
         # Get the feature corresponding to that index
         feature2 = update_df.loc[max_index, 'Feature']
         print(feature2)
+        
         # get iris data and collect main two pricipal components
         df = pd.read_csv(readPath, delimiter='\t',header=0)
         #print(df)
