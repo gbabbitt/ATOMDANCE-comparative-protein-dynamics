@@ -50,9 +50,9 @@ from sklearn.metrics import accuracy_score
 ###############################################################################
 inp = input("\nEnter space delimited list of folder names to compare (e.g. folder1 folder2 ...folderN\n\n")
 folder_list = inp.split()
-#folder_list = ['music_all','human_speech','animal_vocalizations','protein_examples']
+#folder_list = ['music_all','human_speech','vocalizations_animal','protein_examples']
 #folder_list = ['music_all','nonmusic_all']
-#folder_list = ['animal_vocalizations','human_speech']
+#folder_list = ['vocalizations_animal','human_speech']
 #folder_list = ['human_speech_male','human_speech_female']
 #folder_list = ['music_medullaLP_Bjork','human_speech']
 ##############################################################################
@@ -329,6 +329,8 @@ def RF():
     myplot.save("data_RF_featureImportance_%s.png" % folder_list, width=10, height=5, dpi=300)
     myplot.show()
     
+    inp2 = input("\nEnter number of features to graph (range 2 to 6)\n\n")
+
     if(len(folder_list)==2):
         ### plot data on top 2 features
         # Find the index of the row with the maximum value
@@ -342,29 +344,77 @@ def RF():
         # Get the feature corresponding to that index
         feature2 = update_df.loc[max_index, 'Feature']
         print(feature2)
+        update_df = update_df.drop(max_index)
+        # Find the index of the row with the maximum value
+        max_index = update_df['Importance'].idxmax()
+        # Get the feature corresponding to that index
+        feature3 = update_df.loc[max_index, 'Feature']
+        print(feature3)
+        update_df = update_df.drop(max_index)
+        # Find the index of the row with the maximum value
+        max_index = update_df['Importance'].idxmax()
+        # Get the feature corresponding to that index
+        feature4 = update_df.loc[max_index, 'Feature']
+        print(feature4)
+        update_df = update_df.drop(max_index)
+        # Find the index of the row with the maximum value
+        max_index = update_df['Importance'].idxmax()
+        # Get the feature corresponding to that index
+        feature5 = update_df.loc[max_index, 'Feature']
+        print(feature5)
+        update_df = update_df.drop(max_index)
+        # Find the index of the row with the maximum value
+        max_index = update_df['Importance'].idxmax()
+        # Get the feature corresponding to that index
+        feature6 = update_df.loc[max_index, 'Feature']
+        print(feature6)
+        
         
         # get iris data and collect main two pricipal components
         df = pd.read_csv(readPath, delimiter='\t',header=0)
         #print(df)
         y = df.sound_type
         #X = df.drop('sound_type', axis=1)
-        X = df[[feature1,feature2]]
+        X1 = df[[feature1,feature2]]
+        X2 = df[[feature2,feature3]]
+        X3 = df[[feature3,feature4]]
+        X4 = df[[feature4,feature4]]
+        X5 = df[[feature5,feature6]]
         # Convert to integers using factorize()
         df['sound_int'] = pd.factorize(df['sound_type'])[0]   
         y = df['sound_int'].to_numpy()
-        X = X.to_numpy()
+        X1 = X1.to_numpy()
+        X2 = X2.to_numpy()
+        X3 = X3.to_numpy()
+        X4 = X4.to_numpy()
+        X5 = X5.to_numpy()
         #print(X)
         #print(y)
     
         # Create a Random Forest Classifier
         clf = RandomForestClassifier(n_estimators=500)
-        myData = (X, y)
-
-        # original data with iris replacing linear separable random variables
-        datasets = [myData]
-        names = ["random forest on top two most important features"]
-        #classifiers = [RandomForestClassifier(n_estimators=500),RandomForestClassifier(n_estimators=500),RandomForestClassifier(n_estimators=500),RandomForestClassifier(n_estimators=500),RandomForestClassifier(n_estimators=500)]
-        classifiers = [clf]
+        myData1 = (X1, y)
+        myData2 = (X2, y)
+        myData3 = (X3, y)
+        myData4 = (X4, y)
+        myData5 = (X5, y)
+        
+        names = ["random forest on ranked importantance of features"]
+        if(inp2 == "6"):
+            classifiers = [clf,clf,clf,clf,clf]
+            datasets = [myData1,myData2,myData3,myData4,myData5]
+        if(inp2 == "5"):
+            classifiers = [clf,clf,clf,clf]
+            datasets = [myData1,myData2,myData3,myData4]
+        if(inp2 == "4"):
+            classifiers = [clf,clf,clf]
+            datasets = [myData1,myData2,myData3]
+        if(inp2 == "3"):
+            classifiers = [clf,clf]
+            datasets = [myData1,myData2]
+        if(inp2 == "2"):
+            classifiers = [clf]
+            datasets = [myData1]
         h = .02  # step size in the mesh
     
         figure = plt.figure(figsize=(27, 9))
@@ -381,29 +431,28 @@ def RF():
             y_min, y_max = X[:, 1].min() - .5, X[:, 1].max() + .5
             xx, yy = np.meshgrid(np.arange(x_min, x_max, h),
                 np.arange(y_min, y_max, h))
+            if(ds_cnt == 0):
+                # just plot the dataset first
+                cm = plt.cm.Spectral  # background
+                cm_bright = ListedColormap(['red', 'blue'])
+                #cm_bright = plt.cm.Set1  # data points
             
-            # just plot the dataset first
-            cm = plt.cm.Spectral  # background
-            cm_bright = ListedColormap(['red', 'blue'])
-            #cm_bright = plt.cm.Set1  # data points
-            
-            ax = plt.subplot(len(datasets), len(classifiers) + 1, i)
-            if ds_cnt == 0:
-                ax.set_title("Input data", fontsize=24)
-            # Plot the training points
-            ax.scatter(X_train[:, 0], X_train[:, 1], c=y_train, cmap=cm_bright,
-                   edgecolors='k', s=120)
-            # Plot the testing points
-            ax.scatter(X_test[:, 0], X_test[:, 1], c=y_test, cmap=cm_bright,
-                   edgecolors='k', s=120)
-            ax.set_xlim(xx.min(), xx.max())
-            ax.set_ylim(yy.min(), yy.max())
-            ax.set_xticks(())
-            ax.set_yticks(())
-            i += 1
-            plt.xlabel(feature1, fontsize=18)
-            plt.ylabel(feature2, fontsize=18)
-           
+                ax = plt.subplot(len(datasets), len(classifiers) + 1, i)
+                if ds_cnt == 0:
+                    ax.set_title("Input data", fontsize=12)
+                # Plot the training points
+                ax.scatter(X_train[:, 0], X_train[:, 1], c=y_train, cmap=cm_bright,
+                       edgecolors='k', s=20)
+                # Plot the testing points
+                ax.scatter(X_test[:, 0], X_test[:, 1], c=y_test, cmap=cm_bright,
+                       edgecolors='k', s=20)
+                ax.set_xlim(xx.min(), xx.max())
+                ax.set_ylim(yy.min(), yy.max())
+                ax.set_xticks(())
+                ax.set_yticks(())
+                i += 1
+                plt.xlabel(feature1, fontsize=12)
+                plt.ylabel(feature2, fontsize=12)
             
             # iterate over classifiers
             for name, clf in zip(names, classifiers):
@@ -438,32 +487,45 @@ def RF():
                 myX_test = X_test[:, 0]
                 myY_test = X_test[:, 1]
                 ax.scatter(myX_train[zero_train_indices], myY_train[zero_train_indices], c="darkred", marker='o', label=("train %s" % folder_list[0]),
-                       edgecolors='k', s=120)
+                       edgecolors='k', s=20)
                 # Plot the testing points
                 ax.scatter(myX_test[zero_test_indices], myY_test[zero_test_indices], c="darkred", marker='s', label=("test %s" % folder_list[0]),
-                       edgecolors='k', alpha=0.6, s=120)
+                       edgecolors='k', alpha=0.6, s=20)
                 # Plot the training points
                 ax.scatter(myX_train[one_train_indices], myY_train[one_train_indices], c="navy", marker='o', label=("train %s" % folder_list[1]),
-                       edgecolors='k', s=120)
+                       edgecolors='k', s=20)
                 # Plot the testing points
                 ax.scatter(myX_test[one_test_indices],  myY_test[one_test_indices], c="navy", marker='s', label=("test %s" % folder_list[1]),
-                       edgecolors='k', alpha=0.6, s=120)
+                       edgecolors='k', alpha=0.6, s=20)
                 ax.set_xlim(xx.min(), xx.max())
                 ax.set_ylim(yy.min(), yy.max())
                 ax.set_xticks(())
                 ax.set_yticks(())
                 if ds_cnt == 0:
-                     ax.set_title(name, fontsize=24)
+                     ax.set_title(name, fontsize=12)
                 ax.text(xx.max() - .3, yy.min() + .3, ('accuracy = %.2f' % score).lstrip('0'),
-                     size=15, horizontalalignment='right')
+                     size=8, horizontalalignment='right')
                 i += 1
-                plt.xlabel(feature1, fontsize=18)
-                plt.ylabel(feature2, fontsize=18)
-                plt.legend(loc='best', fontsize=18)
-            plt.tight_layout()
-            plt.savefig('data_RF_StrongestFeatures_%s.png' % folder_list, dpi = 300, bbox_inches='tight', pad_inches=1)
-            plt.show() # always put after savefig uelse figure will be blank
-            plt.close()
+                if(ds_cnt ==0):
+                    plt.xlabel(feature1, fontsize=12)
+                    plt.ylabel(feature2, fontsize=12)
+                if(ds_cnt ==1):
+                    plt.xlabel(feature2, fontsize=12)
+                    plt.ylabel(feature3, fontsize=12)
+                if(ds_cnt ==2):
+                    plt.xlabel(feature3, fontsize=12)
+                    plt.ylabel(feature4, fontsize=12)
+                if(ds_cnt ==3):
+                    plt.xlabel(feature4, fontsize=12)
+                    plt.ylabel(feature5, fontsize=12)
+                if(ds_cnt ==4):
+                    plt.xlabel(feature5, fontsize=12)
+                    plt.ylabel(feature6, fontsize=12)  
+                plt.legend(loc='best', fontsize=6)
+        plt.tight_layout()
+        plt.savefig('data_RF_StrongestFeatures_%s.png' % folder_list, dpi = 300, bbox_inches='tight', pad_inches=1)
+        plt.show() # always put after savefig uelse figure will be blank
+        plt.close()
     
      
 ###############################################################
