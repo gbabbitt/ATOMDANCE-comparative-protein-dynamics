@@ -62,7 +62,7 @@ def concat_grps():
     writePath = "data_boxplots_%s.dat" % folder_list
     outfile = open(writePath, "w")
     #outfile.write("sound_type\tcomplexity\tmaxAC\tn_peaksAC\tevenness\tmemory\n")
-    outfile.write("sound_type\tNVI\torder_1_AC\tn_peaksAC\tevenness\tmemory\tHurst_exp\torderAR\torderAR_AC\tADF_stat\tdom_freq\n")
+    outfile.write("sound_type\tNVI\torder_1_AC\tn_peaksAC\tevenness\tmemory\tHurst_exp\torderAR\torderAR_AC\tADF_stat\tdom_freq\tMA_order\n")
     # optional drop order 1 AC
     #outfile.write("sound_type\tNVI\tn_peaksAC\tevenness\tmemory\tHurst_exp\torderAR\torderAR_AC\tADF_stat\tdom_freq\n")
     
@@ -116,10 +116,13 @@ def concat_grps():
                         ADF_stat = line[36:]    
                     if(re.match("dominant", line)):
                         #print("found n peaks")
-                        dom_freq = line[26:]      
+                        dom_freq = line[26:]
+                    if(re.match("MA", line)):
+                        #print("found n peaks")
+                        MAorder = line[35:]    
             # write to .dat file
             #outfile.write("%s\t%s\t%s\t%s\t%s\t%s\n" % (myFolder, NVI, MAC, NPEAKS, EVE, MEM))
-            outfile.write("%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n" % (myFolder, NVI, MAC, NPEAKS, EVE, MEM, HURST, AR, AR_AC,ADF_stat, dom_freq))
+            outfile.write("%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n" % (myFolder, NVI, MAC, NPEAKS, EVE, MEM, HURST, AR, AR_AC,ADF_stat, dom_freq, MAorder))
             # option drop order 1 AC
             #outfile.write("%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n" % (myFolder, NVI, NPEAKS, EVE, MEM, HURST, AR, AR_AC,ADF_stat, dom_freq))
     outfile.close     
@@ -234,6 +237,16 @@ def bar_plots():
     outfile.write(str(mytest10))
     myplot = (ggplot(dfDAT, aes(x="sound_type", y="dom_freq", fill="sound_type")) + geom_boxplot() + labs(title='ANOVA', x='category', y='dominant frequency (Hz)') + theme(panel_background=element_rect(fill='black', alpha=.2)))
     myplot.save("data_boxplots_dom_freq_%s.png" % folder_list, width=10, height=5, dpi=300)
+    
+    ### NVI complexity ######
+    model11 = ols('MA_order ~ sound_type', data=dfDAT).fit()
+    mytest11 = sm.stats.anova_lm(model11, typ=2)
+    print(mytest11)
+    outfile.write('\nANALYSIS ON ORDER OF THE MOVING AVERAGE\n')
+    outfile.write("groups compared are %s\n" % folder_list)
+    outfile.write(str(mytest2))
+    myplot = (ggplot(dfDAT, aes(x="sound_type", y="MA_order", fill="sound_type")) + geom_boxplot() + labs(title='ANOVA', x='category', y='acoustic complexity (NVI)') + theme(panel_background=element_rect(fill='black', alpha=.2)))
+    myplot.save("data_boxplots_MAorder_%s.png"% folder_list, width=10, height=5, dpi=300)
        
     outfile.close
 
@@ -323,7 +336,7 @@ def RF():
     outfile.write("\n%s\n" % (importance_df))
     outfile.close
     # Plot feature importances
-    grp_color = ('red','orange','yellow','green','cyan','blue','violet','brown','gray','white')
+    grp_color = ('red','orange','yellow','green','cyan','blue','violet','brown','gray','white','black')
     #grp_color = ('red','orange','yellow','green','cyan','blue','violet','brown','gray') # option drop order 1 AC
     myplot = (ggplot(importance_df, aes(x='Feature', y='Importance')) + geom_bar(stat = "identity", fill = grp_color) + geom_errorbar(ymin=ylim_neg, ymax=ylim_pos) + labs(title='Feature Importance from Random Forest Model (500 trees, 100 bootstraps)', x='Feature', y='Importance (+- 2 SEM)') + theme(panel_background=element_rect(fill='black', alpha=.2)))
     myplot.save("data_RF_featureImportance_%s.png" % folder_list, width=10, height=5, dpi=300)
