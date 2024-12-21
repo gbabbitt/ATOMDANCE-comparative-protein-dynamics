@@ -144,7 +144,7 @@ def bar_plots():
     outfile.write('\nANALYSIS ON N DISTINCT PEAK COUNTS - log N PEAKS on ACF\n')
     outfile.write("groups compared are %s\n" % folder_list)
     outfile.write(str(mytest1))
-    myplot = (ggplot(dfDAT, aes(x="sound_type", y="log_n_peaksAC", fill="sound_type")) + geom_boxplot() + labs(title='ANOVA', x='category', y='periodicity(log n AC peaks)') + theme(panel_background=element_rect(fill='black', alpha=.2)))
+    myplot = (ggplot(dfDAT, aes(x="sound_type", y="log_n_peaksAC", fill="sound_type")) + geom_boxplot() + labs(title='ANOVA', x='category', y='periodic complexity (log n AC peaks)') + theme(panel_background=element_rect(fill='black', alpha=.2)))
     myplot.save("data_boxplots_log_n_peaksAC_%s.png" % folder_list, width=10, height=5, dpi=300)
     
     ### NVI complexity ######
@@ -154,7 +154,7 @@ def bar_plots():
     outfile.write('\nANALYSIS ON NVI - ACOUSTIC COMPLEXITY\n')
     outfile.write("groups compared are %s\n" % folder_list)
     outfile.write(str(mytest2))
-    myplot = (ggplot(dfDAT, aes(x="sound_type", y="NVI", fill="sound_type")) + geom_boxplot() + labs(title='ANOVA', x='category', y='acoustic complexity (NVI)') + theme(panel_background=element_rect(fill='black', alpha=.2)))
+    myplot = (ggplot(dfDAT, aes(x="sound_type", y="NVI", fill="sound_type")) + geom_boxplot() + labs(title='ANOVA', x='category', y='spectral complexity (NVI)') + theme(panel_background=element_rect(fill='black', alpha=.2)))
     myplot.save("data_boxplots_NVI_%s.png"% folder_list, width=10, height=5, dpi=300)
     #"""
     ### max AC ######
@@ -164,7 +164,7 @@ def bar_plots():
     outfile.write('\nANALYSIS ON 1st ORDER MEMORY\n')
     outfile.write("groups compared are %s\n" % folder_list)
     outfile.write(str(mytest3))
-    myplot = (ggplot(dfDAT, aes(x="sound_type", y="order_1_AC", fill="sound_type")) + geom_boxplot() + labs(title='ANOVA', x='category', y='1st order memory (submaximal AC)') + theme(panel_background=element_rect(fill='black', alpha=.2)))
+    myplot = (ggplot(dfDAT, aes(x="sound_type", y="order_1_AC", fill="sound_type")) + geom_boxplot() + labs(title='ANOVA', x='category', y='1st order autocorrelation (reverb)') + theme(panel_background=element_rect(fill='black', alpha=.2)))
     myplot.save("data_boxplots_firstOrderAC_%s.png" % folder_list, width=10, height=5, dpi=300)
     #"""    
     ### memory persistence ######
@@ -174,7 +174,7 @@ def bar_plots():
     outfile.write('\nANALYSIS ON MEMORY (2*abs(H-0.5)) - MEMORY PERSISTENCE\n')
     outfile.write("groups compared are %s\n" % folder_list)
     outfile.write(str(mytest4))
-    myplot = (ggplot(dfDAT, aes(x="sound_type", y="memory", fill="sound_type")) + geom_boxplot() + labs(title='ANOVA', x='category', y='long term memory (persistence)') + theme(panel_background=element_rect(fill='black', alpha=.2)))
+    myplot = (ggplot(dfDAT, aes(x="sound_type", y="memory", fill="sound_type")) + geom_boxplot() + labs(title='ANOVA', x='category', y='persistence or memory (2*abs(H-0.5)') + theme(panel_background=element_rect(fill='black', alpha=.2)))
     myplot.save("data_boxplots_memory_%s.png" % folder_list, width=10, height=5, dpi=300)
     
     ### evenness index ######
@@ -215,7 +215,7 @@ def bar_plots():
     outfile.write('\nANALYSIS ON AC at ORDER OF AUTOREGRESSION - AC value at LAG\n')
     outfile.write("groups compared are %s\n" % folder_list)
     outfile.write(str(mytest8))
-    myplot = (ggplot(dfDAT, aes(x="sound_type", y="orderAR_AC", fill="sound_type")) + geom_boxplot() + labs(title='ANOVA', x='category', y='AC at order of autoregression') + theme(panel_background=element_rect(fill='black', alpha=.2)))
+    myplot = (ggplot(dfDAT, aes(x="sound_type", y="orderAR_AC", fill="sound_type")) + geom_boxplot() + labs(title='ANOVA', x='category', y='r value at order of AR') + theme(panel_background=element_rect(fill='black', alpha=.2)))
     myplot.save("data_boxplots_orderAR_AC_%s.png" % folder_list, width=10, height=5, dpi=300)
     
     ### ADF statistic ####
@@ -245,7 +245,7 @@ def bar_plots():
     outfile.write('\nANALYSIS ON ORDER OF THE MOVING AVERAGE\n')
     outfile.write("groups compared are %s\n" % folder_list)
     outfile.write(str(mytest2))
-    myplot = (ggplot(dfDAT, aes(x="sound_type", y="MA_order", fill="sound_type")) + geom_boxplot() + labs(title='ANOVA', x='category', y='acoustic complexity (NVI)') + theme(panel_background=element_rect(fill='black', alpha=.2)))
+    myplot = (ggplot(dfDAT, aes(x="sound_type", y="MA_order", fill="sound_type")) + geom_boxplot() + labs(title='ANOVA', x='category', y='order of MA (moving average)') + theme(panel_background=element_rect(fill='black', alpha=.2)))
     myplot.save("data_boxplots_MAorder_%s.png"% folder_list, width=10, height=5, dpi=300)
        
     outfile.close
@@ -340,7 +340,8 @@ def RF():
     #grp_color = ('red','orange','yellow','green','cyan','blue','violet','brown','gray') # option drop order 1 AC
     myplot = (ggplot(importance_df, aes(x='Feature', y='Importance')) + geom_bar(stat = "identity", fill = grp_color) + geom_errorbar(ymin=ylim_neg, ymax=ylim_pos) + labs(title='Feature Importance from Random Forest Model (500 trees, 100 bootstraps)', x='Feature', y='Importance (+- 2 SEM)') + theme(panel_background=element_rect(fill='black', alpha=.2)))
     myplot.save("data_RF_featureImportance_%s.png" % folder_list, width=10, height=5, dpi=300)
-    myplot.show()
+    #myplot.show()
+    print(myplot)
     
     inp2 = input("\nEnter number of features to graph (range 2 to 6)\n\n")
 
